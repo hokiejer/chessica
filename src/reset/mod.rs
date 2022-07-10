@@ -1,6 +1,6 @@
 pub mod init;
 
-// Board-to-Bit Numbering:
+// Board-to-Bit (and Square) Numbering:
 // 64 63 62 61 60 59 58 57 
 // 56 55 54 53 52 51 50 49
 // 48 47 46 45 44 43 42 41

@@ -25,12 +25,15 @@ impl Reset {
                     'k'|'q'|'r'|'b'|'n'|'p'|'K'|'Q'|'R'|'B'|'N'|'P' => {
                         bit = bit << 7 - x + 8*(7 - y as u32);
                         self.b_all |= bit;
+                        let mut material_multiplier: i8 = 0;
                         match c {
                             'k'|'q'|'r'|'b'|'n'|'p' => {
                                 self.b_black |= bit;
+                                material_multiplier = -1;
                             },
                             _ => {
                                 self.b_white |= bit;
+                                material_multiplier = 1;
                             },
                         }
                         match c {
@@ -39,18 +42,23 @@ impl Reset {
                             },
                             'q'|'Q' => {
                                 self.b_queens |= bit;
+                                self.material += material_multiplier * 9;
                             },
                             'r'|'R' => {
                                 self.b_rooks |= bit;
+                                self.material += material_multiplier * 5;
                             },
                             'b'|'B' => {
                                 self.b_bishops |= bit;
+                                self.material += material_multiplier * 3;
                             },
                             'n'|'N' => {
                                 self.b_knights |= bit;
+                                self.material += material_multiplier * 3;
                             },
                             _ => {
                                 self.b_pawns |= bit;
+                                self.material += material_multiplier * 1;
                             },
                         }
                         x += 1;
@@ -80,6 +88,7 @@ mod tests {
         assert_eq!(r.b_rooks,0x8100000000000081,"b_rooks");
         assert_eq!(r.b_queens,0x1000000000000010,"b_queens");
         assert_eq!(r.b_kings,0x0800000000000008,"b_kings");
+        assert_eq!(r.material,0,"material");
     }
 
     #[test]
@@ -97,5 +106,24 @@ mod tests {
         assert_eq!(r.b_rooks,0x880000000000000c,"b_rooks");
         assert_eq!(r.b_queens,0x0010000000002000,"b_queens");
         assert_eq!(r.b_kings,0x0200000000000002,"b_kings");
+        assert_eq!(r.material,0,"material");
+    }
+
+    #[test]
+    fn init_reset_from_fen_jibberish_01() {
+        use crate::reset;
+        let mut r = reset::new();
+        let starting_fen = String::from("rk6/pn1qPp1q/np2P3/4P1p1/P1p1p2r/R3P1bP/NBQ3P1/6K1 b - - 4 17");
+        r.init_from_fen(starting_fen);
+        assert_eq!(r.b_all,0xc0ddc80aa98be202,"b_all");
+        assert_eq!(r.b_white,0x000808088089e202,"b_white");
+        assert_eq!(r.b_black,0xc0d5c00229020000,"b_black");
+        assert_eq!(r.b_pawns,0x008c480aa8090200,"b_pawns");
+        assert_eq!(r.b_knights,0x0040800000008000,"b_knights");
+        assert_eq!(r.b_bishops,0x0000000000024000,"b_bishops");
+        assert_eq!(r.b_rooks,0x8000000001800000,"b_rooks");
+        assert_eq!(r.b_queens,0x0011000000002000,"b_queens");
+        assert_eq!(r.b_kings,0x4000000000000002,"b_kings");
+        assert_eq!(r.material,-16,"material");
     }
 }

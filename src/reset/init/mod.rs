@@ -81,4 +81,21 @@ mod tests {
         assert_eq!(r.b_queens,0x1000000000000010,"b_queens");
         assert_eq!(r.b_kings,0x0800000000000008,"b_kings");
     }
+
+    #[test]
+    fn init_reset_from_fen_botvinnik_capablanca() {
+        use crate::reset;
+        let mut r = reset::new();
+        let starting_fen = String::from("r3r1k1/p2q1ppp/1pn2n2/3p4/P1pP4/2P1P3/1BQ1NPPP/4RRK1 w - - 4 17");
+        r.init_from_fen(starting_fen);
+        assert_eq!(r.b_all,0x8a976410b0286f0e,"b_all");
+        assert_eq!(r.b_white,0x0000000090286f0e,"b_white");
+        assert_eq!(r.b_black,0x8a97641020000000,"b_black");
+        assert_eq!(r.b_pawns,0x00874010b0280700,"b_pawns");
+        assert_eq!(r.b_knights,0x0000240000000800,"b_knights");
+        assert_eq!(r.b_bishops,0x0000000000004000,"b_bishops");
+        assert_eq!(r.b_rooks,0x880000000000000c,"b_rooks");
+        assert_eq!(r.b_queens,0x0010000000002000,"b_queens");
+        assert_eq!(r.b_kings,0x0200000000000002,"b_kings");
+    }
 }

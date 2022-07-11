@@ -73,9 +73,9 @@ impl Reset {
 
 #[cfg(test)]
 mod tests {
+    use crate::reset;
     #[test]
     fn init_reset_from_fen_starting_position() {
-        use crate::reset;
         let mut r = reset::new();
         let starting_fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         r.init_from_fen(starting_fen);
@@ -93,7 +93,6 @@ mod tests {
 
     #[test]
     fn init_reset_from_fen_botvinnik_capablanca() {
-        use crate::reset;
         let mut r = reset::new();
         let starting_fen = String::from("r3r1k1/p2q1ppp/1pn2n2/3p4/P1pP4/2P1P3/1BQ1NPPP/4RRK1 w - - 4 17");
         r.init_from_fen(starting_fen);
@@ -111,7 +110,6 @@ mod tests {
 
     #[test]
     fn init_reset_from_fen_jibberish_01() {
-        use crate::reset;
         let mut r = reset::new();
         let starting_fen = String::from("rk6/pn1qPp1q/np2P3/4P1p1/P1p1p2r/R3P1bP/NBQ3P1/6K1 b - - 4 17");
         r.init_from_fen(starting_fen);

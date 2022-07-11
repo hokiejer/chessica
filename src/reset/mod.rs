@@ -1,4 +1,5 @@
 pub mod init;
+//use hexplay::HexViewBuilder;
 
 // Board-to-Bit (and Square) Numbering:
 // 64 63 62 61 60 59 58 57 
@@ -11,23 +12,53 @@ pub mod init;
 // 08 07 06 05 04 03 02 01
 
 pub struct Reset {
-    b_all: u64,
-    b_white: u64,
-    b_black: u64,
-    b_pawns: u64,
-    b_knights: u64,
-    b_bishops: u64,
-    b_rooks: u64,
-    b_queens: u64,
-    b_kings: u64,
-    material: i8,
-    moves_since_capture: u8,
-    white_king_square: u8,
-    black_king_square: u8,
-    white_castle_q: u8,
-    white_castle_k: u8,
-    black_castle_q: u8,
-    black_castle_k: u8
+    //Fields passed from parent to child
+    b_all: u64,                 // 8 bytes (  8)
+    b_white: u64,               // 8 bytes ( 16)
+    b_black: u64,               // 8 bytes ( 24)
+    b_pawns: u64,               // 8 bytes ( 32)
+    b_knights: u64,             // 8 bytes ( 40)
+    b_bishops: u64,             // 8 bytes ( 48)
+    b_rooks: u64,               // 8 bytes ( 56)
+    b_queens: u64,              // 8 bytes ( 64)
+    b_kings: u64,               // 8 bytes ( 72)
+    material: i8,               // 1 byte  ( 73)
+    moves_since_capture: u8,    // 1 byte  ( 74)
+    white_king_square: u8,      // 1 byte  ( 75)
+    black_king_square: u8,      // 1 byte  ( 76)
+    white_castle_q: u8,         // 1 byte  ( 77) bit
+    white_castle_k: u8,         // 1 byte  ( 78) bit
+    black_castle_q: u8,         // 1 byte  ( 79) bit
+    black_castle_k: u8,         // 1 byte  ( 80) bit
+
+    //Fields cleared in a new child
+    b_current_piece: u64,       // 8 bytes (  8)
+    b_en_passant: u64,          // 8 bytes ( 16)
+    b_move_data: u64,           // 8 bytes ( 24)
+    score: i32,                 // 4 bytes ( 28)
+    move_number: u8,            // 1 byte  ( 29)
+    current_piece: u8,          // 1 byte  ( 30)
+    move_data: u8,              // 1 byte  ( 31)
+    capture: u8,                // 1 byte  ( 32) bit
+    in_check: u8,               // 1 byte  ( 33) bit
+    to_move: u8,                // 1 byte  ( 34) bit
+    ep_capture: u8,             // 1 byte  ( 35) bit
+    promotion: u8,              // 1 byte  ( 36) bit
+    king_castled: u8,           // 1 byte  ( 37) bit
+    game_over: u8,              // 1 byte  ( 38) bit
+
+    //Fields that can be garbage in a new child
+    b_from: u64,                // 8 bytes (  8)
+    b_to: u64,                  // 8 bytes ( 16)
+    hash_value: u32,            // 4 bytes ( 20)
+    min: i32,                   // 4 bytes ( 24)
+    max: i32,                   // 4 bytes ( 28)
+    score_depth: u8,            // 1 bytes ( 29)
+    hash_count: u8,             // 1 bytes ( 30)
+    times_seen: u8,             // 1 bytes ( 31)
+    from: u8,                   // 1 bytes ( 32)
+    to: u8,                     // 1 bytes ( 33)
+    must_check_safety: u8,      // 1 bytes ( 34) bit
 }
 
 pub fn new() -> Reset {
@@ -48,7 +79,34 @@ pub fn new() -> Reset {
         white_castle_q: 0,
         white_castle_k: 0,
         black_castle_q: 0,
-        black_castle_k: 0
+        black_castle_k: 0,
+
+        b_current_piece: 0,
+        b_en_passant: 0,
+        b_move_data: 0,
+        score: 0,
+        move_number: 0,
+        current_piece: 0,
+        move_data: 0,
+        capture: 0,
+        in_check: 0,
+        to_move: 0,
+        ep_capture: 0,
+        promotion: 0,
+        king_castled: 0,
+        game_over: 0,
+
+        b_from: 0,
+        b_to: 0,
+        hash_value: 0,
+        min: 0,
+        max: 0,
+        score_depth: 0,
+        hash_count: 0,
+        times_seen: 0,
+        from: 0,
+        to: 0,
+        must_check_safety: 0,
     };
     reset
 }

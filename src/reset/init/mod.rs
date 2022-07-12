@@ -76,6 +76,11 @@ impl Reset {
                 }
             }
         }
+        
+        // PROCESS WHO'S MOVE IT IS (Chunk 1)
+        if chunks[1] == "b" {
+            self.to_move = 1;
+        }
     }
 
 }
@@ -98,6 +103,7 @@ mod tests {
         assert_eq!(r.b_queens,0x1000000000000010,"b_queens");
         assert_eq!(r.b_kings,0x0800000000000008,"b_kings");
         assert_eq!(r.material,0,"material");
+        assert_eq!(r.to_move,0,"to_move");
     }
 
     #[test]
@@ -115,6 +121,7 @@ mod tests {
         assert_eq!(r.b_queens,0x0010000000002000,"b_queens");
         assert_eq!(r.b_kings,0x0200000000000002,"b_kings");
         assert_eq!(r.material,0,"material");
+        assert_eq!(r.to_move,0,"to_move");
     }
 
     #[test]
@@ -132,5 +139,6 @@ mod tests {
         assert_eq!(r.b_queens,0x0011000000002000,"b_queens");
         assert_eq!(r.b_kings,0x4000000000000002,"b_kings");
         assert_eq!(r.material,-16,"material");
+        assert_eq!(r.to_move,1,"to_move");
     }
 }

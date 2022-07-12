@@ -1,6 +1,15 @@
 use crate::reset::Reset;
 
 impl Reset {
+    /// Initialize a Reset from FEN notation
+    /// 
+    /// # Examples
+    ///
+    /// ```
+    /// let mut r = reset::new();
+    /// let fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    /// r.init_from_fen(fen);
+    /// ```
     pub fn init_from_fen(&mut self, fen: String) {
         println!("{}",fen);
         println!("{}",self.b_all);
@@ -77,8 +86,8 @@ mod tests {
     #[test]
     fn init_reset_from_fen_starting_position() {
         let mut r = reset::new();
-        let starting_fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-        r.init_from_fen(starting_fen);
+        let fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        r.init_from_fen(fen);
         assert_eq!(r.b_all,0xffff00000000ffff,"b_all");
         assert_eq!(r.b_white,0x000000000000ffff,"b_white");
         assert_eq!(r.b_black,0xffff000000000000,"b_black");
@@ -94,8 +103,8 @@ mod tests {
     #[test]
     fn init_reset_from_fen_botvinnik_capablanca() {
         let mut r = reset::new();
-        let starting_fen = String::from("r3r1k1/p2q1ppp/1pn2n2/3p4/P1pP4/2P1P3/1BQ1NPPP/4RRK1 w - - 4 17");
-        r.init_from_fen(starting_fen);
+        let fen = String::from("r3r1k1/p2q1ppp/1pn2n2/3p4/P1pP4/2P1P3/1BQ1NPPP/4RRK1 w - - 4 17");
+        r.init_from_fen(fen);
         assert_eq!(r.b_all,0x8a976410b0286f0e,"b_all");
         assert_eq!(r.b_white,0x0000000090286f0e,"b_white");
         assert_eq!(r.b_black,0x8a97641020000000,"b_black");
@@ -111,8 +120,8 @@ mod tests {
     #[test]
     fn init_reset_from_fen_jibberish_01() {
         let mut r = reset::new();
-        let starting_fen = String::from("rk6/pn1qPp1q/np2P3/4P1p1/P1p1p2r/R3P1bP/NBQ3P1/6K1 b - - 4 17");
-        r.init_from_fen(starting_fen);
+        let fen = String::from("rk6/pn1qPp1q/np2P3/4P1p1/P1p1p2r/R3P1bP/NBQ3P1/6K1 b - - 4 17");
+        r.init_from_fen(fen);
         assert_eq!(r.b_all,0xc0ddc80aa98be202,"b_all");
         assert_eq!(r.b_white,0x000808088089e202,"b_white");
         assert_eq!(r.b_black,0xc0d5c00229020000,"b_black");

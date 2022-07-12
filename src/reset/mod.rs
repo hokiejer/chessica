@@ -61,6 +61,13 @@ pub struct Reset {
     must_check_safety: u8,      // 1 bytes ( 34) bit
 }
 
+/// Constructs a new Reset
+/// 
+/// # Examples
+/// 
+/// ```
+/// let mut r = reset::new();
+/// ```
 pub fn new() -> Reset {
     let reset = Reset {
         b_all: 0,
@@ -112,6 +119,14 @@ pub fn new() -> Reset {
 }
 
 
+/// Prints a Reset
+/// 
+/// # Examples
+///
+/// ```
+/// let mut r = reset::new();
+/// r.print;
+/// ```
 impl Reset {
     pub fn print(&self) -> String {
         let mut reset_text: String = "a".to_owned();

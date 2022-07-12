@@ -78,9 +78,36 @@ impl Reset {
         }
         
         // PROCESS WHO'S MOVE IT IS (Chunk 1)
-        if chunks[1] == "b" {
-            self.to_move = 1;
+        match chunks[1] {
+            "b" => {
+                self.to_move = 1;
+            },
+            "w" => {
+                self.to_move = 0;
+            },
+            _ => println!("I don't know what to do with {}",chunks[1]),
         }
+
+        // PROCESS CASTLE ELIGIBILITY (Chunk 2)
+        for c in chunks[2].chars() {
+            match c {
+                '-' => {},
+                'K' => {
+                    self.white_castle_k = 1;
+                },
+                'Q' => {
+                    self.white_castle_q = 1;
+                },
+                'k' => {
+                    self.black_castle_k = 1;
+                },
+                'q' => {
+                    self.black_castle_q = 1;
+                },
+                _ => println!("I don't know what to do with {}",c),
+            }
+        }
+
     }
 
 }
@@ -104,6 +131,10 @@ mod tests {
         assert_eq!(r.b_kings,0x0800000000000008,"b_kings");
         assert_eq!(r.material,0,"material");
         assert_eq!(r.to_move,0,"to_move");
+        assert_eq!(r.white_castle_k,1,"white_castle_k");
+        assert_eq!(r.white_castle_q,1,"white_castle_q");
+        assert_eq!(r.black_castle_k,1,"black_castle_k");
+        assert_eq!(r.black_castle_q,1,"black_castle_q");
     }
 
     #[test]
@@ -122,6 +153,10 @@ mod tests {
         assert_eq!(r.b_kings,0x0200000000000002,"b_kings");
         assert_eq!(r.material,0,"material");
         assert_eq!(r.to_move,0,"to_move");
+        assert_eq!(r.white_castle_k,0,"white_castle_k");
+        assert_eq!(r.white_castle_q,0,"white_castle_q");
+        assert_eq!(r.black_castle_k,0,"black_castle_k");
+        assert_eq!(r.black_castle_q,0,"black_castle_q");
     }
 
     #[test]
@@ -140,5 +175,9 @@ mod tests {
         assert_eq!(r.b_kings,0x4000000000000002,"b_kings");
         assert_eq!(r.material,-16,"material");
         assert_eq!(r.to_move,1,"to_move");
+        assert_eq!(r.white_castle_k,0,"white_castle_k");
+        assert_eq!(r.white_castle_q,0,"white_castle_q");
+        assert_eq!(r.black_castle_k,0,"black_castle_k");
+        assert_eq!(r.black_castle_q,0,"black_castle_q");
     }
 }

@@ -1,5 +1,5 @@
 pub mod fen;
-//use hexplay::HexViewBuilder;
+pub mod print;
 
 // Board-to-Bit (and Square) Numbering:
 // 64 63 62 61 60 59 58 57    a8 b8 c8 d8 e8 f8 g8 h8
@@ -116,25 +116,6 @@ pub fn new() -> Reset {
         must_check_safety: 0,
     };
     reset
-}
-
-
-/// Prints a Reset
-/// 
-/// # Examples
-///
-/// ```
-/// let mut r = reset::new();
-/// r.print;
-/// ```
-impl Reset {
-    pub fn print(&self) -> String {
-        let mut reset_text: String = "a".to_owned();
-        let appender: &str = "b";
-        reset_text.push_str(appender);
-        println!("{}",reset_text);
-        reset_text
-    }
 }
 
 

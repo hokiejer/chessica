@@ -114,6 +114,12 @@ impl Reset {
             self.b_en_passant = utils::convert_square_to_bitstring(chunks[3].to_string());
         }
 
+        // PROCESS HALFMOVE CLOCK (Chunk 4)
+        self.halfmove_clock = chunks[4].parse().unwrap();
+
+        // PROCESS HALFMOVE CLOCK (Chunk 4)
+        self.move_number = chunks[5].parse().unwrap();
+
     }
 
 }
@@ -142,6 +148,8 @@ mod tests {
         assert_eq!(r.black_castle_k,1,"black_castle_k");
         assert_eq!(r.black_castle_q,1,"black_castle_q");
         assert_eq!(r.b_en_passant,0,"b_en_passant");
+        assert_eq!(r.halfmove_clock,0,"halfmove_clock");
+        assert_eq!(r.move_number,1,"move_number");
     }
 
     #[test]
@@ -165,6 +173,8 @@ mod tests {
         assert_eq!(r.black_castle_k,0,"black_castle_k");
         assert_eq!(r.black_castle_q,0,"black_castle_q");
         assert_eq!(r.b_en_passant,0,"b_en_passant");
+        assert_eq!(r.halfmove_clock,4,"halfmove_clock");
+        assert_eq!(r.move_number,17,"move_number");
     }
 
     #[test]
@@ -188,6 +198,8 @@ mod tests {
         assert_eq!(r.black_castle_k,0,"black_castle_k");
         assert_eq!(r.black_castle_q,0,"black_castle_q");
         assert_eq!(r.b_en_passant,0,"b_en_passant");
+        assert_eq!(r.halfmove_clock,4,"halfmove_clock");
+        assert_eq!(r.move_number,17,"move_number");
     }
 
     #[test]
@@ -211,5 +223,7 @@ mod tests {
         assert_eq!(r.black_castle_k,1,"black_castle_k");
         assert_eq!(r.black_castle_q,1,"black_castle_q");
         assert_eq!(r.b_en_passant,0x0000000000020000,"b_en_passant");
+        assert_eq!(r.halfmove_clock,0,"halfmove_clock");
+        assert_eq!(r.move_number,1,"move_number");
     }
 }

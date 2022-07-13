@@ -23,7 +23,7 @@ pub struct Reset {
     b_queens: u64,              // 8 bytes ( 64)
     b_kings: u64,               // 8 bytes ( 72)
     material: i8,               // 1 byte  ( 73)
-    moves_since_capture: u8,    // 1 byte  ( 74)
+    halfmove_clock: u8,         // 1 byte  ( 74)
     white_king_square: u8,      // 1 byte  ( 75)
     black_king_square: u8,      // 1 byte  ( 76)
     white_castle_q: u8,         // 1 byte  ( 77) bit
@@ -80,7 +80,7 @@ pub fn new() -> Reset {
         b_queens: 0,
         b_kings: 0,
         material: 0,
-        moves_since_capture: 0,
+        halfmove_clock: 0,
         white_king_square: 0,
         black_king_square: 0,
         white_castle_q: 0,

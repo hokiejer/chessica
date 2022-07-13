@@ -108,6 +108,12 @@ impl Reset {
             }
         }
 
+        // PROCESS EN PASSANT SQUARE (Chunk 3)
+        if chunks[3] != "-" {
+            use crate::utils;
+            self.b_en_passant = utils::convert_square_to_bitstring(chunks[3].to_string());
+        }
+
     }
 
 }
@@ -135,6 +141,7 @@ mod tests {
         assert_eq!(r.white_castle_q,1,"white_castle_q");
         assert_eq!(r.black_castle_k,1,"black_castle_k");
         assert_eq!(r.black_castle_q,1,"black_castle_q");
+        assert_eq!(r.b_en_passant,0,"b_en_passant");
     }
 
     #[test]
@@ -157,6 +164,7 @@ mod tests {
         assert_eq!(r.white_castle_q,0,"white_castle_q");
         assert_eq!(r.black_castle_k,0,"black_castle_k");
         assert_eq!(r.black_castle_q,0,"black_castle_q");
+        assert_eq!(r.b_en_passant,0,"b_en_passant");
     }
 
     #[test]
@@ -179,5 +187,29 @@ mod tests {
         assert_eq!(r.white_castle_q,0,"white_castle_q");
         assert_eq!(r.black_castle_k,0,"black_castle_k");
         assert_eq!(r.black_castle_q,0,"black_castle_q");
+        assert_eq!(r.b_en_passant,0,"b_en_passant");
+    }
+
+    #[test]
+    fn init_reset_from_fen_en_passant() {
+        let mut r = reset::new();
+        let fen = String::from("rnbqkbnr/ppppp1pp/8/4P3/5pP1/8/PPPP1P1P/RNBQKBNR b KQkq g3 0 1");
+        r.init_from_fen(fen);
+        assert_eq!(r.b_all,0xfffb00080600f5ff,"b_all");
+        assert_eq!(r.b_white,0x000000080200f5ff,"b_white");
+        assert_eq!(r.b_black,0xfffb000004000000,"b_black");
+        assert_eq!(r.b_pawns,0x00fb00080600f500,"b_pawns");
+        assert_eq!(r.b_knights,0x4200000000000042,"b_knights");
+        assert_eq!(r.b_bishops,0x2400000000000024,"b_bishops");
+        assert_eq!(r.b_rooks,0x8100000000000081,"b_rooks");
+        assert_eq!(r.b_queens,0x1000000000000010,"b_queens");
+        assert_eq!(r.b_kings,0x0800000000000008,"b_kings");
+        assert_eq!(r.material,0,"material");
+        assert_eq!(r.to_move,1,"to_move");
+        assert_eq!(r.white_castle_k,1,"white_castle_k");
+        assert_eq!(r.white_castle_q,1,"white_castle_q");
+        assert_eq!(r.black_castle_k,1,"black_castle_k");
+        assert_eq!(r.black_castle_q,1,"black_castle_q");
+        assert_eq!(r.b_en_passant,0x0000000000020000,"b_en_passant");
     }
 }

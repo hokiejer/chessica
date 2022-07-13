@@ -1,4 +1,4 @@
-pub mod init;
+pub mod fen;
 //use hexplay::HexViewBuilder;
 
 // Board-to-Bit (and Square) Numbering:

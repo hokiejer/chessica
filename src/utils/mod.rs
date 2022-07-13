@@ -13,7 +13,7 @@ pub fn convert_square_to_number(square: String) -> u8 {
     for c in square.chars() {
         match c {
             'a'|'b'|'c'|'d'|'e'|'f'|'g'|'h' => {
-                squarenumber += ('h' as u8 - c as u8);
+                squarenumber += 'h' as u8 - c as u8;
             },
             '1'|'2'|'3'|'4'|'5'|'6'|'7'|'8' => {
                 squarenumber += 8 * ((c as u8) - ('1' as u8));

@@ -119,18 +119,31 @@ impl Reset {
 
         // PROCESS HALFMOVE CLOCK (Chunk 4)
         self.move_number = chunks[5].parse().unwrap();
-
     }
 
+    /// Generate a FEN notation string from a reset
+    /// 
+    /// # Examples
+    ///
+    /// ```
+    /// let mut r = reset::new();
+    /// let fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    /// r.init_from_fen(fen);
+    /// let my_fen = r.get_fen();
+    /// ```
+    pub fn get_fen(&mut self) -> String {
+        todo!();
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use crate::reset;
     #[test]
-    fn init_reset_from_fen_starting_position() {
+    fn fen_init_from_fen_starting_position() {
         let mut r = reset::new();
         let fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        let fen_copy = fen.clone();
         r.init_from_fen(fen);
         assert_eq!(r.b_all,0xffff00000000ffff,"b_all");
         assert_eq!(r.b_white,0x000000000000ffff,"b_white");
@@ -150,12 +163,15 @@ mod tests {
         assert_eq!(r.b_en_passant,0,"b_en_passant");
         assert_eq!(r.halfmove_clock,0,"halfmove_clock");
         assert_eq!(r.move_number,1,"move_number");
+        //let generated_fen = r.get_fen();
+        //assert_eq!(generated_fen,fen_copy,"FEN generation");
     }
 
     #[test]
-    fn init_reset_from_fen_botvinnik_capablanca() {
+    fn fen_init_from_fen_botvinnik_capablanca() {
         let mut r = reset::new();
         let fen = String::from("r3r1k1/p2q1ppp/1pn2n2/3p4/P1pP4/2P1P3/1BQ1NPPP/4RRK1 w - - 4 17");
+        let fen_copy = fen.clone();
         r.init_from_fen(fen);
         assert_eq!(r.b_all,0x8a976410b0286f0e,"b_all");
         assert_eq!(r.b_white,0x0000000090286f0e,"b_white");
@@ -175,12 +191,15 @@ mod tests {
         assert_eq!(r.b_en_passant,0,"b_en_passant");
         assert_eq!(r.halfmove_clock,4,"halfmove_clock");
         assert_eq!(r.move_number,17,"move_number");
+        //let generated_fen = r.get_fen();
+        //assert_eq!(generated_fen,fen_copy,"FEN generation");
     }
 
     #[test]
-    fn init_reset_from_fen_jibberish_01() {
+    fn fen_init_from_fen_jibberish_01() {
         let mut r = reset::new();
         let fen = String::from("rk6/pn1qPp1q/np2P3/4P1p1/P1p1p2r/R3P1bP/NBQ3P1/6K1 b - - 4 17");
+        let fen_copy = fen.clone();
         r.init_from_fen(fen);
         assert_eq!(r.b_all,0xc0ddc80aa98be202,"b_all");
         assert_eq!(r.b_white,0x000808088089e202,"b_white");
@@ -200,12 +219,15 @@ mod tests {
         assert_eq!(r.b_en_passant,0,"b_en_passant");
         assert_eq!(r.halfmove_clock,4,"halfmove_clock");
         assert_eq!(r.move_number,17,"move_number");
+        //let generated_fen = r.get_fen();
+        //assert_eq!(generated_fen,fen_copy,"FEN generation");
     }
 
     #[test]
-    fn init_reset_from_fen_en_passant() {
+    fn fen_init_from_fen_en_passant() {
         let mut r = reset::new();
         let fen = String::from("rnbqkbnr/ppppp1pp/8/4P3/5pP1/8/PPPP1P1P/RNBQKBNR b KQkq g3 0 1");
+        let fen_copy = fen.clone();
         r.init_from_fen(fen);
         assert_eq!(r.b_all,0xfffb00080600f5ff,"b_all");
         assert_eq!(r.b_white,0x000000080200f5ff,"b_white");
@@ -225,5 +247,7 @@ mod tests {
         assert_eq!(r.b_en_passant,0x0000000000020000,"b_en_passant");
         assert_eq!(r.halfmove_clock,0,"halfmove_clock");
         assert_eq!(r.move_number,1,"move_number");
+        //let generated_fen = r.get_fen();
+        //assert_eq!(generated_fen,fen_copy,"FEN generation");
     }
 }

@@ -54,7 +54,7 @@ pub fn convert_number_to_square(number: u8) -> String {
 /// assert_eq!(bitstring,0x0000400000000000,"b6");
 /// ```
 pub fn convert_square_to_bitstring(square: String) -> u64 {
-    let mut bitstring: u64 = 1;
+    let bitstring: u64 = 1;
     let squarenumber = convert_square_to_number(square);
     bitstring << (squarenumber - 1)
 }

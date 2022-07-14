@@ -12,15 +12,7 @@ impl Reset {
     /// r.init_from_fen(fen);
     /// ```
     pub fn init_from_fen(&mut self, fen: String) {
-        println!("{}",fen);
-        println!("{}",self.b_all);
         let chunks:Vec<&str>= fen.split(" ").collect();
-        println!("chunk 0: {}",chunks[0]);
-        println!("chunk 1: {}",chunks[1]);
-        println!("chunk 2: {}",chunks[2]);
-        println!("chunk 3: {}",chunks[3]);
-        println!("chunk 4: {}",chunks[4]);
-        println!("chunk 5: {}",chunks[5]);
 
         // PROCESS THE PIECE POSITIONS (Chunk 0)
         let rows:Vec<&str>= chunks[0].split("/").collect();
@@ -35,7 +27,7 @@ impl Reset {
                     'k'|'q'|'r'|'b'|'n'|'p'|'K'|'Q'|'R'|'B'|'N'|'P' => {
                         bit = bit << 7 - x + 8*(7 - y as u32);
                         self.b_all |= bit;
-                        let mut material_multiplier: i8 = 0;
+                        let material_multiplier: i8;
                         match c {
                             'k'|'q'|'r'|'b'|'n'|'p' => {
                                 self.b_black |= bit;
@@ -129,16 +121,106 @@ impl Reset {
     /// let mut r = reset::new();
     /// let fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     /// r.init_from_fen(fen);
-    /// let my_fen = r.get_fen();
+    /// let my_fen = r.to_fen();
     /// ```
-    pub fn get_fen(&mut self) -> String {
+    pub fn to_fen(&mut self) -> String {
         let mut fen = String::from("");
         
         // PROCESS THE PIECE POSITIONS (Chunk 0)
+        let mut pointer: u64;
+        let mut counter = 64;
+        for _rank in 0..8 {
+            let mut emptycount = 0;
+            for _file in 0..8 {
+                pointer = 1 << (counter-1);
+                if pointer & self.b_all != 0 {
+                    if emptycount > 0 {
+                        fen.push_str(&emptycount.to_string());
+                        emptycount = 0;
+                    }
+                    if pointer & self.b_white != 0 {
+                        if pointer & self.b_pawns != 0 {
+                            fen.push('P');
+                        }
+                        if pointer & self.b_knights != 0 {
+                            fen.push('N');
+                        }
+                        if pointer & self.b_bishops != 0 {
+                            fen.push('B');
+                        }
+                        if pointer & self.b_rooks != 0 {
+                            fen.push('R');
+                        }
+                        if pointer & self.b_queens != 0 {
+                            fen.push('Q');
+                        }
+                        if pointer & self.b_kings != 0 {
+                            fen.push('K');
+                        }
+                    } else {
+                        if pointer & self.b_pawns != 0 {
+                            fen.push('p');
+                        }
+                        if pointer & self.b_knights != 0 {
+                            fen.push('n');
+                        }
+                        if pointer & self.b_bishops != 0 {
+                            fen.push('b');
+                        }
+                        if pointer & self.b_rooks != 0 {
+                            fen.push('r');
+                        }
+                        if pointer & self.b_queens != 0 {
+                            fen.push('q');
+                        }
+                        if pointer & self.b_kings != 0 {
+                            fen.push('k');
+                        }
+                    }
+                } else {
+                    emptycount += 1;
+                }
+                counter -= 1;
+            }
+            if emptycount > 0 {
+                fen.push_str(&emptycount.to_string());
+                emptycount = 0;
+            }
+            if counter > 0 {
+                fen.push('/');
+            }
+        }
         
         // PROCESS WHO'S MOVE IT IS (Chunk 1)
+        fen.push_str(" ");
+        if self.to_move == 0 {
+            fen.push('w');
+        } else {
+            fen.push('b');
+        }
 
         // PROCESS CASTLE ELIGIBILITY (Chunk 2)
+        fen.push_str(" ");
+        let mut any_castle = 0;
+        if self.white_castle_k != 0 {
+            fen.push('K');
+            any_castle = 1;
+        }
+        if self.white_castle_q != 0 {
+            fen.push('Q');
+            any_castle = 1;
+        }
+        if self.black_castle_k != 0 {
+            fen.push('k');
+            any_castle = 1;
+        }
+        if self.black_castle_q != 0 {
+            fen.push('q');
+            any_castle = 1;
+        }
+        if any_castle == 0 {
+          fen.push('-');
+        }
 
         // PROCESS EN PASSANT SQUARE (Chunk 3)
         fen.push_str(" ");
@@ -187,7 +269,7 @@ mod tests {
         assert_eq!(r.b_en_passant,0,"b_en_passant");
         assert_eq!(r.halfmove_clock,0,"halfmove_clock");
         assert_eq!(r.move_number,1,"move_number");
-        let generated_fen = r.get_fen();
+        let generated_fen = r.to_fen();
         assert_eq!(generated_fen,fen_copy,"FEN generation");
     }
 
@@ -215,7 +297,7 @@ mod tests {
         assert_eq!(r.b_en_passant,0,"b_en_passant");
         assert_eq!(r.halfmove_clock,4,"halfmove_clock");
         assert_eq!(r.move_number,17,"move_number");
-        let generated_fen = r.get_fen();
+        let generated_fen = r.to_fen();
         assert_eq!(generated_fen,fen_copy,"FEN generation");
     }
 
@@ -243,7 +325,7 @@ mod tests {
         assert_eq!(r.b_en_passant,0,"b_en_passant");
         assert_eq!(r.halfmove_clock,4,"halfmove_clock");
         assert_eq!(r.move_number,17,"move_number");
-        let generated_fen = r.get_fen();
+        let generated_fen = r.to_fen();
         assert_eq!(generated_fen,fen_copy,"FEN generation");
     }
 
@@ -271,7 +353,24 @@ mod tests {
         assert_eq!(r.b_en_passant,0x0000000000020000,"b_en_passant");
         assert_eq!(r.halfmove_clock,0,"halfmove_clock");
         assert_eq!(r.move_number,1,"move_number");
-        let generated_fen = r.get_fen();
+        let generated_fen = r.to_fen();
         assert_eq!(generated_fen,fen_copy,"FEN generation");
+    }
+
+    #[test]
+    fn fen_to_reset_and_back() {
+        let fens = [
+            "r3k3/8/5P2/8/8/8/8/4K2R b Kq - 0 1",
+            "4k2r/8/5P2/8/8/8/8/R3K3 b Qk - 0 1",
+            "8/8/8/8/2k1KP2/8/8/8 b - - 0 1",
+            "rnb1kb1r/p1pp1ppp/8/1B3Nqn/4Pp2/3P4/PPP3PP/RNBQ1K1R b kq - 4 9",
+            "r1bk3r/p2pBpNp/n4n2/1p1NP2P/6P1/3P4/P1P1K3/q5b1 b - - 1 23",
+        ];
+        for fen in fens.iter() {
+            let mut r = reset::new();
+            r.init_from_fen(fen.to_string());
+            let generated_fen = r.to_fen();
+            assert_eq!(generated_fen,fen.to_string(),"FEN->Reset->FEN");
+        }
     }
 }

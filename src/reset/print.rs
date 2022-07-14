@@ -9,12 +9,9 @@ use crate::reset::Reset;
 /// r.print;
 /// ```
 impl Reset {
-    pub fn print(&self) -> String {
-        let mut reset_text: String = "a".to_owned();
-        let appender: &str = "b";
-        reset_text.push_str(appender);
-        println!("{}",reset_text);
-        reset_text
+    pub fn print(&mut self) -> String {
+        println!("{}",self.to_fen());
+        self.to_fen()
     }
 }
 

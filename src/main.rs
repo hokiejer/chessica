@@ -1,6 +1,6 @@
-mod utils; //include "utils/mod.rs"
-mod reset; //include "reset/mod.rs"
-mod bitops; //include "bitops/mod.rs";
+pub mod utils; //include "utils/mod.rs"
+pub mod reset; //include "reset/mod.rs"
+pub mod bitops; //include "bitops/mod.rs";
 
 fn main() {
       let mut r = reset::new();

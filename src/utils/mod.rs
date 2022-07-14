@@ -4,9 +4,9 @@
 /// # Examples
 ///
 /// ```
-/// let mysquare = String::from("b6");
-/// let squarenumber = convert_square_to_number(square: mysquare);
-/// assert_eq!(bitstring,47,"b6");
+/// # use chessica::utils;
+/// let squarenumber = utils::convert_square_to_number("b6".to_string());
+/// assert_eq!(squarenumber,47);
 /// ```
 pub fn convert_square_to_number(square: String) -> u8 {
     let mut squarenumber: u8 = 1;
@@ -30,8 +30,9 @@ pub fn convert_square_to_number(square: String) -> u8 {
 /// # Examples
 ///
 /// ```
-/// let square = convert_number_to_square("b6");
-/// assert_eq!(square,47,"b6");
+/// # use chessica::utils;
+/// let square = utils::convert_number_to_square(47);
+/// assert_eq!(square,"b6");
 /// ```
 pub fn convert_number_to_square(number: u8) -> String {
     let mut square = String::from("");
@@ -49,9 +50,9 @@ pub fn convert_number_to_square(number: u8) -> String {
 /// # Examples
 ///
 /// ```
-/// let mysquare = String::from("b6");
-/// let bitstring = convert_square_to_bitstring(square: mysquare);
-/// assert_eq!(bitstring,0x0000400000000000,"b6");
+/// # use chessica::utils;
+/// let bitstring = utils::convert_square_to_bitstring("b6".to_string());
+/// assert_eq!(bitstring,0x0000400000000000);
 /// ```
 pub fn convert_square_to_bitstring(square: String) -> u64 {
     let bitstring: u64 = 1;
@@ -64,9 +65,9 @@ pub fn convert_square_to_bitstring(square: String) -> u64 {
 /// # Examples
 ///
 /// ```
-/// let bitstring = 0x0000000000010000;
-/// let square = convert_bitstring_to_square(bitstring);
-/// assert_eq!(square,"b6","b6");
+/// # use chessica::utils;
+/// let square = utils::convert_bitstring_to_square(0x0000400000000000);
+/// assert_eq!(square,"b6");
 /// ```
 pub fn convert_bitstring_to_square(bitstring: u64) -> String {
     use crate::bitops;

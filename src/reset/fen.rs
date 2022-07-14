@@ -1,4 +1,5 @@
 use crate::reset::Reset;
+use crate::utils;
 
 impl Reset {
     /// Initialize a Reset from FEN notation
@@ -110,7 +111,6 @@ impl Reset {
 
         // PROCESS EN PASSANT SQUARE (Chunk 3)
         if chunks[3] != "-" {
-            use crate::utils;
             self.b_en_passant = utils::convert_square_to_bitstring(chunks[3].to_string());
         }
 
@@ -132,7 +132,31 @@ impl Reset {
     /// let my_fen = r.get_fen();
     /// ```
     pub fn get_fen(&mut self) -> String {
-        todo!();
+        let mut fen = String::from("");
+        
+        // PROCESS THE PIECE POSITIONS (Chunk 0)
+        
+        // PROCESS WHO'S MOVE IT IS (Chunk 1)
+
+        // PROCESS CASTLE ELIGIBILITY (Chunk 2)
+
+        // PROCESS EN PASSANT SQUARE (Chunk 3)
+        fen.push_str(" ");
+        if self.b_en_passant == 0 {
+            fen.push_str("-");
+        } else {
+            fen.push_str(&utils::convert_bitstring_to_square(self.b_en_passant));
+        }
+
+        // PROCESS HALFMOVE CLOCK (Chunk 4)
+        fen.push_str(" ");
+        fen.push_str(&self.halfmove_clock.to_string());
+
+        // PROCESS HALFMOVE CLOCK (Chunk 4)
+        fen.push_str(" ");
+        fen.push_str(&self.move_number.to_string());
+
+        fen
     }
 }
 
@@ -163,8 +187,8 @@ mod tests {
         assert_eq!(r.b_en_passant,0,"b_en_passant");
         assert_eq!(r.halfmove_clock,0,"halfmove_clock");
         assert_eq!(r.move_number,1,"move_number");
-        //let generated_fen = r.get_fen();
-        //assert_eq!(generated_fen,fen_copy,"FEN generation");
+        let generated_fen = r.get_fen();
+        assert_eq!(generated_fen,fen_copy,"FEN generation");
     }
 
     #[test]
@@ -191,8 +215,8 @@ mod tests {
         assert_eq!(r.b_en_passant,0,"b_en_passant");
         assert_eq!(r.halfmove_clock,4,"halfmove_clock");
         assert_eq!(r.move_number,17,"move_number");
-        //let generated_fen = r.get_fen();
-        //assert_eq!(generated_fen,fen_copy,"FEN generation");
+        let generated_fen = r.get_fen();
+        assert_eq!(generated_fen,fen_copy,"FEN generation");
     }
 
     #[test]
@@ -219,8 +243,8 @@ mod tests {
         assert_eq!(r.b_en_passant,0,"b_en_passant");
         assert_eq!(r.halfmove_clock,4,"halfmove_clock");
         assert_eq!(r.move_number,17,"move_number");
-        //let generated_fen = r.get_fen();
-        //assert_eq!(generated_fen,fen_copy,"FEN generation");
+        let generated_fen = r.get_fen();
+        assert_eq!(generated_fen,fen_copy,"FEN generation");
     }
 
     #[test]
@@ -247,7 +271,7 @@ mod tests {
         assert_eq!(r.b_en_passant,0x0000000000020000,"b_en_passant");
         assert_eq!(r.halfmove_clock,0,"halfmove_clock");
         assert_eq!(r.move_number,1,"move_number");
-        //let generated_fen = r.get_fen();
-        //assert_eq!(generated_fen,fen_copy,"FEN generation");
+        let generated_fen = r.get_fen();
+        assert_eq!(generated_fen,fen_copy,"FEN generation");
     }
 }

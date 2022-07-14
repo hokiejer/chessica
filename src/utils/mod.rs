@@ -1,5 +1,5 @@
 
-/// Convert a chess "square" (e.g., "b6") to a number
+/// Convert a chess "square" (e.g., "b6") to a position number
 /// 
 /// # Examples
 ///
@@ -25,6 +25,25 @@ pub fn convert_square_to_number(square: String) -> u8 {
     squarenumber
 }
 
+/// Convert a chess position number to a "square" (e.g., "b6")
+/// 
+/// # Examples
+///
+/// ```
+/// let square = convert_number_to_square("b6");
+/// assert_eq!(square,47,"b6");
+/// ```
+pub fn convert_number_to_square(number: u8) -> String {
+    let mut square = String::from("");
+    let mut file: u8 = 'a' as u8;
+    file += 7 - ((number - 1) % 8);
+    square.push(file as char);
+    let mut rank: u8 = '1' as u8;
+    rank += (number - 1) / 8;
+    square.push(rank as char);
+    square
+}
+
 /// Convert a chess "square" (e.g., "b6") to a bitstring
 /// 
 /// # Examples
@@ -32,7 +51,7 @@ pub fn convert_square_to_number(square: String) -> u8 {
 /// ```
 /// let mysquare = String::from("b6");
 /// let bitstring = convert_square_to_bitstring(square: mysquare);
-/// assert_eq!(bitstring,0x0000000000400000,"b6");
+/// assert_eq!(bitstring,0x0000400000000000,"b6");
 /// ```
 pub fn convert_square_to_bitstring(square: String) -> u64 {
     let mut bitstring: u64 = 1;
@@ -40,39 +59,60 @@ pub fn convert_square_to_bitstring(square: String) -> u64 {
     bitstring << (squarenumber - 1)
 }
 
+/// Convert a bitstring to a "square" (e.g., "b6")
+/// 
+/// # Examples
+///
+/// ```
+/// let bitstring = 0x0000000000010000;
+/// let square = convert_bitstring_to_square(bitstring);
+/// assert_eq!(square,"b6","b6");
+/// ```
+pub fn convert_bitstring_to_square(bitstring: u64) -> String {
+    use crate::bitops;
+    let number = bitops::get_bit_number(bitstring);
+    convert_number_to_square(number)
+}
+
 #[cfg(test)]
 mod tests {
     use crate::utils;
     #[test]
     fn utils_convert_square_to_bitstring() {
-        let result = utils::convert_square_to_bitstring("a1".to_string());
-        assert_eq!(result,0x0000000000000080,"a1");
-        let result = utils::convert_square_to_bitstring("a8".to_string());
-        assert_eq!(result,0x8000000000000000,"a8");
-        let result = utils::convert_square_to_bitstring("h1".to_string());
-        assert_eq!(result,0x0000000000000001,"h1");
-        let result = utils::convert_square_to_bitstring("h8".to_string());
-        assert_eq!(result,0x0100000000000000,"h8");
-        let result = utils::convert_square_to_bitstring("c2".to_string());
-        assert_eq!(result,0x0000000000002000,"c2");
-        let result = utils::convert_square_to_bitstring("g5".to_string());
-        assert_eq!(result,0x0000000200000000,"g5");
+        let test_data = [
+            ("a1", 0x0000000000000080u64),
+            ("a8", 0x8000000000000000u64),
+            ("h1", 0x0000000000000001u64),
+            ("h8", 0x0100000000000000u64),
+            ("c2", 0x0000000000002000u64),
+            ("g5", 0x0000000200000000u64),
+        ];
+        for tuple in test_data.iter() {
+          let (square,bitstring) = tuple;
+          let result = utils::convert_square_to_bitstring(square.to_string());
+          assert_eq!(result,*bitstring,"{}",square.to_string());
+          let result = utils::convert_bitstring_to_square(*bitstring);
+          assert_eq!(result,*square,"{}",square.to_string());
+        }
     }
 
     #[test]
-    fn utils_convert_square_to_number() {
-        let result = utils::convert_square_to_number("a1".to_string());
-        assert_eq!(result,8,"a1");
-        let result = utils::convert_square_to_number("a8".to_string());
-        assert_eq!(result,64,"a8");
-        let result = utils::convert_square_to_number("h1".to_string());
-        assert_eq!(result,1,"h1");
-        let result = utils::convert_square_to_number("h8".to_string());
-        assert_eq!(result,57,"h8");
-        let result = utils::convert_square_to_number("c2".to_string());
-        assert_eq!(result,14,"c2");
-        let result = utils::convert_square_to_number("g5".to_string());
-        assert_eq!(result,34,"g5");
+    fn utils_convert_square_to_number_and_back() {
+        let test_data = [
+            (8u8,  "a1"),
+            (64u8, "a8"),
+            (1u8,  "h1"),
+            (57u8, "h8"),
+            (14u8, "c2"),
+            (34u8, "g5"),
+        ];
+        for tuple in test_data.iter() {
+            let (number,square) = tuple;
+            let result = utils::convert_square_to_number(square.to_string());
+            assert_eq!(result,*number,"{}",square);
+            let result = utils::convert_number_to_square(*number);
+            assert_eq!(result,*square,"{}",square);
+        }
     }
 }
 

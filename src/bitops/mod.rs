@@ -12,8 +12,8 @@ pub fn next_lowest_bit(bitstring: u64, singlebit: u64) -> u64 {
 }
 
 // I think O(log(log(n)) is the best I can do here
-pub fn get_bit_number(singlebit: u64) -> u32 {
-    let mut result: u32 = 1;
+pub fn get_bit_number(singlebit: u64) -> u8 {
+    let mut result: u8 = 1;
     if singlebit & 0xffffffff00000000 > 0 {
         result += 32;
     }

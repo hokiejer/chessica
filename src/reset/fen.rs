@@ -184,7 +184,6 @@ impl Reset {
             }
             if emptycount > 0 {
                 fen.push_str(&emptycount.to_string());
-                emptycount = 0;
             }
             if counter > 0 {
                 fen.push('/');

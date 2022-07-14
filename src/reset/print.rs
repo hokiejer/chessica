@@ -5,8 +5,9 @@ use crate::reset::Reset;
 /// # Examples
 ///
 /// ```
-/// let mut r = reset::new();
-/// r.print;
+/// # use chessica::reset::Reset;
+/// let mut r = chessica::reset::new();
+/// r.print();
 /// ```
 impl Reset {
     pub fn print(&mut self) -> String {

@@ -7,7 +7,8 @@ impl Reset {
     /// # Examples
     ///
     /// ```
-    /// let mut r = reset::new();
+    /// # use chessica::reset::Reset;
+    /// let mut r = chessica::reset::new();
     /// let fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     /// r.init_from_fen(fen);
     /// ```
@@ -118,10 +119,11 @@ impl Reset {
     /// # Examples
     ///
     /// ```
-    /// let mut r = reset::new();
-    /// let fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-    /// r.init_from_fen(fen);
+    /// # use chessica::reset::Reset;
+    /// let mut r = chessica::reset::new();
+    /// r.init_from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1".to_string());
     /// let my_fen = r.to_fen();
+    /// assert_eq!(my_fen,"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1".to_string());
     /// ```
     pub fn to_fen(&mut self) -> String {
         let mut fen = String::from("");

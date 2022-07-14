@@ -66,7 +66,8 @@ pub struct Reset {
 /// # Examples
 /// 
 /// ```
-/// let mut r = reset::new();
+/// # use chessica::reset::Reset;
+/// let mut r = chessica::reset::new();
 /// ```
 pub fn new() -> Reset {
     let reset = Reset {

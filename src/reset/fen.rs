@@ -110,7 +110,7 @@ impl Reset {
         // PROCESS HALFMOVE CLOCK (Chunk 4)
         self.halfmove_clock = chunks[4].parse().unwrap();
 
-        // PROCESS HALFMOVE CLOCK (Chunk 4)
+        // PROCESS MOVE NUMBER (Chunk 5)
         self.move_number = chunks[5].parse().unwrap();
     }
 
@@ -235,7 +235,7 @@ impl Reset {
         fen.push_str(" ");
         fen.push_str(&self.halfmove_clock.to_string());
 
-        // PROCESS HALFMOVE CLOCK (Chunk 4)
+        // PROCESS MOVE NUMBER (Chunk 5)
         fen.push_str(" ");
         fen.push_str(&self.move_number.to_string());
 

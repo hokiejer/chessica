@@ -29,3 +29,4 @@ mod tests {
         assert!(!r.white_to_move());
     }
 }
+

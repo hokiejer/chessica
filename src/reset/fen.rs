@@ -111,7 +111,7 @@ impl Reset {
         self.halfmove_clock = chunks[4].parse().unwrap();
 
         // PROCESS MOVE NUMBER (Chunk 5)
-        self.move_number = chunks[5].parse().unwrap();
+        self.fullmove_number = chunks[5].parse().unwrap();
     }
 
     /// Generate a FEN notation string from a reset
@@ -237,7 +237,7 @@ impl Reset {
 
         // PROCESS MOVE NUMBER (Chunk 5)
         fen.push_str(" ");
-        fen.push_str(&self.move_number.to_string());
+        fen.push_str(&self.fullmove_number.to_string());
 
         fen
     }
@@ -269,7 +269,7 @@ mod tests {
         assert_eq!(r.black_castle_q,1,"black_castle_q");
         assert_eq!(r.b_en_passant,0,"b_en_passant");
         assert_eq!(r.halfmove_clock,0,"halfmove_clock");
-        assert_eq!(r.move_number,1,"move_number");
+        assert_eq!(r.fullmove_number,1,"fullmove_number");
         let generated_fen = r.to_fen();
         assert_eq!(generated_fen,fen_copy,"FEN generation");
     }
@@ -297,7 +297,7 @@ mod tests {
         assert_eq!(r.black_castle_q,0,"black_castle_q");
         assert_eq!(r.b_en_passant,0,"b_en_passant");
         assert_eq!(r.halfmove_clock,4,"halfmove_clock");
-        assert_eq!(r.move_number,17,"move_number");
+        assert_eq!(r.fullmove_number,17,"fullmove_number");
         let generated_fen = r.to_fen();
         assert_eq!(generated_fen,fen_copy,"FEN generation");
     }
@@ -325,7 +325,7 @@ mod tests {
         assert_eq!(r.black_castle_q,0,"black_castle_q");
         assert_eq!(r.b_en_passant,0,"b_en_passant");
         assert_eq!(r.halfmove_clock,4,"halfmove_clock");
-        assert_eq!(r.move_number,17,"move_number");
+        assert_eq!(r.fullmove_number,17,"fullmove_number");
         let generated_fen = r.to_fen();
         assert_eq!(generated_fen,fen_copy,"FEN generation");
     }
@@ -353,7 +353,7 @@ mod tests {
         assert_eq!(r.black_castle_q,1,"black_castle_q");
         assert_eq!(r.b_en_passant,0x0000000000020000,"b_en_passant");
         assert_eq!(r.halfmove_clock,0,"halfmove_clock");
-        assert_eq!(r.move_number,1,"move_number");
+        assert_eq!(r.fullmove_number,1,"fullmove_number");
         let generated_fen = r.to_fen();
         assert_eq!(generated_fen,fen_copy,"FEN generation");
     }

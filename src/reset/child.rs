@@ -45,7 +45,7 @@ impl Reset {
         child.move_data = 0;
         child.capture = 0;
         child.in_check = 0;
-        if self.to_move == 0 {          // White to black
+        if self.white_to_move() {          // White to black
             child.to_move = 1;
         } else {                        // Black to white
             child.fullmove_number += 1;

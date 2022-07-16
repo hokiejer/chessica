@@ -13,7 +13,7 @@ impl Reset {
     /// r.initialize_move_generation();
     /// ```
     pub fn initialize_move_generation(&mut self) {
-        if self.to_move == 0 {
+        if self.white_to_move() {
             self.b_current_piece = bitops::lowest_bit(self.b_white);
         } else {
             self.b_current_piece = bitops::lowest_bit(self.b_black);
@@ -39,7 +39,7 @@ impl Reset {
     /// # assert_eq!(0,1);
     /// ```
     pub fn generate_next_move(&mut self, child: &mut Reset) {
-        if self.to_move == 0 {  // White's Move
+        if self.white_to_move() {  // White's Move
             while self.b_current_piece != 0 {
                 // do stuff
                 self.b_current_piece = bitops::next_lowest_bit(self.b_white, self.b_current_piece); // Someday, I can create a Reset method for this called look_for_next_movable_piece
@@ -50,7 +50,6 @@ impl Reset {
                 self.b_current_piece = bitops::next_lowest_bit(self.b_black, self.b_current_piece); // Someday, I can create a Reset method for this called look_for_next_movable_piece
             }
         }
-        todo!();
     }
 }
 ////

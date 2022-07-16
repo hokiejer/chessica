@@ -1,8 +1,9 @@
 pub mod fen;
 pub mod print;
-pub mod init_child;
+pub mod child;
 pub mod clone;
 pub mod moves;
+pub mod helpers;
 
 // Board-to-Bit (and Square) Numbering:
 // 64 63 62 61 60 59 58 57    a8 b8 c8 d8 e8 f8 g8 h8

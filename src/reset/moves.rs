@@ -42,11 +42,10 @@ impl Reset {
 
     /// Generate the next move for a Reset
     ///
-    /// Expects the child reset to already be initialized from
-    /// the parent
+    /// Returns Boolean indicating `true` if move options have not been exhausted
+    /// and `false` if they have.  Expects the child reset to already be initialized 
+    /// from the parent.
     ///
-    /// # Returns
-    /// hello
     /// # Examples
     /// ```
     /// let mut r = chessica::reset::new();

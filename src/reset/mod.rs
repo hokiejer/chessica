@@ -1,3 +1,4 @@
+pub mod r#const;
 pub mod fen;
 pub mod print;
 pub mod child;

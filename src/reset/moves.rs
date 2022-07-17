@@ -22,6 +22,23 @@ impl Reset {
         self.move_id = 10;	//Prime the first move
     }
 
+    /// Consider the next moveable piece
+    ///
+    /// # Examples
+    /// ```
+    /// let mut r = chessica::reset::new();
+    /// let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    /// r.init_from_fen(fen.to_string());
+    /// r.initialize_move_generation();
+    /// ```
+    pub fn consider_next_moveable_piece(&mut self) {
+        if self.white_to_move() {
+            self.b_current_piece = bitops::next_lowest_bit(self.b_white, self.b_current_piece);
+        } else {
+            self.b_current_piece = bitops::next_lowest_bit(self.b_black, self.b_current_piece);
+        }
+    }
+
 
     /// Generate the next move for a Reset
     ///
@@ -36,18 +53,17 @@ impl Reset {
     /// r.init_from_fen(fen.to_string());
     /// r.initialize_move_generation();
     /// r.generate_next_move(&mut child);
-    /// # assert_eq!(0,1);
     /// ```
     pub fn generate_next_move(&mut self, child: &mut Reset) {
         if self.white_to_move() {  // White's Move
             while self.b_current_piece != 0 {
                 // do stuff
-                self.b_current_piece = bitops::next_lowest_bit(self.b_white, self.b_current_piece); // Someday, I can create a Reset method for this called look_for_next_movable_piece
+                self.consider_next_moveable_piece();
             }
         } else {    //Black's Move
             while self.b_current_piece != 0 {
                 // do stuff
-                self.b_current_piece = bitops::next_lowest_bit(self.b_black, self.b_current_piece); // Someday, I can create a Reset method for this called look_for_next_movable_piece
+                self.consider_next_moveable_piece();
             }
         }
     }
@@ -182,6 +198,7 @@ impl Reset {
 #[cfg(test)]
 mod tests {
     use crate::reset;
+
     #[test]
     fn move_init_move_generation() {
         let mut r = reset::new();
@@ -199,6 +216,29 @@ mod tests {
         assert_eq!(r.b_current_piece,0x0001000000000000,"b_current_piece");
         assert_eq!(r.current_piece,49,"current_piece");
         assert_eq!(r.move_id,10,"move_id");
+    }
+
+    #[test]
+    fn move_consider_next_moveable_piece() {
+        let mut r = reset::new();
+        let fen = "4k2r/8/8/8/8/8/8/R3K3 w Qk - 0 1";
+        r.init_from_fen(fen.to_string());
+        r.initialize_move_generation();
+        assert_eq!(r.b_current_piece,0x0000000000000008);
+        r.consider_next_moveable_piece();
+        assert_eq!(r.b_current_piece,0x0000000000000080);
+        r.consider_next_moveable_piece();
+        assert_eq!(r.b_current_piece,0x0000000000000000);
+
+        let mut r = reset::new();
+        let fen = "4k2r/8/8/8/8/8/8/R3K3 b Qk - 0 1";
+        r.init_from_fen(fen.to_string());
+        r.initialize_move_generation();
+        assert_eq!(r.b_current_piece,0x0100000000000000);
+        r.consider_next_moveable_piece();
+        assert_eq!(r.b_current_piece,0x0800000000000000);
+        r.consider_next_moveable_piece();
+        assert_eq!(r.b_current_piece,0x0000000000000000);
     }
 }
 

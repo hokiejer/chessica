@@ -45,6 +45,8 @@ impl Reset {
     /// Expects the child reset to already be initialized from
     /// the parent
     ///
+    /// # Returns
+    /// hello
     /// # Examples
     /// ```
     /// let mut r = chessica::reset::new();
@@ -54,18 +56,38 @@ impl Reset {
     /// r.initialize_move_generation();
     /// r.generate_next_move(&mut child);
     /// ```
-    pub fn generate_next_move(&mut self, child: &mut Reset) {
-        if self.white_to_move() {  // White's Move
-            while self.b_current_piece != 0 {
-                // do stuff
-                self.consider_next_moveable_piece();
+    pub fn generate_next_move(&mut self, child: &mut Reset) -> bool {
+        while self.b_current_piece != 0 {
+            if self.b_current_piece & self.b_pawns != 0 { // Pawn
+                if self.generate_next_pawn_move(child) {
+                    break;
+                }
+            } else if self.b_current_piece & self.b_knights != 0 { // Knight
+                if self.generate_next_knight_move(child) {
+                    break;
+                }
+            } else if self.b_current_piece & self.b_bishops != 0 { // Bishop
+                if self.generate_next_bishop_move(child) {
+                    break;
+                }
+            } else if self.b_current_piece & self.b_rooks != 0 { // Rook
+                if self.generate_next_rook_move(child) {
+                    break;
+                }
+            } else if self.b_current_piece & self.b_queens != 0 { // Queen
+                if self.generate_next_queen_move(child) {
+                    break;
+                }
+            } else { // King
+                if self.generate_next_king_move(child) {
+                    break;
+                }
             }
-        } else {    //Black's Move
-            while self.b_current_piece != 0 {
-                // do stuff
-                self.consider_next_moveable_piece();
-            }
+
+            // do stuff
+            self.consider_next_moveable_piece();
         }
+        self.b_current_piece > 0
     }
 }
 ////

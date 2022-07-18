@@ -13,10 +13,10 @@ pub fn convert_square_to_number(square: String) -> u8 {
     for c in square.chars() {
         match c {
             'a'|'b'|'c'|'d'|'e'|'f'|'g'|'h' => {
-                squarenumber += 'h' as u8 - c as u8;
+                squarenumber += b'h' - c as u8;
             },
             '1'|'2'|'3'|'4'|'5'|'6'|'7'|'8' => {
-                squarenumber += 8 * ((c as u8) - ('1' as u8));
+                squarenumber += 8 * ((c as u8) - b'1');
                 println!("squarenumber = {}",squarenumber);
             },
             _ => println!("I don't know what to do with {}",c),
@@ -36,10 +36,10 @@ pub fn convert_square_to_number(square: String) -> u8 {
 /// ```
 pub fn convert_number_to_square(number: u8) -> String {
     let mut square = String::from("");
-    let mut file: u8 = 'a' as u8;
+    let mut file: u8 = b'a';
     file += 7 - ((number - 1) % 8);
     square.push(file as char);
-    let mut rank: u8 = '1' as u8;
+    let mut rank: u8 = b'1';
     rank += (number - 1) / 8;
     square.push(rank as char);
     square

@@ -1,5 +1,10 @@
 use crate::reset::Reset;
 use crate::bitops;
+use crate::reset::r#const::B_FOUR_CORNERS;
+use crate::reset::r#const::B_LOWER_RIGHT_CORNER;
+use crate::reset::r#const::B_LOWER_LEFT_CORNER;
+use crate::reset::r#const::B_UPPER_RIGHT_CORNER;
+use crate::reset::r#const::B_UPPER_LEFT_CORNER;
 
 impl Reset {
 
@@ -88,133 +93,99 @@ impl Reset {
         }
         self.b_current_piece > 0
     }
-}
-////
-////PERFORMANCE PATH
-////
-////Note: This gets called once per piecemove, not once per piece.  Queen moves should be second
-//int Reset::GenerateNextMove(Reset *Target)
-//{
-//  int retcode = FALSE;
-//
-//  if (ToMove) 		//If it is WHITE's move
-//  {
-//    while (bCurrentPiece)
-//    {
-//      if (bCurrentPiece & bWhite)
-//      {
-//        if (bCurrentPiece & bPawns)
-//        {
-//          if (retcode = GenerateNextWhitePawnMove(Target))
-//            break;
-//        }
-//        else
-//        {
-//          if (bCurrentPiece & bKnights)
-//          {
-//            if (retcode = GenerateNextWhiteKnightMove(Target))
-//              break;
-//          }
-//          else
-//          {
-//            if (bCurrentPiece & bBishops)
-//            {
-//              if (retcode = GenerateNextWhiteBishopMove(Target))
-//                break;
-//            }
-//            else
-//            {
-//              if (bCurrentPiece & bRooks)
-//              {
-//                if (retcode = GenerateNextWhiteRookMove(Target))
-//                  break;
-//              }
-//              else
-//              {
-//                if (bCurrentPiece & bQueens)
-//                {
-//                  if (retcode = GenerateNextWhiteQueenMove(Target))
-//                    break;
-//                }
-//                else //King
-//                {
-//                  if (retcode = GenerateNextWhiteKingMove(Target))
-//                    break;
-//                }
-//              }
-//            }
-//          }
-//        }
-//      }
-//      else
-//      {
-//        //Piece routines will advance bCurrentPiece by themselves
-//        bCurrentPiece >>= 1;
-//        CurrentPiece++;
-//      }
-//    }
-//  }
-//  else // Black's Move
-//  {
-//    while (bCurrentPiece)
-//    {
-//      if (bCurrentPiece & bBlack)
-//      {
-//        if (bCurrentPiece & bPawns)
-//        {
-//          if (retcode = GenerateNextBlackPawnMove(Target))
-//            break;
-//        }
-//        else
-//        {
-//          if (bCurrentPiece & bKnights)
-//          {
-//            if (retcode = GenerateNextBlackKnightMove(Target))
-//              break;
-//          }
-//          else
-//          {
-//            if (bCurrentPiece & bBishops)
-//            {
-//              if (retcode = GenerateNextBlackBishopMove(Target))
-//                break;
-//            }
-//            else
-//            {
-//              if (bCurrentPiece & bRooks)
-//              {
-//                if (retcode = GenerateNextBlackRookMove(Target))
-//                  break;
-//              }
-//              else
-//              {
-//                if (bCurrentPiece & bQueens)
-//                {
-//                  if (retcode = GenerateNextBlackQueenMove(Target))
-//                    break;
-//                }
-//                else //King
-//                {
-//                  if (retcode = GenerateNextBlackKingMove(Target))
-//                    break;
-//                }
-//              }
-//            }
-//          }
-//        }
-//      }
-//      else
-//      {
-//        //Piece routines will advance bCurrentPiece by themselves
-//        bCurrentPiece >>= 1;
-//        CurrentPiece++;
-//      }
-//    }
-//  }
-//  return(retcode);
-//}
-//
 
+
+    /// Adds a move to the specified child reset if valid
+    ///
+    pub fn add_move_if_valid(&mut self, child: &mut Reset, b_destination: u64) -> bool {
+
+        child.b_from = self.b_current_piece;
+        child.b_to = b_destination;
+
+        if child.b_to & child.b_all != 0 { // Capture
+            child.capture_processing();
+        }
+        // Pick up the piece
+        child.b_all &= child.b_from;
+        child.b_white &= !child.b_from;
+        child.b_black &= !child.b_from;
+        if child.b_from & child.b_pawns != 0 {
+            child.b_pawns &= !child.b_from;
+            child.halfmove_clock = 0; // Resets on pawn move
+        } else if child.b_from & child.b_knights != 0 {
+            child.b_knights &= !child.b_from;
+        } else if child.b_from & child.b_bishops != 0 {
+            child.b_bishops &= !child.b_from;
+        } else if child.b_from & child.b_rooks != 0 {
+            child.b_rooks &= !child.b_from;
+            if child.b_from & B_FOUR_CORNERS != 0 {
+                if child.b_to & B_LOWER_RIGHT_CORNER != 0 {
+                    child.white_castle_k = 0;
+                } else if child.b_to & B_LOWER_LEFT_CORNER != 0 {
+                    child.white_castle_q = 0;
+                } else if child.b_to & B_UPPER_RIGHT_CORNER != 0 {
+                    child.black_castle_k = 0;
+                } else { // B_UPPER_RIGHT_CORNER
+                    child.black_castle_q = 0;
+                }
+            }
+        } else if child.b_from & child.b_queens != 0 {
+            child.b_queens &= !child.b_from;
+        } else {
+            child.b_kings &= !child.b_from;
+            child.white_castle_k = 0;
+            child.white_castle_q = 0;
+            child.black_castle_k = 0;
+            child.black_castle_q = 0;
+        }
+
+
+        // Put down the piece
+        
+        if self.white_to_move() {
+        } else {
+        }
+        true
+    }
+}
+//int Reset::AddNextWhiteMove(Reset *MyChild, unsigned long long int *PieceBeingMoved)
+//{
+//  MyChild->bFrom = bCurrentPiece;
+//  MyChild->From = CurrentPiece;
+//  MyChild->bAll &= ~MyChild->bFrom;
+//  MyChild->bWhite &= ~MyChild->bFrom;
+//  *PieceBeingMoved &= ~MyChild->bFrom;
+//  MyChild->bTo = bMoveData;
+//  MyChild->To = MoveData;
+//  if (MyChild->bTo & MyChild->bAll)
+//  {
+//    MyChild->CaptureProcessing(MyChild->bTo);
+//    MyChild->Capture = 1;
+//    MyChild->MovesSinceCapture = 0; //Reset on capture
+//  }
+//  else
+//  {
+//    if (MyChild->bTo & MyChild->bPawns)
+//      MyChild->MovesSinceCapture = 0; //Reset on pawn move
+//    else
+//      MyChild->MovesSinceCapture = MovesSinceCapture + 1;
+//  }
+//  MyChild->bAll |= MyChild->bTo;
+//  MyChild->bWhite |= MyChild->bTo;
+//  *PieceBeingMoved |= MyChild->bTo;
+//  if ((MyChild->DidWhiteJustMoveIntoCheck()) ||
+//      (MyChild->MovesSinceCapture >= 50))
+//  {
+//    InitMyChild(MyChild);
+//    return(FALSE);
+//  }
+//  if (MyChild->DidWhiteMoveCauseBlackCheck())
+//  {
+//    MyChild->BlackInCheck = ON;
+//  }
+//  MyChild->HashValue = (int) (MyChild->bAll % LARGE_PRIME);
+//  return(TRUE);
+//}
 
 #[cfg(test)]
 mod tests {

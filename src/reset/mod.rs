@@ -4,6 +4,7 @@ pub mod print;
 pub mod child;
 pub mod clone;
 pub mod helpers;
+pub mod capture;
 pub mod pawn;
 pub mod knight;
 pub mod bishop;
@@ -84,7 +85,7 @@ pub struct Reset {
 /// let mut r = chessica::reset::new();
 /// ```
 pub fn new() -> Reset {
-    let reset = Reset {
+    Reset {
         b_all: 0,
         b_white: 0,
         b_black: 0,
@@ -130,7 +131,6 @@ pub fn new() -> Reset {
         from: 0,
         to: 0,
         must_check_safety: 0,
-    };
-    reset
+    }
 }
 

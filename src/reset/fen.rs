@@ -13,10 +13,10 @@ impl Reset {
     /// r.init_from_fen(fen);
     /// ```
     pub fn init_from_fen(&mut self, fen: String) {
-        let chunks:Vec<&str>= fen.split(" ").collect();
+        let chunks:Vec<&str>= fen.split(' ').collect();
 
         // PROCESS THE PIECE POSITIONS (Chunk 0)
-        let rows:Vec<&str>= chunks[0].split("/").collect();
+        let rows:Vec<&str>= chunks[0].split('/').collect();
         for y in 0..8 {
             let mut x = 0;
             for c in rows[y].chars() {
@@ -26,19 +26,18 @@ impl Reset {
                         x += c as u32 - '0' as u32;
                     },
                     'k'|'q'|'r'|'b'|'n'|'p'|'K'|'Q'|'R'|'B'|'N'|'P' => {
-                        bit = bit << 7 - x + 8*(7 - y as u32);
+                        bit <<= 7 - x + 8*(7 - y as u32);
                         self.b_all |= bit;
-                        let material_multiplier: i8;
-                        match c {
+                        let material_multiplier: i8 = match c {
                             'k'|'q'|'r'|'b'|'n'|'p' => {
                                 self.b_black |= bit;
-                                material_multiplier = -1;
+                                -1
                             },
                             _ => {
                                 self.b_white |= bit;
-                                material_multiplier = 1;
+                                1
                             },
-                        }
+                        };
                         match c {
                             'k'|'K' => {
                                 self.b_kings |= bit;
@@ -61,7 +60,7 @@ impl Reset {
                             },
                             _ => {
                                 self.b_pawns |= bit;
-                                self.material += material_multiplier * 1;
+                                self.material += material_multiplier;
                             },
                         }
                         x += 1;
@@ -193,7 +192,7 @@ impl Reset {
         }
         
         // PROCESS WHO'S MOVE IT IS (Chunk 1)
-        fen.push_str(" ");
+        fen.push(' ');
         if self.to_move == 0 {
             fen.push('w');
         } else {
@@ -201,7 +200,7 @@ impl Reset {
         }
 
         // PROCESS CASTLE ELIGIBILITY (Chunk 2)
-        fen.push_str(" ");
+        fen.push(' ');
         let mut any_castle = 0;
         if self.white_castle_k != 0 {
             fen.push('K');
@@ -224,19 +223,19 @@ impl Reset {
         }
 
         // PROCESS EN PASSANT SQUARE (Chunk 3)
-        fen.push_str(" ");
+        fen.push(' ');
         if self.b_en_passant == 0 {
-            fen.push_str("-");
+            fen.push('-');
         } else {
             fen.push_str(&utils::convert_bitstring_to_square(self.b_en_passant));
         }
 
         // PROCESS HALFMOVE CLOCK (Chunk 4)
-        fen.push_str(" ");
+        fen.push(' ');
         fen.push_str(&self.halfmove_clock.to_string());
 
         // PROCESS MOVE NUMBER (Chunk 5)
-        fen.push_str(" ");
+        fen.push(' ');
         fen.push_str(&self.fullmove_number.to_string());
 
         fen

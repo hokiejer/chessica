@@ -105,19 +105,22 @@ impl Reset {
         if child.b_to & child.b_all != 0 { // Capture
             child.capture_processing();
         }
-        // Pick up the piece
         child.b_all &= child.b_from;
         child.b_white &= !child.b_from;
         child.b_black &= !child.b_from;
         if child.b_from & child.b_pawns != 0 {
             child.b_pawns &= !child.b_from;
+            child.b_pawns |= child.b_to;
             child.halfmove_clock = 0; // Resets on pawn move
         } else if child.b_from & child.b_knights != 0 {
             child.b_knights &= !child.b_from;
+            child.b_knights |= child.b_to;
         } else if child.b_from & child.b_bishops != 0 {
             child.b_bishops &= !child.b_from;
+            child.b_bishops |= child.b_to;
         } else if child.b_from & child.b_rooks != 0 {
             child.b_rooks &= !child.b_from;
+            child.b_rooks |= !child.b_to;
             if child.b_from & B_FOUR_CORNERS != 0 {
                 if child.b_to & B_LOWER_RIGHT_CORNER != 0 {
                     child.white_castle_k = 0;
@@ -131,61 +134,21 @@ impl Reset {
             }
         } else if child.b_from & child.b_queens != 0 {
             child.b_queens &= !child.b_from;
+            child.b_queens |= child.b_to;
         } else {
             child.b_kings &= !child.b_from;
+            child.b_kings |= child.b_to;
             child.white_castle_k = 0;
             child.white_castle_q = 0;
             child.black_castle_k = 0;
             child.black_castle_q = 0;
         }
 
-
-        // Put down the piece
-        
-        if self.white_to_move() {
-        } else {
-        }
+        // If I moved into check then init_my_child and return false
+        // Determine if the opponent is now in check and if so, indicate it
         true
     }
 }
-//int Reset::AddNextWhiteMove(Reset *MyChild, unsigned long long int *PieceBeingMoved)
-//{
-//  MyChild->bFrom = bCurrentPiece;
-//  MyChild->From = CurrentPiece;
-//  MyChild->bAll &= ~MyChild->bFrom;
-//  MyChild->bWhite &= ~MyChild->bFrom;
-//  *PieceBeingMoved &= ~MyChild->bFrom;
-//  MyChild->bTo = bMoveData;
-//  MyChild->To = MoveData;
-//  if (MyChild->bTo & MyChild->bAll)
-//  {
-//    MyChild->CaptureProcessing(MyChild->bTo);
-//    MyChild->Capture = 1;
-//    MyChild->MovesSinceCapture = 0; //Reset on capture
-//  }
-//  else
-//  {
-//    if (MyChild->bTo & MyChild->bPawns)
-//      MyChild->MovesSinceCapture = 0; //Reset on pawn move
-//    else
-//      MyChild->MovesSinceCapture = MovesSinceCapture + 1;
-//  }
-//  MyChild->bAll |= MyChild->bTo;
-//  MyChild->bWhite |= MyChild->bTo;
-//  *PieceBeingMoved |= MyChild->bTo;
-//  if ((MyChild->DidWhiteJustMoveIntoCheck()) ||
-//      (MyChild->MovesSinceCapture >= 50))
-//  {
-//    InitMyChild(MyChild);
-//    return(FALSE);
-//  }
-//  if (MyChild->DidWhiteMoveCauseBlackCheck())
-//  {
-//    MyChild->BlackInCheck = ON;
-//  }
-//  MyChild->HashValue = (int) (MyChild->bAll % LARGE_PRIME);
-//  return(TRUE);
-//}
 
 #[cfg(test)]
 mod tests {

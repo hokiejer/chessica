@@ -13,13 +13,13 @@ impl Reset {
         self.halfmove_clock = 0; // Resets on capture
 
         self.b_all &= !self.b_to; // Useful for EP
-        if self.white_to_move() {
+        let material_multiplier: i8 = if self.white_to_move() {
             self.b_black &= !self.b_to;
-            material_multiplier = -1;
+            -1
         } else {
             self.b_white &= !self.b_to;
-            material_multiplier = 1;
-        }
+            1
+        };
 
         if self.b_to & self.b_pawns != 0 {
             // Pawns

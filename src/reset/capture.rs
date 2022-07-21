@@ -8,7 +8,6 @@ use crate::reset::r#const::B_UPPER_LEFT_CORNER;
 impl Reset {
 
     pub fn capture_processing(&mut self) {
-        let material_multiplier: i8;
         self.capture = 1;
         self.halfmove_clock = 0; // Resets on capture
 

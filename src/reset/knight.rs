@@ -20,7 +20,6 @@ impl Reset {
     /// ```
     pub fn generate_next_knight_move(&mut self, child: &mut Reset) -> bool {
 
-        println!("In generate_next_knight_move, Current Piece = {:x}, Move ID = {}",self.current_piece,self.move_id);
         let b_available_moves: u64 = if self.white_to_move() {
             !self.b_white
         } else {
@@ -28,11 +27,8 @@ impl Reset {
         };
 
         if self.move_id < 20 && (self.b_current_piece & KNIGHT_CAN_MOVE_0100 != 0) {
-            println!("In 10");
             self.move_id = 20;
             let b_destination = self.b_current_piece << 15;
-            println!("b_destination == {:x}",b_destination);
-            println!("b_available_moves == {:x}",b_available_moves);
             if (b_available_moves & b_destination != 0) 
                 && (self.add_move_if_valid(child, b_destination)) 
             {
@@ -40,11 +36,8 @@ impl Reset {
             }
         }
         if self.move_id < 30 && (self.b_current_piece & KNIGHT_CAN_MOVE_0200 != 0) {
-            println!("In 20");
             self.move_id = 30;
             let b_destination = self.b_current_piece << 6;
-            println!("b_destination == {:x}",b_destination);
-            println!("b_available_moves == {:x}",b_available_moves);
             if (b_available_moves & b_destination != 0) 
                 && (self.add_move_if_valid(child, b_destination)) 
             {
@@ -52,11 +45,8 @@ impl Reset {
             }
         }
         if self.move_id < 40 && (self.b_current_piece & KNIGHT_CAN_MOVE_0400 != 0) {
-            println!("In 30");
             self.move_id = 40;
             let b_destination = self.b_current_piece >> 10;
-            println!("b_destination == {:x}",b_destination);
-            println!("b_available_moves == {:x}",b_available_moves);
             if (b_available_moves & b_destination != 0) 
                 && (self.add_move_if_valid(child, b_destination)) 
             {
@@ -64,11 +54,8 @@ impl Reset {
             }
         }
         if self.move_id < 50 && (self.b_current_piece & KNIGHT_CAN_MOVE_0500 != 0) {
-            println!("In 40");
             self.move_id = 50;
             let b_destination = self.b_current_piece >> 17;
-            println!("b_destination == {:x}",b_destination);
-            println!("b_available_moves == {:x}",b_available_moves);
             if (b_available_moves & b_destination != 0) 
                 && (self.add_move_if_valid(child, b_destination)) 
             {
@@ -76,11 +63,8 @@ impl Reset {
             }
         }
         if self.move_id < 60 && (self.b_current_piece & KNIGHT_CAN_MOVE_0700 != 0) {
-            println!("In 50");
             self.move_id = 60;
             let b_destination = self.b_current_piece >> 15;
-            println!("b_destination == {:x}",b_destination);
-            println!("b_available_moves == {:x}",b_available_moves);
             if (b_available_moves & b_destination != 0) 
                 && (self.add_move_if_valid(child, b_destination)) 
             {
@@ -88,11 +72,8 @@ impl Reset {
             }
         }
         if self.move_id < 70 && (self.b_current_piece & KNIGHT_CAN_MOVE_0800 != 0) {
-            println!("In 60");
             self.move_id = 70;
             let b_destination = self.b_current_piece >> 6;
-            println!("b_destination == {:x}",b_destination);
-            println!("b_available_moves == {:x}",b_available_moves);
             if (b_available_moves & b_destination != 0) 
                 && (self.add_move_if_valid(child, b_destination)) 
             {
@@ -100,11 +81,8 @@ impl Reset {
             }
         }
         if self.move_id < 80 && (self.b_current_piece & KNIGHT_CAN_MOVE_1000 != 0) {
-            println!("In 70");
             self.move_id = 80;
             let b_destination = self.b_current_piece << 10;
-            println!("b_destination == {:x}",b_destination);
-            println!("b_available_moves == {:x}",b_available_moves);
             if (b_available_moves & b_destination != 0) 
                 && (self.add_move_if_valid(child, b_destination)) 
             {
@@ -112,18 +90,14 @@ impl Reset {
             }
         }
         if self.move_id < 90 && (self.b_current_piece & KNIGHT_CAN_MOVE_1100 != 0) {
-            println!("In 80");
             self.move_id = 90;
             let b_destination = self.b_current_piece << 17;
-            println!("b_destination == {:x}",b_destination);
-            println!("b_available_moves == {:x}",b_available_moves);
             if (b_available_moves & b_destination != 0) 
                 && (self.add_move_if_valid(child, b_destination)) 
             {
                 return true;
             }
         }
-        println!("No more knight moves to check!");
         self.consider_next_moveable_piece();
         self.move_id = 10;
         false
@@ -291,9 +265,6 @@ mod tests {
         let fen = String::from("4k3/8/5n2/8/8/8/8/4K3 w - - 1 35");
         r.init_child(&mut child);
         let retval = r.generate_next_knight_move(&mut child);
-        println!("child.b_all == {:x}",child.b_all);
-        println!("child.b_knights == {:x}",child.b_knights);
-        println!("child.b_kings == {:x}",child.b_kings);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,0x0000001000000000);

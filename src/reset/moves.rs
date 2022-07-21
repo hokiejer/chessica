@@ -99,26 +99,40 @@ impl Reset {
     ///
     pub fn add_move_if_valid(&mut self, child: &mut Reset, b_destination: u64) -> bool {
 
+        println!("In add_move_if_valid ({:x} to {:x})", self.b_current_piece,b_destination);
         child.b_from = self.b_current_piece;
         child.b_to = b_destination;
 
         if child.b_to & child.b_all != 0 { // Capture
+            println!("Capture Processing!!");
             child.capture_processing();
         }
-        child.b_all &= child.b_from;
+        child.b_all &= !child.b_from;
+        child.b_all |= child.b_to;
+        if self.white_to_move() {
+            child.b_white &= !child.b_from;
+            child.b_white |= child.b_to;
+        } else {
+            self.b_black &= !self.b_from;
+            self.b_black |= self.b_to;
+        }
         child.b_white &= !child.b_from;
         child.b_black &= !child.b_from;
         if child.b_from & child.b_pawns != 0 {
+            println!("Pawn move");
             child.b_pawns &= !child.b_from;
             child.b_pawns |= child.b_to;
             child.halfmove_clock = 0; // Resets on pawn move
         } else if child.b_from & child.b_knights != 0 {
+            println!("Knight move");
             child.b_knights &= !child.b_from;
             child.b_knights |= child.b_to;
         } else if child.b_from & child.b_bishops != 0 {
+            println!("Bishop move");
             child.b_bishops &= !child.b_from;
             child.b_bishops |= child.b_to;
         } else if child.b_from & child.b_rooks != 0 {
+            println!("Rook move");
             child.b_rooks &= !child.b_from;
             child.b_rooks |= !child.b_to;
             if child.b_from & B_FOUR_CORNERS != 0 {
@@ -133,9 +147,11 @@ impl Reset {
                 }
             }
         } else if child.b_from & child.b_queens != 0 {
+            println!("Queen move");
             child.b_queens &= !child.b_from;
             child.b_queens |= child.b_to;
         } else {
+            println!("King move");
             child.b_kings &= !child.b_from;
             child.b_kings |= child.b_to;
             child.white_castle_k = 0;

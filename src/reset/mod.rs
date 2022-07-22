@@ -52,10 +52,10 @@ pub mod moves;
 /// | fullmove_number   | u8   | 1    |   75  | Full moves elapsed since beginning of the game |
 /// | white_king_square | u8   | 1    |   76  | Square number of the white king |
 /// | black_king_square | u8   | 1    |   77  | Square number of the black king |
-/// | white_castle_q    | u8   | 1    |   78  | Square number of the black king |
-/// | white_castle_k    | u8   | 1    |   79  | Square number of the black king |
-/// | black_castle_q    | u8   | 1    |   80  | Square number of the black king |
-/// | black_castle_k    | u8   | 1    |   81  | Square number of the black king |
+/// | white_castle_q    | u8   | 1    |   78  | 1 if white is eligible to castle queenside, 0 if not |
+/// | white_castle_k    | u8   | 1    |   79  | 1 if white is eligible to castle kingside, 0 if not |
+/// | black_castle_q    | u8   | 1    |   80  | 1 if black is eligible to castle queenside, 0 if not |
+/// | black_castle_k    | u8   | 1    |   81  | 1 if black is eligible to castle kingside, 0 if not |
 ///
 /// ## Fields cleared in a new child
 ///

@@ -41,11 +41,10 @@ impl Reset {
         clone.b_move_data = self.b_move_data;
         clone.score = self.score;
         clone.move_id = self.move_id;
-        clone.current_piece = self.current_piece;
+        clone.to_move = self.to_move;
         clone.move_data = self.move_data;
         clone.capture = self.capture;
         clone.in_check = self.in_check;
-        clone.to_move = self.to_move;
         clone.ep_capture = self.ep_capture;
         clone.promotion = self.promotion;
         clone.king_castled = self.king_castled;
@@ -59,8 +58,6 @@ impl Reset {
         clone.score_depth = self.score_depth;
         clone.hash_count = self.hash_count;
         clone.times_seen = self.times_seen;
-        clone.from = self.from;
-        clone.to = self.to;
         clone.must_check_safety = self.must_check_safety;
     }
 }
@@ -108,7 +105,6 @@ mod tests {
         r.b_en_passant = 222;
         r.b_move_data = 333;
         r.score = 44;
-        r.current_piece = 55;
         r.move_data = 66;
         r.capture = 1;
         r.in_check = 1;
@@ -141,7 +137,6 @@ mod tests {
         assert_eq!(child.b_en_passant,222);
         assert_eq!(child.b_move_data,333);
         assert_eq!(child.score,44);
-        assert_eq!(child.current_piece,55);
         assert_eq!(child.move_data,66);
         assert_eq!(child.capture,1);
         assert_eq!(child.in_check,1);

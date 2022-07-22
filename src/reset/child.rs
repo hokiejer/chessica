@@ -41,16 +41,15 @@ impl Reset {
         child.b_move_data = 0;
         child.score = 0;
         child.move_id = 0;
-        child.current_piece = 0;
-        child.move_data = 0;
-        child.capture = 0;
-        child.in_check = 0;
         if self.white_to_move() {          // White to black
             child.to_move = 1;
         } else {                        // Black to white
             child.fullmove_number += 1;
             child.to_move = 0;
         }
+        child.move_data = 0;
+        child.capture = 0;
+        child.in_check = 0;
         child.ep_capture = 0;
         child.promotion = 0;
         child.king_castled = 0;
@@ -107,7 +106,6 @@ mod tests {
         r.b_en_passant = 222;
         r.b_move_data = 333;
         r.score = 44;
-        r.current_piece = 55;
         r.move_data = 66;
         r.capture = 1;
         r.in_check = 1;
@@ -140,7 +138,6 @@ mod tests {
         assert_eq!(child.b_en_passant,0); // Cleared
         assert_eq!(child.b_move_data,0); // Cleared
         assert_eq!(child.score,0); // Cleared
-        assert_eq!(child.current_piece,0); // Cleared
         assert_eq!(child.move_data,0); // Cleared
         assert_eq!(child.capture,0); // Cleared
         assert_eq!(child.in_check,0); // Cleared

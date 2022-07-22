@@ -23,7 +23,6 @@ impl Reset {
         } else {
             self.b_current_piece = bitops::lowest_bit(self.b_black);
         }
-        self.current_piece = bitops::get_bit_number(self.b_current_piece);
         self.move_id = 10;	//Prime the first move
     }
 
@@ -177,7 +176,6 @@ mod tests {
         r.init_from_fen(fen.to_string());
         r.initialize_move_generation();
         assert_eq!(r.b_current_piece,0x0000000000000001,"b_current_piece");
-        assert_eq!(r.current_piece,1,"current_piece");
         assert_eq!(r.move_id,10,"move_id");
 
         let mut r = reset::new();
@@ -185,7 +183,6 @@ mod tests {
         r.init_from_fen(fen2.to_string());
         r.initialize_move_generation();
         assert_eq!(r.b_current_piece,0x0001000000000000,"b_current_piece");
-        assert_eq!(r.current_piece,49,"current_piece");
         assert_eq!(r.move_id,10,"move_id");
     }
 

@@ -52,10 +52,10 @@ pub mod moves;
 /// | fullmove_number   | u8   | 1    |   75  | Full moves elapsed since beginning of the game |
 /// | white_king_square | u8   | 1    |   76  | Square number of the white king |
 /// | black_king_square | u8   | 1    |   77  | Square number of the black king |
-/// | white_castle_q    | u8   | 1    |   78  | 1 if white is eligible to castle queenside, 0 if not |
-/// | white_castle_k    | u8   | 1    |   79  | 1 if white is eligible to castle kingside, 0 if not |
-/// | black_castle_q    | u8   | 1    |   80  | 1 if black is eligible to castle queenside, 0 if not |
-/// | black_castle_k    | u8   | 1    |   81  | 1 if black is eligible to castle kingside, 0 if not |
+/// | white_castle_q    | u8   | 1    |   78  | `1` if white is eligible to castle queenside, `0` if not |
+/// | white_castle_k    | u8   | 1    |   79  | `1` if white is eligible to castle kingside, `0` if not |
+/// | black_castle_q    | u8   | 1    |   80  | `1` if black is eligible to castle queenside, `0` if not |
+/// | black_castle_k    | u8   | 1    |   81  | `1` if black is eligible to castle kingside, `0` if not |
 ///
 /// ## Fields cleared in a new child
 ///
@@ -66,14 +66,14 @@ pub mod moves;
 /// | b_move_data       | u64  | 8    |   24  | Is this even needed anymore? |
 /// | score             | i32  | 4    |   28  | Score of this reset.  White is positive, Black negative.  If white is up exactly a pawn, the score will be 1,000,000.  Checkmate for Black is -128,000,000. |
 /// | move_id           | u8   | 1    |   29  | ID of tne next move to be considered for a given piece type |
-/// | to_move           | u8   | 1    |   30  | 0 if it is white's move, 1 if it is black's move |
+/// | to_move           | u8   | 1    |   30  | `0` if it is white's move, `1` if it is black's move |
 /// | move_data         | u8   | 1    |   31  | Is this even needed anymore? |
-/// | capture           | u8   | 1    |   32  | 1 if the last move was a capture, 0 otherwise |
-/// | in_check          | u8   | 1    |   33  | 1 if the side moving is currently in check, 0 otherwise |
-/// | ep_capture        | u8   | 1    |   34  | 1 if the last move was an en passant capture, 0 otherwise |
-/// | promotion         | u8   | 1    |   35  | 1 if the last move was a promotion, 0 otherwise |
-/// | king_castled      | u8   | 1    |   36  | 1 if the last move was a castle, 0 otherwise |
-/// | game_over         | u8   | 1    |   37  | 1 if the game is over |
+/// | capture           | u8   | 1    |   32  | `1` if the last move was a capture, `0` otherwise |
+/// | in_check          | u8   | 1    |   33  | `1` if the side moving is currently in check, `0` otherwise |
+/// | ep_capture        | u8   | 1    |   34  | `1` if the last move was an en passant capture, `0` otherwise |
+/// | promotion         | u8   | 1    |   35  | `1` if the last move was a promotion, `0` otherwise |
+/// | king_castled      | u8   | 1    |   36  | `1` if the last move was a castle, `0` otherwise |
+/// | game_over         | u8   | 1    |   37  | `1` if the game is over |
 ///
 ///
 /// ## Fields that can be garbage in a new child

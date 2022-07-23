@@ -3,7 +3,6 @@ use crate::reset::r#const::B_FOUR_CORNERS;
 use crate::reset::r#const::B_LOWER_RIGHT_CORNER;
 use crate::reset::r#const::B_LOWER_LEFT_CORNER;
 use crate::reset::r#const::B_UPPER_RIGHT_CORNER;
-use crate::reset::r#const::B_UPPER_LEFT_CORNER;
 
 impl Reset {
 

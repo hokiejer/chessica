@@ -12,6 +12,7 @@ pub mod rook;
 pub mod queen;
 pub mod king;
 pub mod moves;
+pub mod safe;
 
 /// The complete status of a chess game at a given time
 ///

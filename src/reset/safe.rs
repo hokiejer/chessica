@@ -168,21 +168,33 @@ impl Reset {
             }
         }
 
-//
-//  /* King */
-//  Attackers = bKings & bBlack;
-//  if (((Squares & CANMOVEUP) >> 8) & Attackers)
-//    return FALSE;
-//  if (((Squares & CANMOVERIGHT) >> 1) & Attackers)
-//    return FALSE;
-//  if (((Squares & CANMOVELEFT) << 1) & Attackers)
-//    return FALSE;
-//  if (((Squares & CANMOVEDOWN) << 8) & Attackers)
-//    return FALSE;
-//  if (((Squares & DREDGE) << 7) & Attackers)
-//    return FALSE;
-//  if (((Squares & DLEDGE) << 9) & Attackers)
-//    return FALSE;
+        // King
+        let b_attackers: u64 = b_opponent & self.b_kings;
+        if ((b_squares & B_NOT_UR_EDGE) << 7) & b_attackers != 0 {
+            return false;
+        }
+        if ((b_squares & B_NOT_RIGHT_EDGE) >> 1) & b_attackers != 0 {
+            return false;
+        }
+        if ((b_squares & B_NOT_DR_EDGE) >> 9) & b_attackers != 0 {
+            return false;
+        }
+        if ((b_squares & B_NOT_BOTTOM_EDGE) >> 8) & b_attackers != 0 {
+            return false;
+        }
+        if ((b_squares & B_NOT_DL_EDGE) >> 7) & b_attackers != 0 {
+            return false;
+        }
+        if ((b_squares & B_NOT_LEFT_EDGE) << 1) & b_attackers != 0 {
+            return false;
+        }
+        if ((b_squares & B_NOT_UL_EDGE) << 9) & b_attackers != 0 {
+            return false;
+        }
+        if ((b_squares & B_NOT_TOP_EDGE) << 8) & b_attackers != 0 {
+            return false;
+        }
+
         true
     }
 
@@ -225,7 +237,7 @@ mod tests {
 
     #[test]
     fn is_safe_against_white_bishop_attacks() {
-        let mut r = prep_board("8/4b3/8/8/1B2b3/8/6B1/6kK w - - 0 1");
+        let mut r = prep_board("8/4b3/8/8/1B2b3/8/6B1/6pp w - - 0 1");
         assert!(!r.is_safe(utils::convert_square_to_bitstring("e7".to_string()),0));
         assert!(!r.is_safe(utils::convert_square_to_bitstring("d6".to_string()),0));
         assert!(!r.is_safe(utils::convert_square_to_bitstring("a5".to_string()),0));
@@ -244,7 +256,7 @@ mod tests {
 
     #[test]
     fn is_safe_against_black_bishop_attacks() {
-        let mut r = prep_board("8/4b3/8/8/1B2b3/8/6B1/6kK w - - 0 1");
+        let mut r = prep_board("8/4b3/8/8/1B2b3/8/6B1/6pp w - - 0 1");
         assert!(!r.is_safe(utils::convert_square_to_bitstring("a8".to_string()),1));
         assert!(!r.is_safe(utils::convert_square_to_bitstring("d8".to_string()),1));
         assert!(!r.is_safe(utils::convert_square_to_bitstring("f8".to_string()),1));
@@ -463,40 +475,22 @@ mod tests {
         assert!(r.is_safe(0xf7ffd7baffbbd7ff,1)); // all safe squares
     }
 
+    #[test]
+    fn is_safe_against_white_king_corner_attacks() {
+        let mut r = prep_board("7k/8/8/8/8/8/8/K7 w - - 0 1");
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("a2".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("b2".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("b1".to_string()),0));
+        assert!(r.is_safe(0xffffffffffff3fbf,0)); // all safe squares
+    }
+
+    #[test]
+    fn is_safe_against_black_king_corner_attacks() {
+        let mut r = prep_board("7k/8/8/8/8/8/8/K7 w - - 0 1");
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("g8".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("g7".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h7".to_string()),1));
+        assert!(r.is_safe(0xfdfcffffffffffff,1)); // all safe squares
+    }
+
 }
-//  /* Knights */
-//  Attackers = bKnights & bBlack;
-//  if (Attackers & ((Squares & K0100) >> 17))
-//    return FALSE;
-//  if (Attackers & ((Squares & K0200) >> 10))
-//    return FALSE;
-//  if (Attackers & ((Squares & K0400) << 6))
-//    return FALSE;
-//  if (Attackers & ((Squares & K0500) << 15))
-//    return FALSE;
-//  if (Attackers & ((Squares & K0700) << 17))
-//    return FALSE;
-//  if (Attackers & ((Squares & K0800) << 10))
-//    return FALSE;
-//  if (Attackers & ((Squares & K1000) >> 6))
-//    return FALSE;
-//  if (Attackers & ((Squares & K1100) >> 15))
-//    return FALSE;
-//
-//  /* King */
-//  Attackers = bKings & bBlack;
-//  if (((Squares & CANMOVEUP) >> 8) & Attackers)
-//    return FALSE;
-//  if (((Squares & CANMOVERIGHT) >> 1) & Attackers)
-//    return FALSE;
-//  if (((Squares & CANMOVELEFT) << 1) & Attackers)
-//    return FALSE;
-//  if (((Squares & CANMOVEDOWN) << 8) & Attackers)
-//    return FALSE;
-//  if (((Squares & DREDGE) << 7) & Attackers)
-//    return FALSE;
-//  if (((Squares & DLEDGE) << 9) & Attackers)
-//    return FALSE;
-//
-//  return TRUE;
-//}

@@ -14,3 +14,12 @@ pub const B_NOT_TOP_EDGE: u64 = 0x00ffffffffffffff;
 pub const B_NOT_RIGHT_EDGE: u64 = 0xfefefefefefefefe;
 pub const B_NOT_LEFT_EDGE: u64 = 0x7f7f7f7f7f7f7f7f;
 pub const B_NOT_BOTTOM_EDGE: u64 = 0xffffffffffffff00;
+
+pub const B_KNIGHT_CAN_MOVE_0100: u64 = 0x0000fefefefefefe;
+pub const B_KNIGHT_CAN_MOVE_0200: u64 = 0x00fcfcfcfcfcfcfc;
+pub const B_KNIGHT_CAN_MOVE_0400: u64 = 0xfcfcfcfcfcfcfc00;
+pub const B_KNIGHT_CAN_MOVE_0500: u64 = 0xfefefefefefe0000;
+pub const B_KNIGHT_CAN_MOVE_0700: u64 = 0x7f7f7f7f7f7f0000;
+pub const B_KNIGHT_CAN_MOVE_0800: u64 = 0x3f3f3f3f3f3f3f00;
+pub const B_KNIGHT_CAN_MOVE_1000: u64 = 0x003f3f3f3f3f3f3f;
+pub const B_KNIGHT_CAN_MOVE_1100: u64 = 0x00007f7f7f7f7f7f;

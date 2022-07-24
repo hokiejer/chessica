@@ -1,13 +1,12 @@
 use crate::reset::Reset;
-
-pub const KNIGHT_CAN_MOVE_0100: u64 = 0x0000fefefefefefe;
-pub const KNIGHT_CAN_MOVE_0200: u64 = 0x00fcfcfcfcfcfcfc;
-pub const KNIGHT_CAN_MOVE_0400: u64 = 0xfcfcfcfcfcfcfc00;
-pub const KNIGHT_CAN_MOVE_0500: u64 = 0xfefefefefefe0000;
-pub const KNIGHT_CAN_MOVE_0700: u64 = 0x7f7f7f7f7f7f0000;
-pub const KNIGHT_CAN_MOVE_0800: u64 = 0x3f3f3f3f3f3f3f00;
-pub const KNIGHT_CAN_MOVE_1000: u64 = 0x003f3f3f3f3f3f3f;
-pub const KNIGHT_CAN_MOVE_1100: u64 = 0x00007f7f7f7f7f7f;
+use crate::reset::r#const::B_KNIGHT_CAN_MOVE_0100;
+use crate::reset::r#const::B_KNIGHT_CAN_MOVE_0200;
+use crate::reset::r#const::B_KNIGHT_CAN_MOVE_0400;
+use crate::reset::r#const::B_KNIGHT_CAN_MOVE_0500;
+use crate::reset::r#const::B_KNIGHT_CAN_MOVE_0700;
+use crate::reset::r#const::B_KNIGHT_CAN_MOVE_0800;
+use crate::reset::r#const::B_KNIGHT_CAN_MOVE_1000;
+use crate::reset::r#const::B_KNIGHT_CAN_MOVE_1100;
 
 impl Reset {
 
@@ -26,7 +25,7 @@ impl Reset {
             !self.b_black
         };
 
-        if self.move_id < 20 && (self.b_current_piece & KNIGHT_CAN_MOVE_0100 != 0) {
+        if self.move_id < 20 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_0100 != 0) {
             self.move_id = 20;
             let b_destination = self.b_current_piece << 15;
             if (b_available_moves & b_destination != 0) 
@@ -35,7 +34,7 @@ impl Reset {
                 return true;
             }
         }
-        if self.move_id < 30 && (self.b_current_piece & KNIGHT_CAN_MOVE_0200 != 0) {
+        if self.move_id < 30 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_0200 != 0) {
             self.move_id = 30;
             let b_destination = self.b_current_piece << 6;
             if (b_available_moves & b_destination != 0) 
@@ -44,7 +43,7 @@ impl Reset {
                 return true;
             }
         }
-        if self.move_id < 40 && (self.b_current_piece & KNIGHT_CAN_MOVE_0400 != 0) {
+        if self.move_id < 40 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_0400 != 0) {
             self.move_id = 40;
             let b_destination = self.b_current_piece >> 10;
             if (b_available_moves & b_destination != 0) 
@@ -53,7 +52,7 @@ impl Reset {
                 return true;
             }
         }
-        if self.move_id < 50 && (self.b_current_piece & KNIGHT_CAN_MOVE_0500 != 0) {
+        if self.move_id < 50 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_0500 != 0) {
             self.move_id = 50;
             let b_destination = self.b_current_piece >> 17;
             if (b_available_moves & b_destination != 0) 
@@ -62,7 +61,7 @@ impl Reset {
                 return true;
             }
         }
-        if self.move_id < 60 && (self.b_current_piece & KNIGHT_CAN_MOVE_0700 != 0) {
+        if self.move_id < 60 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_0700 != 0) {
             self.move_id = 60;
             let b_destination = self.b_current_piece >> 15;
             if (b_available_moves & b_destination != 0) 
@@ -71,7 +70,7 @@ impl Reset {
                 return true;
             }
         }
-        if self.move_id < 70 && (self.b_current_piece & KNIGHT_CAN_MOVE_0800 != 0) {
+        if self.move_id < 70 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_0800 != 0) {
             self.move_id = 70;
             let b_destination = self.b_current_piece >> 6;
             if (b_available_moves & b_destination != 0) 
@@ -80,7 +79,7 @@ impl Reset {
                 return true;
             }
         }
-        if self.move_id < 80 && (self.b_current_piece & KNIGHT_CAN_MOVE_1000 != 0) {
+        if self.move_id < 80 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_1000 != 0) {
             self.move_id = 80;
             let b_destination = self.b_current_piece << 10;
             if (b_available_moves & b_destination != 0) 
@@ -89,7 +88,7 @@ impl Reset {
                 return true;
             }
         }
-        if self.move_id < 90 && (self.b_current_piece & KNIGHT_CAN_MOVE_1100 != 0) {
+        if self.move_id < 90 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_1100 != 0) {
             self.move_id = 90;
             let b_destination = self.b_current_piece << 17;
             if (b_available_moves & b_destination != 0) 

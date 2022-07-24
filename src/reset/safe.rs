@@ -18,6 +18,14 @@ impl Reset {
         use crate::reset::r#const::B_NOT_RIGHT_EDGE;
         use crate::reset::r#const::B_NOT_LEFT_EDGE;
         use crate::reset::r#const::B_NOT_BOTTOM_EDGE;
+        use crate::reset::r#const::B_KNIGHT_CAN_MOVE_0100;
+        use crate::reset::r#const::B_KNIGHT_CAN_MOVE_0200;
+        use crate::reset::r#const::B_KNIGHT_CAN_MOVE_0400;
+        use crate::reset::r#const::B_KNIGHT_CAN_MOVE_0500;
+        use crate::reset::r#const::B_KNIGHT_CAN_MOVE_0700;
+        use crate::reset::r#const::B_KNIGHT_CAN_MOVE_0800;
+        use crate::reset::r#const::B_KNIGHT_CAN_MOVE_1000;
+        use crate::reset::r#const::B_KNIGHT_CAN_MOVE_1100;
 
         let b_opponent: u64 = if opponent == 0 {
             // Pawns - Down Left
@@ -131,24 +139,35 @@ impl Reset {
             }
         }
 
-//  /* Knights */
-//  Attackers = bKnights & bBlack;
-//  if (Attackers & ((Squares & K0100) >> 17))
-//    return FALSE;
-//  if (Attackers & ((Squares & K0200) >> 10))
-//    return FALSE;
-//  if (Attackers & ((Squares & K0400) << 6))
-//    return FALSE;
-//  if (Attackers & ((Squares & K0500) << 15))
-//    return FALSE;
-//  if (Attackers & ((Squares & K0700) << 17))
-//    return FALSE;
-//  if (Attackers & ((Squares & K0800) << 10))
-//    return FALSE;
-//  if (Attackers & ((Squares & K1000) >> 6))
-//    return FALSE;
-//  if (Attackers & ((Squares & K1100) >> 15))
-//    return FALSE;
+        // Knight
+        let b_attackers: u64 = b_opponent & self.b_knights;
+        if b_attackers != 0 {
+            if b_attackers & ((b_squares & B_KNIGHT_CAN_MOVE_0100) << 15) != 0 {
+                return false;
+            }
+            if b_attackers & ((b_squares & B_KNIGHT_CAN_MOVE_0200) << 6) != 0 {
+                return false;
+            }
+            if b_attackers & ((b_squares & B_KNIGHT_CAN_MOVE_0400) >> 10) != 0 {
+                return false;
+            }
+            if b_attackers & ((b_squares & B_KNIGHT_CAN_MOVE_0500) >> 17) != 0 {
+                return false;
+            }
+            if b_attackers & ((b_squares & B_KNIGHT_CAN_MOVE_0700) >> 15) != 0 {
+                return false;
+            }
+            if b_attackers & ((b_squares & B_KNIGHT_CAN_MOVE_0800) >> 6) != 0 {
+                return false;
+            }
+            if b_attackers & ((b_squares & B_KNIGHT_CAN_MOVE_1000) << 10) != 0 {
+                return false;
+            }
+            if b_attackers & ((b_squares & B_KNIGHT_CAN_MOVE_1100) << 17) != 0 {
+                return false;
+            }
+        }
+
 //
 //  /* King */
 //  Attackers = bKings & bBlack;
@@ -410,6 +429,38 @@ mod tests {
         assert!(!r.is_safe(utils::convert_square_to_bitstring("e1".to_string()),1));
         assert!(!r.is_safe(utils::convert_square_to_bitstring("f1".to_string()),1));
         assert!(!r.is_safe(utils::convert_square_to_bitstring("g1".to_string()),1));
+    }
+
+    #[test]
+    fn is_safe_against_white_knight_attacks() {
+        let mut r = prep_board("8/6n1/N7/8/3n4/6N1/8/8 w - - 0 1");
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("b8".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("c7".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("c5".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("f5".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h5".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("b4".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("e4".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("e2".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("f1".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h1".to_string()),0));
+        assert!(r.is_safe(0xbfdfffdab7fff7fa,0)); // all safe squares
+    }
+
+    #[test]
+    fn is_safe_against_black_knight_attacks() {
+        let mut r = prep_board("8/6n1/N7/8/3n4/6N1/8/8 w - - 0 1");
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("e8".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("c6".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("e6".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("b5".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("f5".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h5".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("b3".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("f3".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("c2".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("e2".to_string()),1));
+        assert!(r.is_safe(0xf7ffd7baffbbd7ff,1)); // all safe squares
     }
 
 }

@@ -89,11 +89,12 @@ impl Reset {
             }
         }
         if self.move_id < 90 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_1100 != 0) {
-            self.move_id = 90;
             let b_destination = self.b_current_piece << 17;
             if (b_available_moves & b_destination != 0) 
                 && (self.add_move_if_valid(child, b_destination)) 
             {
+                self.consider_next_moveable_piece();
+                self.move_id = 10;
                 return true;
             }
         }
@@ -138,13 +139,6 @@ mod tests {
         let retval = r.generate_next_knight_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen2);
-        assert_eq!(r.b_current_piece,0x0000000000000002);
-        assert_eq!(r.move_id,90);
-
-        // No Third Move
-        r.init_child(&mut child);
-        let retval = r.generate_next_knight_move(&mut child);
-        assert_eq!(retval,false);
         assert_eq!(r.b_current_piece,0x0000000000000004);
         assert_eq!(r.move_id,10);
     }
@@ -170,13 +164,6 @@ mod tests {
         let retval = r.generate_next_knight_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen2);
-        assert_eq!(r.b_current_piece,0x0000000000000040);
-        assert_eq!(r.move_id,90);
-
-        // No Third Move
-        r.init_child(&mut child);
-        let retval = r.generate_next_knight_move(&mut child);
-        assert_eq!(retval,false);
         assert_eq!(r.b_current_piece,0x0000000000000080);
         assert_eq!(r.move_id,10);
     }
@@ -320,13 +307,6 @@ mod tests {
         let retval = r.generate_next_knight_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
-        assert_eq!(r.b_current_piece,0x0000001000000000);
-        assert_eq!(r.move_id,90);
-
-        // No Third Move
-        r.init_child(&mut child);
-        let retval = r.generate_next_knight_move(&mut child);
-        assert_eq!(retval,false);
         assert_eq!(r.b_current_piece,0x0800000000000000);
         assert_eq!(r.move_id,10);
     }

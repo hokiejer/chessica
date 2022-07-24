@@ -14,6 +14,10 @@ impl Reset {
         use crate::reset::r#const::B_NOT_UR_EDGE;
         use crate::reset::r#const::B_NOT_DL_EDGE;
         use crate::reset::r#const::B_NOT_DR_EDGE;
+        use crate::reset::r#const::B_NOT_TOP_EDGE;
+        use crate::reset::r#const::B_NOT_RIGHT_EDGE;
+        use crate::reset::r#const::B_NOT_LEFT_EDGE;
+        use crate::reset::r#const::B_NOT_BOTTOM_EDGE;
 
         let b_opponent: u64 = if opponent == 0 {
             // Pawns - Down Left
@@ -82,6 +86,84 @@ impl Reset {
             }
         }
 
+        // Rook or Queen
+        let b_attackers: u64 = b_opponent & (self.b_rooks | self.b_queens);
+
+        if b_attackers != 0 {
+            // Rook or Queen: Up
+            let mut b_temp: u64 = b_squares;
+            while b_temp & B_NOT_TOP_EDGE != 0 {
+                b_temp = (b_temp & B_NOT_TOP_EDGE) << 8;
+                if b_temp & b_attackers != 0 {
+                    return false;
+                }
+                b_temp &= !(self.b_all);
+            }
+
+            // Rook or Queen: Right
+            let mut b_temp: u64 = b_squares;
+            while b_temp & B_NOT_RIGHT_EDGE != 0 {
+                b_temp = (b_temp & B_NOT_RIGHT_EDGE) >> 1;
+                if b_temp & b_attackers != 0 {
+                    return false;
+                }
+                b_temp &= !(self.b_all);
+            }
+
+            // Rook or Queen: Down
+            let mut b_temp: u64 = b_squares;
+            while b_temp & B_NOT_BOTTOM_EDGE != 0 {
+                b_temp = (b_temp & B_NOT_DL_EDGE) >> 8;
+                if b_temp & b_attackers != 0 {
+                    return false;
+                }
+                b_temp &= !(self.b_all);
+            }
+
+            // Rook or Queen: Left
+            let mut b_temp: u64 = b_squares;
+            while b_temp & B_NOT_LEFT_EDGE != 0 {
+                b_temp = (b_temp & B_NOT_LEFT_EDGE) << 1;
+                if b_temp & b_attackers != 0 {
+                    return false;
+                }
+                b_temp &= !(self.b_all);
+            }
+        }
+
+//  /* Knights */
+//  Attackers = bKnights & bBlack;
+//  if (Attackers & ((Squares & K0100) >> 17))
+//    return FALSE;
+//  if (Attackers & ((Squares & K0200) >> 10))
+//    return FALSE;
+//  if (Attackers & ((Squares & K0400) << 6))
+//    return FALSE;
+//  if (Attackers & ((Squares & K0500) << 15))
+//    return FALSE;
+//  if (Attackers & ((Squares & K0700) << 17))
+//    return FALSE;
+//  if (Attackers & ((Squares & K0800) << 10))
+//    return FALSE;
+//  if (Attackers & ((Squares & K1000) >> 6))
+//    return FALSE;
+//  if (Attackers & ((Squares & K1100) >> 15))
+//    return FALSE;
+//
+//  /* King */
+//  Attackers = bKings & bBlack;
+//  if (((Squares & CANMOVEUP) >> 8) & Attackers)
+//    return FALSE;
+//  if (((Squares & CANMOVERIGHT) >> 1) & Attackers)
+//    return FALSE;
+//  if (((Squares & CANMOVELEFT) << 1) & Attackers)
+//    return FALSE;
+//  if (((Squares & CANMOVEDOWN) << 8) & Attackers)
+//    return FALSE;
+//  if (((Squares & DREDGE) << 7) & Attackers)
+//    return FALSE;
+//  if (((Squares & DLEDGE) << 9) & Attackers)
+//    return FALSE;
         true
     }
 
@@ -102,7 +184,7 @@ mod tests {
 
     #[test]
     fn is_safe_against_white_pawn_attacks() {
-        let mut r = prep_board("r7/p7/6p1/P3p3/8/7p/2P4P/8 w - - 0 100");
+        let mut r = prep_board("8/p7/6p1/P3p3/8/7p/2P4P/8 w - - 0 100");
         assert!(!r.is_safe(utils::convert_square_to_bitstring("b6".to_string()),0));
         assert!(!r.is_safe(utils::convert_square_to_bitstring("b3".to_string()),0));
         assert!(!r.is_safe(utils::convert_square_to_bitstring("d3".to_string()),0));
@@ -112,7 +194,7 @@ mod tests {
 
     #[test]
     fn is_safe_against_black_pawn_attacks() {
-        let mut r = prep_board("r7/p7/6p1/P3p3/8/7p/2P4P/8 w - - 0 100");
+        let mut r = prep_board("8/p7/6p1/P3p3/8/7p/2P4P/8 w - - 0 100");
         assert!(!r.is_safe(utils::convert_square_to_bitstring("b6".to_string()),1));
         assert!(!r.is_safe(utils::convert_square_to_bitstring("f5".to_string()),1));
         assert!(!r.is_safe(utils::convert_square_to_bitstring("h5".to_string()),1));
@@ -210,77 +292,127 @@ mod tests {
         assert!(!r.is_safe(utils::convert_square_to_bitstring("b1".to_string()),1));
     }
 
+    #[test]
+    fn is_safe_against_white_rook_attacks() {
+        let mut r = prep_board("r7/8/7R/8/8/8/8/2R4r b - - 0 1");
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("c8".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h8".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("c7".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h7".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("a6".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("b6".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("c6".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("d6".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("e6".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("f6".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("g6".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("c5".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h5".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("c4".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h4".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("c3".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h3".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("c2".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h2".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("a1".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("b1".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("d1".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("e1".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("f1".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("g1".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h1".to_string()),0));
+        assert!(r.is_safe(0xdede01dededede20,0)); // all safe squares
+    }
+
+    #[test]
+    fn is_safe_against_black_rook_attacks() {
+        let mut r = prep_board("r7/8/7R/8/8/8/8/2R4r b - - 0 1");
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("b8".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("c8".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("d8".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("e8".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("f8".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("g8".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h8".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("a7".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("a6".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h6".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("a5".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h5".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("a4".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h4".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("a3".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h3".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("a2".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h2".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("c1".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("d1".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("e1".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("f1".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("g1".to_string()),1));
+        assert!(r.is_safe(0x807f7e7e7e7e7e41,1)); // all safe squares
+    }
+
+    #[test]
+    fn is_safe_against_white_straight_line_queen_attacks() {
+        let mut r = prep_board("q7/8/7Q/8/8/8/8/2Q4q b - - 0 1");
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("c8".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h8".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("c7".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h7".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("a6".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("b6".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("c6".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("d6".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("e6".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("f6".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("g6".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("c5".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h5".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("c4".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h4".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("c3".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h3".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("c2".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h2".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("a1".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("b1".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("d1".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("e1".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("f1".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("g1".to_string()),0));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h1".to_string()),0));
+    }
+
+    #[test]
+    fn is_safe_against_black_straight_line_queen_attacks() {
+        let mut r = prep_board("q7/8/7Q/8/8/8/8/2Q4q b - - 0 1");
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("b8".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("c8".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("d8".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("e8".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("f8".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("g8".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h8".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("a7".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("a6".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h6".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("a5".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h5".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("a4".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h4".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("a3".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h3".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("a2".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("h2".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("c1".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("d1".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("e1".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("f1".to_string()),1));
+        assert!(!r.is_safe(utils::convert_square_to_bitstring("g1".to_string()),1));
+    }
+
 }
-//  /* Bishop or Queen */
-//  Temp = Squares;
-//  Attackers = bBlack & (bBishops | bQueens);
-//  while(Temp & ULEDGE)
-//  {
-//    Temp = (Temp & ULEDGE) >> 7;
-//    if (Temp & Attackers)
-//      return FALSE;
-//    Temp &= ~bAll;
-//  }
-//  Temp = Squares;
-//  while(Temp & UREDGE)
-//  {
-//    Temp = (Temp & UREDGE) >> 9;
-//    if (Temp & Attackers)
-//      return FALSE;
-//    Temp &= ~bAll;
-//  }
-//  Temp = Squares;
-//  while(Temp & DLEDGE)
-//  {
-//    Temp = (Temp & DLEDGE) << 9;
-//    if (Temp & Attackers)
-//      return FALSE;
-//    Temp &= ~bAll;
-//  }
-//  Temp = Squares;
-//  while(Temp & DREDGE)
-//  {
-//    Temp = (Temp & DREDGE) << 7;
-//    if (Temp & Attackers)
-//      return FALSE;
-//    Temp &= ~bAll;
-//  }
-//
-//  /* Rook or Queen */
-//  Temp = Squares;
-//  Attackers = bBlack & (bRooks | bQueens);
-//  while(Temp & CANMOVEUP)
-//  {
-//    Temp = (Temp & CANMOVEUP) >> 8;
-//    if (Temp & Attackers)
-//      return FALSE;
-//    Temp &= ~bAll;
-//  }
-//  Temp = Squares;
-//  while(Temp & CANMOVEDOWN)
-//  {
-//    Temp = (Temp & CANMOVEDOWN) << 8;
-//    if (Temp & Attackers)
-//      return FALSE;
-//    Temp &= ~bAll;
-//  }
-//  Temp = Squares;
-//  while(Temp & CANMOVERIGHT)
-//  {
-//    Temp = (Temp & CANMOVERIGHT) >> 1;
-//    if (Temp & Attackers)
-//      return FALSE;
-//    Temp &= ~bAll;
-//  }
-//  Temp = Squares;
-//  while(Temp & CANMOVELEFT)
-//  {
-//    Temp = (Temp & CANMOVELEFT) << 1;
-//    if (Temp & Attackers)
-//      return FALSE;
-//    Temp &= ~bAll;
-//  }
-//  
 //  /* Knights */
 //  Attackers = bKnights & bBlack;
 //  if (Attackers & ((Squares & K0100) >> 17))

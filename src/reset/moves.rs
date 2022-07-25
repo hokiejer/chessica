@@ -40,6 +40,7 @@ impl Reset {
         } else {
             self.b_current_piece = bitops::next_lowest_bit(self.b_black, self.b_current_piece);
         }
+        self.move_id = 10;
     }
 
 
@@ -97,7 +98,8 @@ impl Reset {
     ///
     pub fn add_move_if_valid(&mut self, child: &mut Reset, b_destination: u64) -> bool {
 
-        println!("In add_move_if_valid ({:x} to {:x})", self.b_current_piece,b_destination);
+        use crate::utils;
+        println!("In add_move_if_valid ({} to {})", utils::convert_bitstring_to_square(self.b_current_piece),utils::convert_bitstring_to_square(b_destination));
         child.b_from = self.b_current_piece;
         child.b_to = b_destination;
 
@@ -111,8 +113,8 @@ impl Reset {
             child.b_white &= !child.b_from;
             child.b_white |= child.b_to;
         } else {
-            self.b_black &= !self.b_from;
-            self.b_black |= self.b_to;
+            child.b_black &= !child.b_from;
+            child.b_black |= child.b_to;
         }
         child.b_white &= !child.b_from;
         child.b_black &= !child.b_from;
@@ -157,9 +159,32 @@ impl Reset {
             child.black_castle_k = 0;
             child.black_castle_q = 0;
         }
+child.print();
+println!("Bishops: {:x}",child.b_bishops);
+println!("Black: {:x}",child.b_black);
+        println!("Safety check");
+        // Move is invalid if I'm moving into check
+        if self.white_to_move() {
+            println!("White move - safety check");
+            if !child.white_is_safe(child.b_kings & child.b_white) {
+                println!("White is not safe!");
+                return false;
+            }
+            println!("White is safe!");
+            if !child.black_is_safe(child.b_kings & child.b_black) {
+                child.in_check = 1;
+            }
+        } else {
+            println!("Black move - safety check");
+            if !child.black_is_safe(child.b_kings & child.b_black) {
+                return false;
+            }
+            println!("Black is safe!");
+            if !child.white_is_safe(child.b_kings & child.b_white) {
+                child.in_check = 1;
+            }
+        }
 
-        // If I moved into check then init_my_child and return false
-        // Determine if the opponent is now in check and if so, indicate it
         true
     }
 }
@@ -167,6 +192,7 @@ impl Reset {
 #[cfg(test)]
 mod tests {
     use crate::reset;
+    use crate::utils;
 
     #[test]
     fn move_init_move_generation() {
@@ -206,6 +232,57 @@ mod tests {
         assert_eq!(r.b_current_piece,0x0800000000000000);
         r.consider_next_moveable_piece();
         assert_eq!(r.b_current_piece,0x0000000000000000);
+    }
+
+    #[test]
+    fn white_cannot_move_into_check() {
+        let mut r = reset::new();
+        let mut child = reset::new();
+        let fen = "k7/3r4/8/8/7P/3N4/8/3K4 w - - 0 1";
+        r.init_from_fen(fen.to_string());
+        r.init_child(&mut child);
+        r.b_current_piece = utils::convert_square_to_bitstring("d3".to_string());
+        let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("b2".to_string()));
+        assert!(!result);
+    }
+
+    #[test]
+    fn black_cannot_move_into_check() {
+        let mut r = reset::new();
+        let mut child = reset::new();
+        let fen = "rnbqk1nr/ppppbppp/8/8/3P4/8/PPP1QPPP/RNB1KBNR b KQkq d3 0 1";
+        r.init_from_fen(fen.to_string());
+        r.init_child(&mut child);
+        r.b_current_piece = utils::convert_square_to_bitstring("e7".to_string());
+        let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("b4".to_string()));
+        assert!(!result);
+    }
+
+    #[test]
+    fn white_check_detected() {
+        let mut r = reset::new();
+        let mut child = reset::new();
+        let fen = "r1bqkbnr/ppp2ppp/2np4/4pN2/4P3/8/PPPP1PPP/RNBQKB1R w KQkq - 0 1";
+        r.init_from_fen(fen.to_string());
+        r.init_child(&mut child);
+        r.b_current_piece = utils::convert_square_to_bitstring("f5".to_string());
+        let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("g7".to_string()));
+        assert!(result);
+        assert_eq!(child.in_check,1);
+    }
+
+    #[test]
+    fn black_check_detected() {
+        let mut r = reset::new();
+        let mut child = reset::new();
+        let fen = "rnbqk1nr/ppppbppp/8/8/3P4/8/PPP1BPPP/RNBQK1NR b KQkq - 1 2";
+        r.init_from_fen(fen.to_string());
+        r.init_child(&mut child);
+        r.b_current_piece = utils::convert_square_to_bitstring("e7".to_string());
+        let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("b4".to_string()));
+        child.print();
+        assert!(result);
+        assert_eq!(child.in_check,1);
     }
 }
 

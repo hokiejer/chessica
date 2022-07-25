@@ -61,6 +61,7 @@ impl Reset {
                 return true;
             }
         }
+        println!("Looking at 60!");
         if self.move_id < 60 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_0700 != 0) {
             self.move_id = 60;
             let b_destination = self.b_current_piece >> 15;
@@ -70,6 +71,7 @@ impl Reset {
                 return true;
             }
         }
+        println!("Looking at 70!");
         if self.move_id < 70 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_0800 != 0) {
             self.move_id = 70;
             let b_destination = self.b_current_piece >> 6;
@@ -79,6 +81,7 @@ impl Reset {
                 return true;
             }
         }
+        println!("Looking at 80!");
         if self.move_id < 80 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_1000 != 0) {
             self.move_id = 80;
             let b_destination = self.b_current_piece << 10;
@@ -94,12 +97,10 @@ impl Reset {
                 && (self.add_move_if_valid(child, b_destination)) 
             {
                 self.consider_next_moveable_piece();
-                self.move_id = 10;
                 return true;
             }
         }
         self.consider_next_moveable_piece();
-        self.move_id = 10;
         false
     }
 
@@ -310,4 +311,5 @@ mod tests {
         assert_eq!(r.b_current_piece,0x0800000000000000);
         assert_eq!(r.move_id,10);
     }
+
 }

@@ -63,60 +63,40 @@ impl Reset {
 
         if b_attackers != 0 {
             // Bishop or Queen: Up Left
-            println!("Up Left");
             let mut b_temp: u64 = b_squares;
             while b_temp & B_NOT_UL_EDGE != 0 {
                 b_temp = (b_temp & B_NOT_UL_EDGE) << 9;
-                println!("Checking {}",utils::convert_bitstring_to_square(b_temp));
-                println!("b_temp = {:x}",b_temp);
-                println!("b_attackers = {:x}",b_attackers);
                 if b_temp & b_attackers != 0 {
-                    println!("FALSE!!!");
                     return false;
                 }
                 b_temp &= !(self.b_all);
             }
 
             // Bishop or Queen: Up Right
-            println!("Up Right");
             let mut b_temp: u64 = b_squares;
             while b_temp & B_NOT_UR_EDGE != 0 {
                 b_temp = (b_temp & B_NOT_UR_EDGE) << 7;
-                println!("Checking {}",utils::convert_bitstring_to_square(b_temp));
-                println!("b_temp = {:x}",b_temp);
-                println!("b_attackers = {:x}",b_attackers);
                 if b_temp & b_attackers != 0 {
-                    println!("FALSE!!!");
                     return false;
                 }
                 b_temp &= !(self.b_all);
             }
 
             // Bishop or Queen: Down Left
-            println!("Down Left");
             let mut b_temp: u64 = b_squares;
             while b_temp & B_NOT_DL_EDGE != 0 {
                 b_temp = (b_temp & B_NOT_DL_EDGE) >> 7;
-                println!("Checking {}",utils::convert_bitstring_to_square(b_temp));
-                println!("b_temp = {:x}",b_temp);
-                println!("b_attackers = {:x}",b_attackers);
                 if b_temp & b_attackers != 0 {
-                    println!("FALSE!!!");
                     return false;
                 }
                 b_temp &= !(self.b_all);
             }
 
             // Bishop or Queen: Down Right
-            println!("Down Right");
             let mut b_temp: u64 = b_squares;
             while b_temp & B_NOT_DR_EDGE != 0 {
                 b_temp = (b_temp & B_NOT_DR_EDGE) >> 9;
-                println!("Checking {}",utils::convert_bitstring_to_square(b_temp));
-                println!("b_temp = {:x}",b_temp);
-                println!("b_attackers = {:x}",b_attackers);
                 if b_temp & b_attackers != 0 {
-                    println!("FALSE!!!");
                     return false;
                 }
                 b_temp &= !(self.b_all);

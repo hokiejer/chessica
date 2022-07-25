@@ -134,7 +134,7 @@ impl Reset {
         } else if child.b_from & child.b_rooks != 0 {
             println!("Rook move");
             child.b_rooks &= !child.b_from;
-            child.b_rooks |= !child.b_to;
+            child.b_rooks |= child.b_to;
             if child.b_from & B_FOUR_CORNERS != 0 {
                 if child.b_to & B_LOWER_RIGHT_CORNER != 0 {
                     child.white_castle_k = 0;
@@ -159,10 +159,6 @@ impl Reset {
             child.black_castle_k = 0;
             child.black_castle_q = 0;
         }
-child.print();
-println!("Bishops: {:x}",child.b_bishops);
-println!("Black: {:x}",child.b_black);
-        println!("Safety check");
         // Move is invalid if I'm moving into check
         if self.white_to_move() {
             println!("White move - safety check");

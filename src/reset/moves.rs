@@ -284,5 +284,34 @@ mod tests {
         assert!(result);
         assert_eq!(child.in_check,1);
     }
+
+    #[test]
+    fn white_check_midgame() {
+        let mut r = reset::new();
+        let mut child = reset::new();
+        let fen = "rnb1kb1r/p2p1ppp/5n2/1p3NqP/4PpP1/3P4/PPP5/RNBQ1KR1 w kq - 1 14";
+        r.init_from_fen(fen.to_string());
+        r.init_child(&mut child);
+        r.b_current_piece = utils::convert_square_to_bitstring("f5".to_string());
+        let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("g7".to_string()));
+        child.print();
+        assert!(result);
+        assert_eq!(child.in_check,1);
+    }
+
+    #[test]
+    fn black_check_midgame() {
+        let mut r = reset::new();
+        let mut child = reset::new();
+        let fen = "rnb1kb1r/p2p1ppp/5n2/1p3NqP/4P1P1/3P4/PPP5/RNBQ1KR1 b kq - 1 14";
+        r.init_from_fen(fen.to_string());
+        r.init_child(&mut child);
+        r.b_current_piece = utils::convert_square_to_bitstring("g5".to_string());
+        let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("f4".to_string()));
+        child.print();
+        assert!(result);
+        assert_eq!(child.in_check,1);
+    }
+
 }
 

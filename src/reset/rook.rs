@@ -24,17 +24,17 @@ impl Reset {
         // Up
         let next_line = 20;
         if self.move_id < next_line {
-            let mut b_target = self.b_current_piece << ((self.move_id - 10) * 8);
+            let mut b_target = self.b_current_piece << ((self.move_id % 10) * 8);
             loop {
                 println!("Move ID == {}",self.move_id);
-                // If we can't move up anymore, give up
+                // If we can't move up anymore, give up on this line
                 if b_target & B_NOT_TOP_EDGE == 0 {
                     self.move_id = next_line;
                     break;
                 }
                 b_target <<= 8;
                 self.move_id += 1;
-                // If my color is on the target, we're done with this line
+                // If my color is on the target, give up on this line
                 if b_available_moves & b_target == 0 {
                     self.move_id = next_line;
                     break;
@@ -52,17 +52,17 @@ impl Reset {
         // Down
         let next_line = 30;
         if self.move_id < next_line {
-            let mut b_target = self.b_current_piece >> ((self.move_id - 20) * 8);
+            let mut b_target = self.b_current_piece >> ((self.move_id % 10) * 8);
             loop {
                 println!("Move ID == {}",self.move_id);
-                // If we can't move up anymore, give up
+                // If we can't move up anymore, give up on this line
                 if b_target & B_NOT_BOTTOM_EDGE == 0 {
                     self.move_id = next_line;
                     break;
                 }
                 b_target >>= 8;
                 self.move_id += 1;
-                // If my color is on the target, we're done with this line
+                // If my color is on the target, give up on this line
                 if b_available_moves & b_target == 0 {
                     self.move_id = next_line;
                     break;
@@ -80,17 +80,17 @@ impl Reset {
         // Left
         let next_line = 40;
         if self.move_id < next_line {
-            let mut b_target = self.b_current_piece << (self.move_id - 30);
+            let mut b_target = self.b_current_piece << (self.move_id % 10);
             loop {
                 println!("Move ID == {}",self.move_id);
-                // If we can't move left anymore, give up
+                // If we can't move left anymore, give up on this line
                 if b_target & B_NOT_LEFT_EDGE == 0 {
                     self.move_id = next_line;
                     break;
                 }
                 b_target <<= 1;
                 self.move_id += 1;
-                // If my color is on the target, we're done with this line
+                // If my color is on the target, give up on this line
                 if b_available_moves & b_target == 0 {
                     self.move_id = next_line;
                     break;
@@ -106,16 +106,16 @@ impl Reset {
         }
 
         // Right
-        let mut b_target = self.b_current_piece >> ((self.move_id - 40));
+        let mut b_target = self.b_current_piece >> (self.move_id % 10);
         loop {
             println!("Move ID == {}",self.move_id);
-            // If we can't move right anymore, give up
+            // If we can't move right anymore, give up on this line
             if b_target & B_NOT_RIGHT_EDGE == 0 {
                 break;
             }
             b_target >>= 1;
             self.move_id += 1;
-            // If my color is on the target, we're done with this line
+            // If my color is on the target, give up on this line
             if b_available_moves & b_target == 0 {
                 break;
             }

@@ -27,7 +27,7 @@ impl Reset {
             let mut b_target = self.b_current_piece << ((self.move_id % 10) * 8);
             loop {
                 println!("Move ID == {}",self.move_id);
-                // If we can't move up anymore, give up on this line
+                // If we can't move any farther, give up on this line
                 if b_target & B_NOT_TOP_EDGE == 0 {
                     self.move_id = next_line;
                     break;
@@ -55,7 +55,7 @@ impl Reset {
             let mut b_target = self.b_current_piece >> ((self.move_id % 10) * 8);
             loop {
                 println!("Move ID == {}",self.move_id);
-                // If we can't move up anymore, give up on this line
+                // If we can't move any farther, give up on this line
                 if b_target & B_NOT_BOTTOM_EDGE == 0 {
                     self.move_id = next_line;
                     break;
@@ -83,7 +83,7 @@ impl Reset {
             let mut b_target = self.b_current_piece << (self.move_id % 10);
             loop {
                 println!("Move ID == {}",self.move_id);
-                // If we can't move left anymore, give up on this line
+                // If we can't move any farther, give up on this line
                 if b_target & B_NOT_LEFT_EDGE == 0 {
                     self.move_id = next_line;
                     break;
@@ -109,7 +109,7 @@ impl Reset {
         let mut b_target = self.b_current_piece >> (self.move_id % 10);
         loop {
             println!("Move ID == {}",self.move_id);
-            // If we can't move right anymore, give up on this line
+            // If we can't move any farther, give up on this line
             if b_target & B_NOT_RIGHT_EDGE == 0 {
                 break;
             }
@@ -128,7 +128,6 @@ impl Reset {
             }
         }
 
-        println!("I got here!");
         self.consider_next_moveable_piece();
         false
     }
@@ -251,11 +250,11 @@ mod tests {
     fn black_rook_moves_no_kings() {
         let mut r = prep_board("8/8/1R2r3/8/8/1r2R3/8/8 b - - 0 1");
         let mut child = reset::new();
-        r.init_child(&mut child);
         r.b_current_piece = utils::convert_square_to_bitstring("e6".to_string());
 
         // Up 1
         let fen = String::from("8/4r3/1R6/8/8/1r2R3/8/8 w - - 1 2");
+        r.init_child(&mut child);
         let retval = r.generate_next_rook_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -297,10 +296,6 @@ mod tests {
         let fen = String::from("8/8/1R6/8/8/1r2r3/8/8 w - - 0 2");
         r.init_child(&mut child);
         let retval = r.generate_next_rook_move(&mut child);
-        println!("child.b_rooks == {:x}",child.b_rooks);
-        println!("child.b_black == {:x}",child.b_black);
-        println!("child.b_white == {:x}",child.b_white);
-        println!("child.b_all == {:x}",child.b_all);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e6".to_string()));

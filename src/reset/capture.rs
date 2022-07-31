@@ -12,10 +12,12 @@ impl Reset {
 
         self.b_all &= !self.b_to; // Useful for EP
         let material_multiplier: i8 = if self.white_to_move() {
-            self.b_black &= !self.b_to;
+            // Parent moved black
+            self.b_white &= !self.b_to;
             -1
         } else {
-            self.b_white &= !self.b_to;
+            // Parent moved white
+            self.b_black &= !self.b_to;
             1
         };
 

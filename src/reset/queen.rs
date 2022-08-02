@@ -88,12 +88,14 @@ impl Reset {
                 println!("Move ID == {}",self.move_id);
                 // If we can't move any farther, give up on this line
                 if b_target & B_NOT_RIGHT_EDGE == 0 {
+                    self.move_id = next_line;
                     break;
                 }
                 b_target >>= 1;
                 self.move_id += 1;
                 // If my color is on the target, give up on this line
                 if b_available_moves & b_target == 0 {
+                    self.move_id = next_line;
                     break;
                 }
                 if self.add_move_if_valid(child, b_target) {
@@ -277,6 +279,7 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c3".to_string()));
         assert_eq!(r.move_id,11);
         assert_eq!(child.capture,0);
+        assert_eq!(child.in_check,0);
 
         // Up 2
         let fen = String::from("4k3/2P5/8/2Qpnr1p/8/1P3q2/8/4K2R b - - 1 1");
@@ -287,6 +290,7 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c3".to_string()));
         assert_eq!(r.move_id,12);
         assert_eq!(child.capture,0);
+        assert_eq!(child.in_check,0);
 
         // Up 3
         let fen = String::from("4k3/2P5/2Q5/3pnr1p/8/1P3q2/8/4K2R b - - 1 1");
@@ -297,6 +301,7 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c3".to_string()));
         assert_eq!(r.move_id,13);
         assert_eq!(child.capture,0);
+        assert_eq!(child.in_check,1);
 
         // Up Right 1
         let fen = String::from("4k3/2P5/8/3pnr1p/3Q4/1P3q2/8/4K2R b - - 1 1");
@@ -307,6 +312,7 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c3".to_string()));
         assert_eq!(r.move_id,21);
         assert_eq!(child.capture,0);
+        assert_eq!(child.in_check,0);
 
         // Up Right 2
         let fen = String::from("4k3/2P5/8/3pQr1p/8/1P3q2/8/4K2R b - - 0 1");
@@ -317,6 +323,7 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c3".to_string()));
         assert_eq!(r.move_id,30);
         assert_eq!(child.capture,1);
+        assert_eq!(child.in_check,1);
 
         // Right 1
         let fen = String::from("4k3/2P5/8/3pnr1p/8/1P1Q1q2/8/4K2R b - - 1 1");
@@ -327,6 +334,7 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c3".to_string()));
         assert_eq!(r.move_id,31);
         assert_eq!(child.capture,0);
+        assert_eq!(child.in_check,0);
 
         // Right 2
         let fen = String::from("4k3/2P5/8/3pnr1p/8/1P2Qq2/8/4K2R b - - 1 1");
@@ -337,6 +345,7 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c3".to_string()));
         assert_eq!(r.move_id,32);
         assert_eq!(child.capture,0);
+        assert_eq!(child.in_check,0);
 
         // Right 3
         let fen = String::from("4k3/2P5/8/3pnr1p/8/1P3Q2/8/4K2R b - - 0 1");
@@ -347,6 +356,7 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c3".to_string()));
         assert_eq!(r.move_id,40);
         assert_eq!(child.capture,1);
+        assert_eq!(child.in_check,0);
 
         // Down Right 1
         let fen = String::from("4k3/2P5/8/3pnr1p/8/1P3q2/3Q4/4K2R b - - 1 1");
@@ -357,6 +367,7 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c3".to_string()));
         assert_eq!(r.move_id,41);
         assert_eq!(child.capture,0);
+        assert_eq!(child.in_check,0);
 
         // Down 1
         let fen = String::from("4k3/2P5/8/3pnr1p/8/1P3q2/2Q5/4K2R b - - 1 1");
@@ -367,6 +378,7 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c3".to_string()));
         assert_eq!(r.move_id,51);
         assert_eq!(child.capture,0);
+        assert_eq!(child.in_check,0);
 
         // Down 2
         let fen = String::from("4k3/2P5/8/3pnr1p/8/1P3q2/8/2Q1K2R b - - 1 1");
@@ -377,6 +389,7 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c3".to_string()));
         assert_eq!(r.move_id,52);
         assert_eq!(child.capture,0);
+        assert_eq!(child.in_check,0);
 
         // Down Left 1
         let fen = String::from("4k3/2P5/8/3pnr1p/8/1P3q2/1Q6/4K2R b - - 1 1");
@@ -387,6 +400,7 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c3".to_string()));
         assert_eq!(r.move_id,61);
         assert_eq!(child.capture,0);
+        assert_eq!(child.in_check,0);
 
         // Down Left 2
         let fen = String::from("4k3/2P5/8/3pnr1p/8/1P3q2/8/Q3K2R b - - 1 1");
@@ -397,6 +411,7 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c3".to_string()));
         assert_eq!(r.move_id,62);
         assert_eq!(child.capture,0);
+        assert_eq!(child.in_check,0);
 
         // Up Left 1
         let fen = String::from("4k3/2P5/8/3pnr1p/1Q6/1P3q2/8/4K2R b - - 1 1");
@@ -407,6 +422,7 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c3".to_string()));
         assert_eq!(r.move_id,81);
         assert_eq!(child.capture,0);
+        assert_eq!(child.in_check,0);
 
         // Up Left 2
         let fen = String::from("4k3/2P5/8/Q2pnr1p/8/1P3q2/8/4K2R b - - 1 1");
@@ -417,6 +433,7 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c3".to_string()));
         assert_eq!(r.move_id,82);
         assert_eq!(child.capture,0);
+        assert_eq!(child.in_check,0);
 
         // Try (and fail with) Up Left 3
         r.init_child(&mut child);
@@ -426,6 +443,174 @@ mod tests {
         assert_eq!(r.move_id,10);
     }
 
+    #[test]
+    fn black_queen_moves() {
+        let mut r = prep_board("4k3/2P5/8/3pnr1p/8/1PQ2q2/8/4K2R b - - 0 1");
+        let mut child = reset::new();
+        r.init_child(&mut child);
+        r.b_current_piece = utils::convert_square_to_bitstring("f3".to_string());
+
+        // Up 1
+        let fen = String::from("4k3/2P5/8/3pnr1p/5q2/1PQ5/8/4K2R w - - 1 2");
+        r.init_child(&mut child);
+        let retval = r.generate_next_queen_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("f3".to_string()));
+        assert_eq!(r.move_id,11);
+        assert_eq!(child.capture,0);
+        assert_eq!(child.in_check,0);
+
+        // Up Right 1
+        let fen = String::from("4k3/2P5/8/3pnr1p/6q1/1PQ5/8/4K2R w - - 1 2");
+        r.init_child(&mut child);
+        let retval = r.generate_next_queen_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("f3".to_string()));
+        assert_eq!(r.move_id,21);
+        assert_eq!(child.capture,0);
+        assert_eq!(child.in_check,0);
+
+        // Right 1
+        let fen = String::from("4k3/2P5/8/3pnr1p/8/1PQ3q1/8/4K2R w - - 1 2");
+        r.init_child(&mut child);
+        let retval = r.generate_next_queen_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("f3".to_string()));
+        assert_eq!(r.move_id,31);
+        assert_eq!(child.capture,0);
+        assert_eq!(child.in_check,1);
+
+        // Right 2
+        let fen = String::from("4k3/2P5/8/3pnr1p/8/1PQ4q/8/4K2R w - - 1 2");
+        r.init_child(&mut child);
+        let retval = r.generate_next_queen_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("f3".to_string()));
+        assert_eq!(r.move_id,32);
+        assert_eq!(child.capture,0);
+        assert_eq!(child.in_check,0);
+
+        // Down Right 1
+        let fen = String::from("4k3/2P5/8/3pnr1p/8/1PQ5/6q1/4K2R w - - 1 2");
+        r.init_child(&mut child);
+        let retval = r.generate_next_queen_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("f3".to_string()));
+        assert_eq!(r.move_id,41);
+        assert_eq!(child.capture,0);
+        assert_eq!(child.in_check,0);
+
+        // Down Right 2
+        let fen = String::from("4k3/2P5/8/3pnr1p/8/1PQ5/8/4K2q w - - 0 2");
+        r.init_child(&mut child);
+        let retval = r.generate_next_queen_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("f3".to_string()));
+        assert_eq!(r.move_id,50);
+        assert_eq!(child.capture,1);
+        assert_eq!(child.in_check,1);
+
+        // Down 1
+        let fen = String::from("4k3/2P5/8/3pnr1p/8/1PQ5/5q2/4K2R w - - 1 2");
+        r.init_child(&mut child);
+        let retval = r.generate_next_queen_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("f3".to_string()));
+        assert_eq!(r.move_id,51);
+        assert_eq!(child.capture,0);
+        assert_eq!(child.in_check,1);
+
+        // Down 2
+        let fen = String::from("4k3/2P5/8/3pnr1p/8/1PQ5/8/4Kq1R w - - 1 2");
+        r.init_child(&mut child);
+        let retval = r.generate_next_queen_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("f3".to_string()));
+        assert_eq!(r.move_id,52);
+        assert_eq!(child.capture,0);
+        assert_eq!(child.in_check,1);
+
+        // Down Left 1
+        let fen = String::from("4k3/2P5/8/3pnr1p/8/1PQ5/4q3/4K2R w - - 1 2");
+        r.init_child(&mut child);
+        let retval = r.generate_next_queen_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("f3".to_string()));
+        assert_eq!(r.move_id,61);
+        assert_eq!(child.capture,0);
+        assert_eq!(child.in_check,1);
+
+        // Down Left 2
+        let fen = String::from("4k3/2P5/8/3pnr1p/8/1PQ5/8/3qK2R w - - 1 2");
+        r.init_child(&mut child);
+        let retval = r.generate_next_queen_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("f3".to_string()));
+        assert_eq!(r.move_id,62);
+        assert_eq!(child.capture,0);
+        assert_eq!(child.in_check,1);
+
+        // Left 1
+        let fen = String::from("4k3/2P5/8/3pnr1p/8/1PQ1q3/8/4K2R w - - 1 2");
+        r.init_child(&mut child);
+        let retval = r.generate_next_queen_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("f3".to_string()));
+        assert_eq!(r.move_id,71);
+        assert_eq!(child.capture,0);
+        assert_eq!(child.in_check,1);
+
+        // Left 2
+        let fen = String::from("4k3/2P5/8/3pnr1p/8/1PQq4/8/4K2R w - - 1 2");
+        r.init_child(&mut child);
+        let retval = r.generate_next_queen_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("f3".to_string()));
+        assert_eq!(r.move_id,72);
+        assert_eq!(child.capture,0);
+        assert_eq!(child.in_check,0);
+
+        // Left 3
+        let fen = String::from("4k3/2P5/8/3pnr1p/8/1Pq5/8/4K2R w - - 0 2");
+        r.init_child(&mut child);
+        let retval = r.generate_next_queen_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("f3".to_string()));
+        assert_eq!(r.move_id,80);
+        assert_eq!(child.capture,1);
+        assert_eq!(child.in_check,1);
+
+        // Up Left 1
+        let fen = String::from("4k3/2P5/8/3pnr1p/4q3/1PQ5/8/4K2R w - - 1 2");
+        r.init_child(&mut child);
+        let retval = r.generate_next_queen_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("f3".to_string()));
+        assert_eq!(r.move_id,81);
+        assert_eq!(child.capture,0);
+        assert_eq!(child.in_check,1);
+
+        // Try (and fail with) Up Left 2
+        r.init_child(&mut child);
+        let retval = r.generate_next_queen_move(&mut child);
+        assert!(!retval);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("h5".to_string()));
+        assert_eq!(r.move_id,10);
+    }
 }
 
 

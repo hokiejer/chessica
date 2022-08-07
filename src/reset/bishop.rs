@@ -152,12 +152,10 @@ mod tests {
     fn white_bishop_moves() {
         let mut r = prep_board("B1k5/1b6/8/8/8/K7/1B6/b7 w - - 0 1");
         let mut child = reset::new();
-        r.init_child(&mut child);
         r.b_current_piece = utils::convert_square_to_bitstring("b2".to_string());
 
         // Up Right 1
         let fen = String::from("B1k5/1b6/8/8/8/K1B5/8/b7 b - - 1 1");
-        r.init_child(&mut child);
         let retval = r.generate_next_bishop_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -167,7 +165,6 @@ mod tests {
 
         // Up Right 2
         let fen = String::from("B1k5/1b6/8/8/3B4/K7/8/b7 b - - 1 1");
-        r.init_child(&mut child);
         let retval = r.generate_next_bishop_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -177,7 +174,6 @@ mod tests {
 
         // Up Right 3
         let fen = String::from("B1k5/1b6/8/4B3/8/K7/8/b7 b - - 1 1");
-        r.init_child(&mut child);
         let retval = r.generate_next_bishop_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -187,7 +183,6 @@ mod tests {
 
         // Up Right 4
         let fen = String::from("B1k5/1b6/5B2/8/8/K7/8/b7 b - - 1 1");
-        r.init_child(&mut child);
         let retval = r.generate_next_bishop_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -197,7 +192,6 @@ mod tests {
 
         // Up Right 5
         let fen = String::from("B1k5/1b4B1/8/8/8/K7/8/b7 b - - 1 1");
-        r.init_child(&mut child);
         let retval = r.generate_next_bishop_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -207,7 +201,6 @@ mod tests {
 
         // Up Right 6
         let fen = String::from("B1k4B/1b6/8/8/8/K7/8/b7 b - - 1 1");
-        r.init_child(&mut child);
         let retval = r.generate_next_bishop_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -217,7 +210,6 @@ mod tests {
 
         // Down Right 1
         let fen = String::from("B1k5/1b6/8/8/8/K7/8/b1B5 b - - 1 1");
-        r.init_child(&mut child);
         let retval = r.generate_next_bishop_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -227,7 +219,6 @@ mod tests {
 
         // Down Left 1
         let fen = String::from("B1k5/1b6/8/8/8/K7/8/B7 b - - 0 1");
-        r.init_child(&mut child);
         let retval = r.generate_next_bishop_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -236,7 +227,6 @@ mod tests {
         assert_eq!(child.capture,1);
 
         // Try (and fail with) Up Left 1
-        r.init_child(&mut child);
         let retval = r.generate_next_bishop_move(&mut child);
         assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("a3".to_string()));
@@ -251,7 +241,6 @@ mod tests {
 
         // Down Right 1
         let fen = String::from("B1k5/8/2b5/8/8/K7/1B6/b7 w - - 1 2");
-        r.init_child(&mut child);
         let retval = r.generate_next_bishop_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -261,7 +250,6 @@ mod tests {
 
         // Down Right 2
         let fen = String::from("B1k5/8/8/3b4/8/K7/1B6/b7 w - - 1 2");
-        r.init_child(&mut child);
         let retval = r.generate_next_bishop_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -271,7 +259,6 @@ mod tests {
 
         // Down Right 3
         let fen = String::from("B1k5/8/8/8/4b3/K7/1B6/b7 w - - 1 2");
-        r.init_child(&mut child);
         let retval = r.generate_next_bishop_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -281,7 +268,6 @@ mod tests {
 
         // Down Right 4
         let fen = String::from("B1k5/8/8/8/8/K4b2/1B6/b7 w - - 1 2");
-        r.init_child(&mut child);
         let retval = r.generate_next_bishop_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -291,7 +277,6 @@ mod tests {
 
         // Down Right 5
         let fen = String::from("B1k5/8/8/8/8/K7/1B4b1/b7 w - - 1 2");
-        r.init_child(&mut child);
         let retval = r.generate_next_bishop_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -301,7 +286,6 @@ mod tests {
 
         // Down Right 6
         let fen = String::from("B1k5/8/8/8/8/K7/1B6/b6b w - - 1 2");
-        r.init_child(&mut child);
         let retval = r.generate_next_bishop_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -311,7 +295,6 @@ mod tests {
 
         // Down Left 1
         let fen = String::from("B1k5/8/b7/8/8/K7/1B6/b7 w - - 1 2");
-        r.init_child(&mut child);
         let retval = r.generate_next_bishop_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -321,7 +304,6 @@ mod tests {
 
         // Up Left 1
         let fen = String::from("b1k5/8/8/8/8/K7/1B6/b7 w - - 0 2");
-        r.init_child(&mut child);
         let retval = r.generate_next_bishop_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);

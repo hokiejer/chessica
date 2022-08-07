@@ -152,7 +152,6 @@ mod tests {
     fn white_rook_moves_no_kings() {
         let mut r = prep_board("8/8/1R2r3/8/8/1r2R3/8/8 w - - 0 1");
         let mut child = reset::new();
-        r.init_child(&mut child);
         r.b_current_piece = utils::convert_square_to_bitstring("b6".to_string());
 
         // Up 1
@@ -166,7 +165,6 @@ mod tests {
 
         // Up 2
         let fen = String::from("1R6/8/4r3/8/8/1r2R3/8/8 b - - 1 1");
-        r.init_child(&mut child);
         let retval = r.generate_next_rook_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -176,7 +174,6 @@ mod tests {
 
         // Down 1
         let fen = String::from("8/8/4r3/1R6/8/1r2R3/8/8 b - - 1 1");
-        r.init_child(&mut child);
         let retval = r.generate_next_rook_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -186,7 +183,6 @@ mod tests {
 
         // Down 2
         let fen = String::from("8/8/4r3/8/1R6/1r2R3/8/8 b - - 1 1");
-        r.init_child(&mut child);
         let retval = r.generate_next_rook_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -196,7 +192,6 @@ mod tests {
 
         // Down 3
         let fen = String::from("8/8/4r3/8/8/1R2R3/8/8 b - - 0 1");
-        r.init_child(&mut child);
         let retval = r.generate_next_rook_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -206,7 +201,6 @@ mod tests {
 
         // Left 1
         let fen = String::from("8/8/R3r3/8/8/1r2R3/8/8 b - - 1 1");
-        r.init_child(&mut child);
         let retval = r.generate_next_rook_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -216,7 +210,6 @@ mod tests {
 
         // Right 1
         let fen = String::from("8/8/2R1r3/8/8/1r2R3/8/8 b - - 1 1");
-        r.init_child(&mut child);
         let retval = r.generate_next_rook_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -226,7 +219,6 @@ mod tests {
 
         // Right 2
         let fen = String::from("8/8/3Rr3/8/8/1r2R3/8/8 b - - 1 1");
-        r.init_child(&mut child);
         let retval = r.generate_next_rook_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -236,7 +228,6 @@ mod tests {
 
         // Right 3
         let fen = String::from("8/8/4R3/8/8/1r2R3/8/8 b - - 0 1");
-        r.init_child(&mut child);
         let retval = r.generate_next_rook_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -254,7 +245,6 @@ mod tests {
 
         // Up 1
         let fen = String::from("8/4r3/1R6/8/8/1r2R3/8/8 w - - 1 2");
-        r.init_child(&mut child);
         let retval = r.generate_next_rook_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -264,7 +254,6 @@ mod tests {
 
         // Up 2
         let fen = String::from("4r3/8/1R6/8/8/1r2R3/8/8 w - - 1 2");
-        r.init_child(&mut child);
         let retval = r.generate_next_rook_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -274,7 +263,6 @@ mod tests {
 
         // Down 1
         let fen = String::from("8/8/1R6/4r3/8/1r2R3/8/8 w - - 1 2");
-        r.init_child(&mut child);
         let retval = r.generate_next_rook_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -284,7 +272,6 @@ mod tests {
 
         // Down 2
         let fen = String::from("8/8/1R6/8/4r3/1r2R3/8/8 w - - 1 2");
-        r.init_child(&mut child);
         let retval = r.generate_next_rook_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -294,7 +281,6 @@ mod tests {
 
         // Down 3
         let fen = String::from("8/8/1R6/8/8/1r2r3/8/8 w - - 0 2");
-        r.init_child(&mut child);
         let retval = r.generate_next_rook_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -304,7 +290,6 @@ mod tests {
 
         // Left 1
         let fen = String::from("8/8/1R1r4/8/8/1r2R3/8/8 w - - 1 2");
-        r.init_child(&mut child);
         let retval = r.generate_next_rook_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -314,7 +299,6 @@ mod tests {
 
         // Left 2
         let fen = String::from("8/8/1Rr5/8/8/1r2R3/8/8 w - - 1 2");
-        r.init_child(&mut child);
         let retval = r.generate_next_rook_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -324,7 +308,6 @@ mod tests {
 
         // Left 3
         let fen = String::from("8/8/1r6/8/8/1r2R3/8/8 w - - 0 2");
-        r.init_child(&mut child);
         let retval = r.generate_next_rook_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -334,7 +317,6 @@ mod tests {
 
         // Right 1
         let fen = String::from("8/8/1R3r2/8/8/1r2R3/8/8 w - - 1 2");
-        r.init_child(&mut child);
         let retval = r.generate_next_rook_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -344,7 +326,6 @@ mod tests {
 
         // Right 2
         let fen = String::from("8/8/1R4r1/8/8/1r2R3/8/8 w - - 1 2");
-        r.init_child(&mut child);
         let retval = r.generate_next_rook_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -354,7 +335,6 @@ mod tests {
 
         // Right 3
         let fen = String::from("8/8/1R5r/8/8/1r2R3/8/8 w - - 1 2");
-        r.init_child(&mut child);
         let retval = r.generate_next_rook_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -363,7 +343,6 @@ mod tests {
         assert_eq!(child.capture,0);
 
         // Try (and fail with) Right 4
-        r.init_child(&mut child);
         let retval = r.generate_next_rook_move(&mut child);
         assert!(!retval);
         assert_eq!(r.b_current_piece,0x0000000000000000);

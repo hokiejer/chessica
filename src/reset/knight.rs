@@ -110,6 +110,7 @@ impl Reset {
 mod tests {
     use crate::reset;
     use crate::reset::Reset;
+    use crate::utils;
 
     fn prep_board(fen: &str) -> Reset {
         let mut r = reset::new();
@@ -123,7 +124,6 @@ mod tests {
     fn knight_moves_white_first_starting_position() {
         let mut r = prep_board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         let mut child = reset::new();
-        r.init_child(&mut child);
         r.b_current_piece = 0x0000000000000002;
 
         // First Move: 0100 (10)
@@ -136,7 +136,6 @@ mod tests {
 
         // Second Move: 1100 (80)
         let fen2 = String::from("rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq - 1 1");
-        r.init_child(&mut child);
         let retval = r.generate_next_knight_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen2);
@@ -148,7 +147,6 @@ mod tests {
     fn knight_moves_white_second_starting_position() {
         let mut r = prep_board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         let mut child = reset::new();
-        r.init_child(&mut child);
         r.b_current_piece = 0x0000000000000040;
 
         // First Move: 0100 (10)
@@ -161,7 +159,6 @@ mod tests {
 
         // Second Move: 1100 (80)
         let fen2 = String::from("rnbqkbnr/pppppppp/8/8/8/N7/PPPPPPPP/R1BQKBNR b KQkq - 1 1");
-        r.init_child(&mut child);
         let retval = r.generate_next_knight_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen2);
@@ -173,7 +170,6 @@ mod tests {
     fn knight_moves_black_first_starting_position() {
         let mut r = prep_board("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1");
         let mut child = reset::new();
-        r.init_child(&mut child);
         r.b_current_piece = 0x0200000000000000;
 
         // First Move: 0500 (40)
@@ -186,7 +182,6 @@ mod tests {
 
         // Second Move: 0700 (50)
         let fen2 = String::from("rnbqkb1r/pppppppp/5n2/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 1 2");
-        r.init_child(&mut child);
         let retval = r.generate_next_knight_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen2);
@@ -194,7 +189,6 @@ mod tests {
         assert_eq!(r.move_id,60);
 
         // No Third Move
-        r.init_child(&mut child);
         let retval = r.generate_next_knight_move(&mut child);
         assert_eq!(retval,false);
         assert_eq!(r.b_current_piece,0x0400000000000000);
@@ -205,7 +199,6 @@ mod tests {
     fn knight_moves_black_second_starting_position() {
         let mut r = prep_board("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1");
         let mut child = reset::new();
-        r.init_child(&mut child);
         r.b_current_piece = 0x4000000000000000;
 
         // First Move: 0500 (40)
@@ -218,7 +211,6 @@ mod tests {
 
         // Second Move: 0700 (50)
         let fen2 = String::from("r1bqkbnr/pppppppp/n7/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 1 2");
-        r.init_child(&mut child);
         let retval = r.generate_next_knight_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen2);
@@ -226,7 +218,6 @@ mod tests {
         assert_eq!(r.move_id,60);
 
         // No Third Move
-        r.init_child(&mut child);
         let retval = r.generate_next_knight_move(&mut child);
         assert_eq!(retval,false);
         assert_eq!(r.b_current_piece,0x8000000000000000);
@@ -237,7 +228,6 @@ mod tests {
     fn knight_moves_black_simple_center() {
         let mut r = prep_board("4k3/8/8/3n4/8/8/8/4K3 b - - 0 34");
         let mut child = reset::new();
-        r.init_child(&mut child);
         r.b_current_piece = 0x0000001000000000;
 
         // First Move: 0100 (10)
@@ -250,7 +240,6 @@ mod tests {
 
         // Second Move: 0200 (20)
         let fen = String::from("4k3/8/5n2/8/8/8/8/4K3 w - - 1 35");
-        r.init_child(&mut child);
         let retval = r.generate_next_knight_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -259,7 +248,6 @@ mod tests {
 
         // Third Move: 0400 (30)
         let fen = String::from("4k3/8/8/8/5n2/8/8/4K3 w - - 1 35");
-        r.init_child(&mut child);
         let retval = r.generate_next_knight_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -268,7 +256,6 @@ mod tests {
 
         // Fourth Move: 0500 (40)
         let fen = String::from("4k3/8/8/8/8/4n3/8/4K3 w - - 1 35");
-        r.init_child(&mut child);
         let retval = r.generate_next_knight_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -277,7 +264,6 @@ mod tests {
 
         // Fifth Move: 0700 (50)
         let fen = String::from("4k3/8/8/8/8/2n5/8/4K3 w - - 1 35");
-        r.init_child(&mut child);
         let retval = r.generate_next_knight_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -286,7 +272,6 @@ mod tests {
 
         // Sixth Move: 0800 (60)
         let fen = String::from("4k3/8/8/8/1n6/8/8/4K3 w - - 1 35");
-        r.init_child(&mut child);
         let retval = r.generate_next_knight_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -295,7 +280,6 @@ mod tests {
 
         // Seventh Move: 1000 (70)
         let fen = String::from("4k3/8/1n6/8/8/8/8/4K3 w - - 1 35");
-        r.init_child(&mut child);
         let retval = r.generate_next_knight_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -304,12 +288,27 @@ mod tests {
 
         // Eighth Move: 1100 (80)
         let fen = String::from("4k3/2n5/8/8/8/8/8/4K3 w - - 1 35");
-        r.init_child(&mut child);
         let retval = r.generate_next_knight_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,0x0800000000000000);
         assert_eq!(r.move_id,10);
+    }
+
+    #[test]
+    fn knight_move_following_illegal_attempt() {
+        let mut r = prep_board("1r2k3/p7/2n5/p7/1p1p4/8/4R3/4K3 b - - 0 1");
+        let mut child = reset::new();
+        r.b_current_piece = utils::convert_square_to_bitstring("c6".to_string());
+
+        // First Move: 0100 (will fail because black still in check)
+        // Second Move: 0200 (20)
+        let fen = String::from("1r2k3/p3n3/8/p7/1p1p4/8/4R3/4K3 w - - 1 2");
+        let retval = r.generate_next_knight_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c6".to_string()));
+        assert_eq!(r.move_id,30);
     }
 
 }

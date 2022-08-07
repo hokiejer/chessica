@@ -100,6 +100,7 @@ impl Reset {
 
         use crate::utils;
         println!("In add_move_if_valid ({} to {})", utils::convert_bitstring_to_square(self.b_current_piece),utils::convert_bitstring_to_square(b_destination));
+        self.init_child(child);
         child.b_from = self.b_current_piece;
         child.b_to = b_destination;
 
@@ -236,7 +237,6 @@ mod tests {
         let mut child = reset::new();
         let fen = "k7/3r4/8/8/7P/3N4/8/3K4 w - - 0 1";
         r.init_from_fen(fen.to_string());
-        r.init_child(&mut child);
         r.b_current_piece = utils::convert_square_to_bitstring("d3".to_string());
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("b2".to_string()));
         assert!(!result);
@@ -248,7 +248,6 @@ mod tests {
         let mut child = reset::new();
         let fen = "rnbqk1nr/ppppbppp/8/8/3P4/8/PPP1QPPP/RNB1KBNR b KQkq d3 0 1";
         r.init_from_fen(fen.to_string());
-        r.init_child(&mut child);
         r.b_current_piece = utils::convert_square_to_bitstring("e7".to_string());
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("b4".to_string()));
         assert!(!result);
@@ -260,7 +259,6 @@ mod tests {
         let mut child = reset::new();
         let fen = "r1bqkbnr/ppp2ppp/2np4/4pN2/4P3/8/PPPP1PPP/RNBQKB1R w KQkq - 0 1";
         r.init_from_fen(fen.to_string());
-        r.init_child(&mut child);
         r.b_current_piece = utils::convert_square_to_bitstring("f5".to_string());
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("g7".to_string()));
         assert!(result);
@@ -273,7 +271,6 @@ mod tests {
         let mut child = reset::new();
         let fen = "rnbqk1nr/ppppbppp/8/8/3P4/8/PPP1BPPP/RNBQK1NR b KQkq - 1 2";
         r.init_from_fen(fen.to_string());
-        r.init_child(&mut child);
         r.b_current_piece = utils::convert_square_to_bitstring("e7".to_string());
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("b4".to_string()));
         child.print();
@@ -287,7 +284,6 @@ mod tests {
         let mut child = reset::new();
         let fen = "rnb1kb1r/p2p1ppp/5n2/1p3NqP/4PpP1/3P4/PPP5/RNBQ1KR1 w kq - 1 14";
         r.init_from_fen(fen.to_string());
-        r.init_child(&mut child);
         r.b_current_piece = utils::convert_square_to_bitstring("f5".to_string());
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("g7".to_string()));
         child.print();
@@ -301,7 +297,6 @@ mod tests {
         let mut child = reset::new();
         let fen = "rnb1kb1r/p2p1ppp/5n2/1p3NqP/4P1P1/3P4/PPP5/RNBQ1KR1 b kq - 1 14";
         r.init_from_fen(fen.to_string());
-        r.init_child(&mut child);
         r.b_current_piece = utils::convert_square_to_bitstring("g5".to_string());
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("f4".to_string()));
         child.print();

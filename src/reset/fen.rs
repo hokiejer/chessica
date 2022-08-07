@@ -111,6 +111,17 @@ impl Reset {
 
         // PROCESS MOVE NUMBER (Chunk 5)
         self.fullmove_number = chunks[5].parse().unwrap();
+
+        // Set check indicator appropriately
+        if self.white_to_move() {
+            if !self.white_is_safe(self.b_kings & self.b_white) {
+                self.in_check = 1;
+            }
+        } else {
+            if !self.black_is_safe(self.b_kings & self.b_black) {
+                self.in_check = 1;
+            }
+        }
     }
 
     /// Generate a FEN notation string from a reset
@@ -193,7 +204,7 @@ impl Reset {
         
         // PROCESS WHO'S MOVE IT IS (Chunk 1)
         fen.push(' ');
-        if self.to_move == 0 {
+        if self.white_to_move() {
             fen.push('w');
         } else {
             fen.push('b');
@@ -269,6 +280,7 @@ mod tests {
         assert_eq!(r.b_en_passant,0,"b_en_passant");
         assert_eq!(r.halfmove_clock,0,"halfmove_clock");
         assert_eq!(r.fullmove_number,1,"fullmove_number");
+        assert_eq!(r.in_check,0,"in_check");
         let generated_fen = r.to_fen();
         assert_eq!(generated_fen,fen_copy,"FEN generation");
     }
@@ -297,6 +309,7 @@ mod tests {
         assert_eq!(r.b_en_passant,0,"b_en_passant");
         assert_eq!(r.halfmove_clock,4,"halfmove_clock");
         assert_eq!(r.fullmove_number,17,"fullmove_number");
+        assert_eq!(r.in_check,0,"in_check");
         let generated_fen = r.to_fen();
         assert_eq!(generated_fen,fen_copy,"FEN generation");
     }
@@ -325,6 +338,7 @@ mod tests {
         assert_eq!(r.b_en_passant,0,"b_en_passant");
         assert_eq!(r.halfmove_clock,4,"halfmove_clock");
         assert_eq!(r.fullmove_number,17,"fullmove_number");
+        assert_eq!(r.in_check,0,"in_check");
         let generated_fen = r.to_fen();
         assert_eq!(generated_fen,fen_copy,"FEN generation");
     }
@@ -353,6 +367,7 @@ mod tests {
         assert_eq!(r.b_en_passant,0x0000000000020000,"b_en_passant");
         assert_eq!(r.halfmove_clock,0,"halfmove_clock");
         assert_eq!(r.fullmove_number,1,"fullmove_number");
+        assert_eq!(r.in_check,0,"in_check");
         let generated_fen = r.to_fen();
         assert_eq!(generated_fen,fen_copy,"FEN generation");
     }
@@ -372,5 +387,21 @@ mod tests {
             let generated_fen = r.to_fen();
             assert_eq!(generated_fen,fen.to_string(),"FEN->Reset->FEN");
         }
+    }
+
+    #[test]
+    fn fen_init_from_fen_white_in_check() {
+        let mut r = reset::new();
+        let fen = String::from("3k4/3r4/5PP1/2P2QP1/5PP1/8/2P5/3K4 w - - 0 1");
+        r.init_from_fen(fen);
+        assert_eq!(r.in_check,1,"in_check");
+    }
+
+    #[test]
+    fn fen_init_from_fen_black_in_check() {
+        let mut r = reset::new();
+        let fen = String::from("r1bqk2r/1ppp1ppp/p2b4/3P4/B2p4/8/PPPP1PPP/R1BQR1K1 b - - 0 1");
+        r.init_from_fen(fen);
+        assert_eq!(r.in_check,1,"in_check");
     }
 }

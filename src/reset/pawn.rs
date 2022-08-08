@@ -10,22 +10,54 @@ use crate::reset::r#const::B_RANK_7;
 use crate::reset::r#const::B_RANK_8;
 
 impl Reset {
+
     pub fn generate_next_white_pawn_move(&mut self, child: &mut Reset) -> bool {
         // Forward one (not promotion)
-        if self.move_id == 10 {
-            self.move_id = 20;
+        if self.move_id < 20 {
             if self.b_current_piece & B_NOT_TOP_EDGE != 0 {
                 let b_destination = self.b_current_piece << 8;
                 if (b_destination & self.b_all == 0) && 
                     self.add_move_if_valid(child, b_destination) 
                 {
+                    if b_destination & B_RANK_8 == 0 {
+                        self.move_id = 20;
+                    } else {
+                        child.promotion = 1;
+                        child.b_pawns &= !b_destination;
+                        match self.move_id {
+                            10 => { // Promote to knight
+                                child.b_knights |= b_destination;
+                                child.material += 2;
+                                self.move_id = 11;
+                            },
+                            11 => { // Promote to bishop
+                                child.b_bishops |= b_destination;
+                                child.material += 2;
+                                self.move_id = 12;
+                            },
+                            12 => { // Promote to rook
+                                child.b_rooks |= b_destination;
+                                child.material += 4;
+                                self.move_id = 13;
+                            },
+                            13 => { // Promote to queen
+                                child.b_queens |= b_destination;
+                                child.material += 8;
+                                self.move_id = 20;
+                            },
+                            _ => panic!("Shouldn't get here!"),
+                        }
+                        if !child.black_is_safe(child.b_kings & child.b_black) {
+                            child.in_check = 1;
+                        }
+                    }
                     return true;
                 }
             }
         }
                 
         // Forward two
-        if self.move_id == 20 {
+        if self.move_id < 30 {
             self.move_id = 30;
             let b_one_square = self.b_current_piece << 8;
             let b_destination = self.b_current_piece << 16; // This won't work as coded
@@ -41,25 +73,87 @@ impl Reset {
         }
 
         // Capture Left
-        if self.move_id == 30 {
-            self.move_id = 40;
+        if self.move_id < 40 {
             let b_destination = self.b_current_piece << 9;
             if (self.b_current_piece & B_NOT_UL_EDGE != 0) && 
                 (b_destination & self.b_black != 0) && 
                 self.add_move_if_valid(child, b_destination) 
             {
+                if b_destination & B_RANK_8 == 0 {
+                    self.move_id = 40;
+                } else {
+                    child.promotion = 1;
+                    child.b_pawns &= !b_destination;
+                    match self.move_id {
+                        10 => { // Promote to knight
+                            child.b_knights |= b_destination;
+                            child.material += 2;
+                            self.move_id = 31;
+                        },
+                        11 => { // Promote to bishop
+                            child.b_bishops |= b_destination;
+                            child.material += 2;
+                            self.move_id = 32;
+                        },
+                        12 => { // Promote to rook
+                            child.b_rooks |= b_destination;
+                            child.material += 4;
+                            self.move_id = 33;
+                        },
+                        13 => { // Promote to queen
+                            child.b_queens |= b_destination;
+                            child.material += 8;
+                            self.move_id = 40;
+                        },
+                        _ => panic!("Shouldn't get here!"),
+                    }
+                    if !child.black_is_safe(child.b_kings & child.b_black) {
+                        child.in_check = 1;
+                    }
+                }
                 return true;
             }
         }
 
         // Capture Right
-        if self.move_id == 40 {
-            self.move_id = 50;
+        if self.move_id < 50 {
             let b_destination = self.b_current_piece << 7;
             if (self.b_current_piece & B_NOT_UR_EDGE != 0) && 
                 (b_destination & self.b_black != 0) && 
                 self.add_move_if_valid(child, b_destination) 
             {
+                if b_destination & B_RANK_8 == 0 {
+                    self.move_id = 50;
+                } else {
+                    child.promotion = 1;
+                    child.b_pawns &= !b_destination;
+                    match self.move_id {
+                        10 => { // Promote to knight
+                            child.b_knights |= b_destination;
+                            child.material += 2;
+                            self.move_id = 41;
+                        },
+                        11 => { // Promote to bishop
+                            child.b_bishops |= b_destination;
+                            child.material += 2;
+                            self.move_id = 42;
+                        },
+                        12 => { // Promote to rook
+                            child.b_rooks |= b_destination;
+                            child.material += 4;
+                            self.move_id = 43;
+                        },
+                        13 => { // Promote to queen
+                            child.b_queens |= b_destination;
+                            child.material += 8;
+                            self.move_id = 50;
+                        },
+                        _ => panic!("Shouldn't get here!"),
+                    }
+                    if !child.black_is_safe(child.b_kings & child.b_black) {
+                        child.in_check = 1;
+                    }
+                }
                 return true;
             }
         }

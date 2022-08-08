@@ -4,31 +4,33 @@ use crate::reset::r#const::B_NOT_UL_EDGE;
 use crate::reset::r#const::B_NOT_UR_EDGE;
 use crate::reset::r#const::B_NOT_DL_EDGE;
 use crate::reset::r#const::B_NOT_DR_EDGE;
-use crate::reset::r#const::B_STARTING_PAWN_POSITION;
+use crate::reset::r#const::B_RANK_1;
+use crate::reset::r#const::B_RANK_2;
+use crate::reset::r#const::B_RANK_7;
+use crate::reset::r#const::B_RANK_8;
 
 impl Reset {
     pub fn generate_next_white_pawn_move(&mut self, child: &mut Reset) -> bool {
-        // Forward one
+        // Forward one (not promotion)
         if self.move_id == 10 {
-            println!("Considering forward one");
             self.move_id = 20;
-            let b_destination = self.b_current_piece << 8;
-            if (b_destination & B_NOT_TOP_EDGE != 0) && 
-                (b_destination & self.b_all == 0) && 
-                self.add_move_if_valid(child, b_destination) 
-            {
-                return true;
+            if self.b_current_piece & B_NOT_TOP_EDGE != 0 {
+                let b_destination = self.b_current_piece << 8;
+                if (b_destination & self.b_all == 0) && 
+                    self.add_move_if_valid(child, b_destination) 
+                {
+                    return true;
+                }
             }
         }
                 
         // Forward two
         if self.move_id == 20 {
-            println!("Considering forward two");
             self.move_id = 30;
             let b_one_square = self.b_current_piece << 8;
             let b_destination = self.b_current_piece << 16; // This won't work as coded
 
-            if (self.b_current_piece & B_STARTING_PAWN_POSITION != 0) &&
+            if (self.b_current_piece & B_RANK_2 != 0) &&
                 ((b_one_square & self.b_all) == 0) &&
                 ((b_destination & self.b_all) == 0) &&
                 self.add_move_if_valid(child, b_destination)
@@ -40,7 +42,6 @@ impl Reset {
 
         // Capture Left
         if self.move_id == 30 {
-            println!("Considering capture left");
             self.move_id = 40;
             let b_destination = self.b_current_piece << 9;
             if (self.b_current_piece & B_NOT_UL_EDGE != 0) && 
@@ -53,12 +54,8 @@ impl Reset {
 
         // Capture Right
         if self.move_id == 40 {
-            println!("Considering capture right");
             self.move_id = 50;
             let b_destination = self.b_current_piece << 7;
-            println!("b_destination == {:x}",b_destination);
-            println!("B_NOT_UR_EDGE == {:x}",B_NOT_UR_EDGE);
-            println!("self.b_black == {:x}",self.b_black);
             if (self.b_current_piece & B_NOT_UR_EDGE != 0) && 
                 (b_destination & self.b_black != 0) && 
                 self.add_move_if_valid(child, b_destination) 

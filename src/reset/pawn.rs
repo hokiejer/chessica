@@ -24,23 +24,23 @@ impl Reset {
                     } else {
                         child.promotion = 1;
                         child.b_pawns &= !b_destination;
-                        match self.move_id {
-                            10 => { // Promote to knight
+                        match self.move_id % 10 {
+                            0 => { // Promote to knight
                                 child.b_knights |= b_destination;
                                 child.material += 2;
                                 self.move_id = 11;
                             },
-                            11 => { // Promote to bishop
+                            1 => { // Promote to bishop
                                 child.b_bishops |= b_destination;
                                 child.material += 2;
                                 self.move_id = 12;
                             },
-                            12 => { // Promote to rook
+                            2 => { // Promote to rook
                                 child.b_rooks |= b_destination;
                                 child.material += 4;
                                 self.move_id = 13;
                             },
-                            13 => { // Promote to queen
+                            3 => { // Promote to queen
                                 child.b_queens |= b_destination;
                                 child.material += 8;
                                 self.move_id = 20;
@@ -84,23 +84,23 @@ impl Reset {
                 } else {
                     child.promotion = 1;
                     child.b_pawns &= !b_destination;
-                    match self.move_id {
-                        10 => { // Promote to knight
+                    match self.move_id % 10 {
+                        0 => { // Promote to knight
                             child.b_knights |= b_destination;
                             child.material += 2;
                             self.move_id = 31;
                         },
-                        11 => { // Promote to bishop
+                        1 => { // Promote to bishop
                             child.b_bishops |= b_destination;
                             child.material += 2;
                             self.move_id = 32;
                         },
-                        12 => { // Promote to rook
+                        2 => { // Promote to rook
                             child.b_rooks |= b_destination;
                             child.material += 4;
                             self.move_id = 33;
                         },
-                        13 => { // Promote to queen
+                        3 => { // Promote to queen
                             child.b_queens |= b_destination;
                             child.material += 8;
                             self.move_id = 40;
@@ -127,23 +127,23 @@ impl Reset {
                 } else {
                     child.promotion = 1;
                     child.b_pawns &= !b_destination;
-                    match self.move_id {
-                        10 => { // Promote to knight
+                    match self.move_id % 10 {
+                        0 => { // Promote to knight
                             child.b_knights |= b_destination;
                             child.material += 2;
                             self.move_id = 41;
                         },
-                        11 => { // Promote to bishop
+                        1 => { // Promote to bishop
                             child.b_bishops |= b_destination;
                             child.material += 2;
                             self.move_id = 42;
                         },
-                        12 => { // Promote to rook
+                        2 => { // Promote to rook
                             child.b_rooks |= b_destination;
                             child.material += 4;
                             self.move_id = 43;
                         },
-                        13 => { // Promote to queen
+                        3 => { // Promote to queen
                             child.b_queens |= b_destination;
                             child.material += 8;
                             self.move_id = 50;
@@ -460,5 +460,211 @@ mod tests {
         assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d5".to_string()));
         assert_eq!(r.move_id,10);
+    }
+
+    #[test]
+    fn pawn_moves_white_promotion() {
+        let mut r = prep_board("k2r4/2P1P2P/8/8/8/8/8/K7 w - - 0 1");
+        let mut child = reset::new();
+        r.b_current_piece = utils::convert_square_to_bitstring("h7".to_string());
+
+        // h7 to h8 Knight
+        let fen = String::from("k2r3N/2P1P3/8/8/8/8/8/K7 b - - 0 1");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("h7".to_string()));
+        assert_eq!(r.move_id,11);
+        assert_eq!(child.capture,0);
+
+        // h7 to h8 Bishop
+        let fen = String::from("k2r3B/2P1P3/8/8/8/8/8/K7 b - - 0 1");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("h7".to_string()));
+        assert_eq!(r.move_id,12);
+        assert_eq!(child.capture,0);
+
+        // h7 to h8 Rook
+        let fen = String::from("k2r3R/2P1P3/8/8/8/8/8/K7 b - - 0 1");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("h7".to_string()));
+        assert_eq!(r.move_id,13);
+        assert_eq!(child.capture,0);
+
+        // h7 to h8 Queen
+        let fen = String::from("k2r3Q/2P1P3/8/8/8/8/8/K7 b - - 0 1");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("h7".to_string()));
+        assert_eq!(r.move_id,20);
+        assert_eq!(child.capture,0);
+
+        // No more moves for this pawn
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(!retval);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e7".to_string()));
+        assert_eq!(r.move_id,10);
+
+        // e7 to e8 Knight
+        let fen = String::from("k2rN3/2P4P/8/8/8/8/8/K7 b - - 0 1");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e7".to_string()));
+        assert_eq!(r.move_id,11);
+        assert_eq!(child.capture,0);
+
+        // e7 to e8 Bishop
+        let fen = String::from("k2rB3/2P4P/8/8/8/8/8/K7 b - - 0 1");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e7".to_string()));
+        assert_eq!(r.move_id,12);
+        assert_eq!(child.capture,0);
+
+        // e7 to e8 Rook
+        let fen = String::from("k2rR3/2P4P/8/8/8/8/8/K7 b - - 0 1");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e7".to_string()));
+        assert_eq!(r.move_id,13);
+        assert_eq!(child.capture,0);
+
+        // e7 to e8 Queen
+        let fen = String::from("k2rQ3/2P4P/8/8/8/8/8/K7 b - - 0 1");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e7".to_string()));
+        assert_eq!(r.move_id,20);
+        assert_eq!(child.capture,0);
+
+        // e7 to d8 Knight
+        let fen = String::from("k2N4/2P4P/8/8/8/8/8/K7 b - - 0 1");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e7".to_string()));
+        assert_eq!(r.move_id,31);
+        assert_eq!(child.capture,1);
+
+        // e7 to d8 Bishop
+        let fen = String::from("k2B4/2P4P/8/8/8/8/8/K7 b - - 0 1");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e7".to_string()));
+        assert_eq!(r.move_id,32);
+        assert_eq!(child.capture,1);
+
+        // e7 to d8 Rook
+        let fen = String::from("k2R4/2P4P/8/8/8/8/8/K7 b - - 0 1");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e7".to_string()));
+        assert_eq!(r.move_id,33);
+        assert_eq!(child.capture,1);
+
+        // e7 to d8 Queen
+        let fen = String::from("k2Q4/2P4P/8/8/8/8/8/K7 b - - 0 1");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e7".to_string()));
+        assert_eq!(r.move_id,40);
+        assert_eq!(child.capture,1);
+
+        // No more moves for this pawn
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(!retval);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c7".to_string()));
+        assert_eq!(r.move_id,10);
+
+        // c7 to c8 Knight
+        let fen = String::from("k1Nr4/4P2P/8/8/8/8/8/K7 b - - 0 1");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c7".to_string()));
+        assert_eq!(r.move_id,11);
+        assert_eq!(child.capture,0);
+
+        // c7 to c8 Bishop
+        let fen = String::from("k1Br4/4P2P/8/8/8/8/8/K7 b - - 0 1");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c7".to_string()));
+        assert_eq!(r.move_id,12);
+        assert_eq!(child.capture,0);
+
+        // c7 to c8 Rook
+        let fen = String::from("k1Rr4/4P2P/8/8/8/8/8/K7 b - - 0 1");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c7".to_string()));
+        assert_eq!(r.move_id,13);
+        assert_eq!(child.capture,0);
+
+        // c7 to c8 Queen
+        let fen = String::from("k1Qr4/4P2P/8/8/8/8/8/K7 b - - 0 1");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c7".to_string()));
+        assert_eq!(r.move_id,20);
+        assert_eq!(child.capture,0);
+
+        // c7 to d8 Knight
+        let fen = String::from("k2N4/4P2P/8/8/8/8/8/K7 b - - 0 1");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c7".to_string()));
+        assert_eq!(r.move_id,41);
+        assert_eq!(child.capture,1);
+
+        // c7 to d8 Bishop
+        let fen = String::from("k2B4/4P2P/8/8/8/8/8/K7 b - - 0 1");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c7".to_string()));
+        assert_eq!(r.move_id,42);
+        assert_eq!(child.capture,1);
+
+        // c7 to d8 Rook
+        let fen = String::from("k2R4/4P2P/8/8/8/8/8/K7 b - - 0 1");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c7".to_string()));
+        assert_eq!(r.move_id,43);
+        assert_eq!(child.capture,1);
+
+        // c7 to d8 Queen
+        let fen = String::from("k2Q4/4P2P/8/8/8/8/8/K7 b - - 0 1");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c7".to_string()));
+        assert_eq!(r.move_id,50);
+        assert_eq!(child.capture,1);
+
+        // No more moves for this pawn
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(!retval);
+        assert_eq!(r.b_current_piece,0);
+        assert_eq!(r.move_id,10);
+
     }
 }

@@ -476,6 +476,8 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("h7".to_string()));
         assert_eq!(r.move_id,11);
         assert_eq!(child.capture,0);
+        assert_eq!(child.material,0);
+        assert_eq!(child.in_check,0);
 
         // h7 to h8 Bishop
         let fen = String::from("k2r3B/2P1P3/8/8/8/8/8/K7 b - - 0 1");
@@ -485,6 +487,8 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("h7".to_string()));
         assert_eq!(r.move_id,12);
         assert_eq!(child.capture,0);
+        assert_eq!(child.material,0);
+        assert_eq!(child.in_check,0);
 
         // h7 to h8 Rook
         let fen = String::from("k2r3R/2P1P3/8/8/8/8/8/K7 b - - 0 1");
@@ -494,6 +498,8 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("h7".to_string()));
         assert_eq!(r.move_id,13);
         assert_eq!(child.capture,0);
+        assert_eq!(child.material,2);
+        assert_eq!(child.in_check,0);
 
         // h7 to h8 Queen
         let fen = String::from("k2r3Q/2P1P3/8/8/8/8/8/K7 b - - 0 1");
@@ -503,6 +509,8 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("h7".to_string()));
         assert_eq!(r.move_id,20);
         assert_eq!(child.capture,0);
+        assert_eq!(child.material,6);
+        assert_eq!(child.in_check,0);
 
         // No more moves for this pawn
         let retval = r.generate_next_pawn_move(&mut child);
@@ -518,6 +526,8 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e7".to_string()));
         assert_eq!(r.move_id,11);
         assert_eq!(child.capture,0);
+        assert_eq!(child.material,0);
+        assert_eq!(child.in_check,0);
 
         // e7 to e8 Bishop
         let fen = String::from("k2rB3/2P4P/8/8/8/8/8/K7 b - - 0 1");
@@ -527,6 +537,8 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e7".to_string()));
         assert_eq!(r.move_id,12);
         assert_eq!(child.capture,0);
+        assert_eq!(child.material,0);
+        assert_eq!(child.in_check,0);
 
         // e7 to e8 Rook
         let fen = String::from("k2rR3/2P4P/8/8/8/8/8/K7 b - - 0 1");
@@ -536,6 +548,8 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e7".to_string()));
         assert_eq!(r.move_id,13);
         assert_eq!(child.capture,0);
+        assert_eq!(child.material,2);
+        assert_eq!(child.in_check,0);
 
         // e7 to e8 Queen
         let fen = String::from("k2rQ3/2P4P/8/8/8/8/8/K7 b - - 0 1");
@@ -545,6 +559,8 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e7".to_string()));
         assert_eq!(r.move_id,20);
         assert_eq!(child.capture,0);
+        assert_eq!(child.material,6);
+        assert_eq!(child.in_check,0);
 
         // e7 to d8 Knight
         let fen = String::from("k2N4/2P4P/8/8/8/8/8/K7 b - - 0 1");
@@ -554,6 +570,8 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e7".to_string()));
         assert_eq!(r.move_id,31);
         assert_eq!(child.capture,1);
+        assert_eq!(child.material,5);
+        assert_eq!(child.in_check,0);
 
         // e7 to d8 Bishop
         let fen = String::from("k2B4/2P4P/8/8/8/8/8/K7 b - - 0 1");
@@ -563,6 +581,8 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e7".to_string()));
         assert_eq!(r.move_id,32);
         assert_eq!(child.capture,1);
+        assert_eq!(child.material,5);
+        assert_eq!(child.in_check,0);
 
         // e7 to d8 Rook
         let fen = String::from("k2R4/2P4P/8/8/8/8/8/K7 b - - 0 1");
@@ -572,6 +592,8 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e7".to_string()));
         assert_eq!(r.move_id,33);
         assert_eq!(child.capture,1);
+        assert_eq!(child.material,7);
+        assert_eq!(child.in_check,1);
 
         // e7 to d8 Queen
         let fen = String::from("k2Q4/2P4P/8/8/8/8/8/K7 b - - 0 1");
@@ -581,6 +603,8 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e7".to_string()));
         assert_eq!(r.move_id,40);
         assert_eq!(child.capture,1);
+        assert_eq!(child.material,11);
+        assert_eq!(child.in_check,1);
 
         // No more moves for this pawn
         let retval = r.generate_next_pawn_move(&mut child);
@@ -596,6 +620,8 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c7".to_string()));
         assert_eq!(r.move_id,11);
         assert_eq!(child.capture,0);
+        assert_eq!(child.material,0);
+        assert_eq!(child.in_check,0);
 
         // c7 to c8 Bishop
         let fen = String::from("k1Br4/4P2P/8/8/8/8/8/K7 b - - 0 1");
@@ -605,6 +631,8 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c7".to_string()));
         assert_eq!(r.move_id,12);
         assert_eq!(child.capture,0);
+        assert_eq!(child.material,0);
+        assert_eq!(child.in_check,0);
 
         // c7 to c8 Rook
         let fen = String::from("k1Rr4/4P2P/8/8/8/8/8/K7 b - - 0 1");
@@ -614,6 +642,8 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c7".to_string()));
         assert_eq!(r.move_id,13);
         assert_eq!(child.capture,0);
+        assert_eq!(child.material,2);
+        assert_eq!(child.in_check,1);
 
         // c7 to c8 Queen
         let fen = String::from("k1Qr4/4P2P/8/8/8/8/8/K7 b - - 0 1");
@@ -623,6 +653,8 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c7".to_string()));
         assert_eq!(r.move_id,20);
         assert_eq!(child.capture,0);
+        assert_eq!(child.material,6);
+        assert_eq!(child.in_check,1);
 
         // c7 to d8 Knight
         let fen = String::from("k2N4/4P2P/8/8/8/8/8/K7 b - - 0 1");
@@ -632,6 +664,8 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c7".to_string()));
         assert_eq!(r.move_id,41);
         assert_eq!(child.capture,1);
+        assert_eq!(child.material,5);
+        assert_eq!(child.in_check,0);
 
         // c7 to d8 Bishop
         let fen = String::from("k2B4/4P2P/8/8/8/8/8/K7 b - - 0 1");
@@ -641,6 +675,8 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c7".to_string()));
         assert_eq!(r.move_id,42);
         assert_eq!(child.capture,1);
+        assert_eq!(child.material,5);
+        assert_eq!(child.in_check,0);
 
         // c7 to d8 Rook
         let fen = String::from("k2R4/4P2P/8/8/8/8/8/K7 b - - 0 1");
@@ -650,6 +686,8 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c7".to_string()));
         assert_eq!(r.move_id,43);
         assert_eq!(child.capture,1);
+        assert_eq!(child.material,7);
+        assert_eq!(child.in_check,1);
 
         // c7 to d8 Queen
         let fen = String::from("k2Q4/4P2P/8/8/8/8/8/K7 b - - 0 1");
@@ -659,6 +697,8 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c7".to_string()));
         assert_eq!(r.move_id,50);
         assert_eq!(child.capture,1);
+        assert_eq!(child.material,11);
+        assert_eq!(child.in_check,1);
 
         // No more moves for this pawn
         let retval = r.generate_next_pawn_move(&mut child);

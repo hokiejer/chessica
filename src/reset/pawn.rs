@@ -642,6 +642,119 @@ mod tests {
     }
 
     #[test]
+    fn pawn_moves_black_captures() {
+        let mut r = prep_board("k7/5p1p/1p4p1/P1P4P/3pp3/2P2P2/8/K7 b - - 0 1");
+        let mut child = reset::new();
+        r.b_current_piece = utils::convert_square_to_bitstring("e4".to_string());
+
+        // e4 to e3
+        let fen = String::from("k7/5p1p/1p4p1/P1P4P/3p4/2P1pP2/8/K7 w - - 0 2");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e4".to_string()));
+        assert_eq!(r.move_id,20);
+        assert_eq!(child.capture,0);
+
+        // e4 to f3
+        let fen = String::from("k7/5p1p/1p4p1/P1P4P/3p4/2P2p2/8/K7 w - - 0 2");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e4".to_string()));
+        assert_eq!(r.move_id,40);
+        assert_eq!(child.capture,1);
+
+        // No more moves for this pawn
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(!retval);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d4".to_string()));
+        assert_eq!(r.move_id,10);
+
+        // d4 to d3
+        let fen = String::from("k7/5p1p/1p4p1/P1P4P/4p3/2Pp1P2/8/K7 w - - 0 2");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d4".to_string()));
+        assert_eq!(r.move_id,20);
+        assert_eq!(child.capture,0);
+
+        // d4 to c3
+        let fen = String::from("k7/5p1p/1p4p1/P1P4P/4p3/2p2P2/8/K7 w - - 0 2");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d4".to_string()));
+        assert_eq!(r.move_id,50);
+        assert_eq!(child.capture,1);
+
+        // No more moves for this pawn
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(!retval);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("g6".to_string()));
+        assert_eq!(r.move_id,10);
+
+        // g6 to g5
+        let fen = String::from("k7/5p1p/1p6/P1P3pP/3pp3/2P2P2/8/K7 w - - 0 2");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("g6".to_string()));
+        assert_eq!(r.move_id,20);
+        assert_eq!(child.capture,0);
+
+        // g6 to h5
+        let fen = String::from("k7/5p1p/1p6/P1P4p/3pp3/2P2P2/8/K7 w - - 0 2");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("g6".to_string()));
+        assert_eq!(r.move_id,40);
+        assert_eq!(child.capture,1);
+
+        // No more moves for this pawn
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(!retval);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("b6".to_string()));
+        assert_eq!(r.move_id,10);
+
+        // b6 to b5
+        let fen = String::from("k7/5p1p/6p1/PpP4P/3pp3/2P2P2/8/K7 w - - 0 2");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("b6".to_string()));
+        assert_eq!(r.move_id,20);
+        assert_eq!(child.capture,0);
+
+        // b6 to c5
+        let fen = String::from("k7/5p1p/6p1/P1p4P/3pp3/2P2P2/8/K7 w - - 0 2");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("b6".to_string()));
+        assert_eq!(r.move_id,40);
+        assert_eq!(child.capture,1);
+
+        // b6 to a5
+        let fen = String::from("k7/5p1p/6p1/p1P4P/3pp3/2P2P2/8/K7 w - - 0 2");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("b6".to_string()));
+        assert_eq!(r.move_id,50);
+        assert_eq!(child.capture,1);
+
+        // No more moves for this pawn
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(!retval);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("h7".to_string()));
+        assert_eq!(r.move_id,10);
+
+    }
+
+    #[test]
     fn pawn_moves_white_promotion() {
         let mut r = prep_board("k2r4/2P1P2P/8/8/8/8/8/K7 w - - 0 1");
         let mut child = reset::new();

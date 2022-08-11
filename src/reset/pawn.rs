@@ -54,29 +54,17 @@ impl Reset {
         }
     }
 
-    pub fn generate_next_pawn_move(&mut self, child: &mut Reset) -> bool {
+    pub fn generate_next_white_pawn_move(&mut self, child: &mut Reset) -> bool {
         let mut b_destination: u64;
-        let mut b_not_last_rank: u64;
-        let b_forward_one: u64;
-        let b_starting_rank: u64;
-        let b_can_capture_left: u64;
-        let b_can_capture_right: u64;
-        let mut b_opponent: u64;
 
         // Forward one (not promotion)
         if self.move_id < 20 {
-            if self.white_to_move() {
-                b_destination = self.b_current_piece << 8;
-                b_not_last_rank = B_NOT_TOP_EDGE;
-            } else {
-                b_destination = self.b_current_piece >> 8;
-                b_not_last_rank = B_NOT_BOTTOM_EDGE;
-            }
-            if self.b_current_piece & b_not_last_rank != 0 {
+            b_destination = self.b_current_piece << 8;
+            if self.b_current_piece & B_NOT_TOP_EDGE != 0 {
                 if (b_destination & self.b_all == 0) && 
                     self.add_move_if_valid(child, b_destination) 
                 {
-                    if b_destination & b_not_last_rank != 0 {
+                    if b_destination & B_NOT_TOP_EDGE != 0 {
                         self.move_id = 20;
                     } else {
                         self.generate_promotion_moves(child, 10);
@@ -89,17 +77,10 @@ impl Reset {
         // Forward two
         if self.move_id < 30 {
             self.move_id = 30;
-            if self.white_to_move() {
-                b_forward_one = self.b_current_piece << 8;
-                b_destination = self.b_current_piece << 16;
-                b_starting_rank = B_RANK_2;
-            } else {
-                b_forward_one = self.b_current_piece >> 8;
-                b_destination = self.b_current_piece >> 16;
-                b_starting_rank = B_RANK_7;
-            }
+            let b_forward_one: u64 = self.b_current_piece << 8;
+            b_destination = self.b_current_piece << 16;
 
-            if (self.b_current_piece & b_starting_rank != 0) &&
+            if (self.b_current_piece & B_RANK_2 != 0) &&
                 ((b_forward_one & self.b_all) == 0) &&
                 ((b_destination & self.b_all) == 0) &&
                 self.add_move_if_valid(child, b_destination)
@@ -111,22 +92,12 @@ impl Reset {
 
         // Capture Left
         if self.move_id < 40 {
-            if self.white_to_move() {
-                b_destination = self.b_current_piece << 9;
-                b_can_capture_left = B_NOT_UL_EDGE;
-                b_opponent = self.b_black;
-                b_not_last_rank = B_NOT_TOP_EDGE;
-            } else {
-                b_destination = self.b_current_piece >> 9;
-                b_can_capture_left = B_NOT_DR_EDGE;
-                b_opponent = self.b_white;
-                b_not_last_rank = B_NOT_BOTTOM_EDGE;
-            }
-            if (self.b_current_piece & b_can_capture_left != 0) && 
-                (b_destination & b_opponent != 0) && 
+            b_destination = self.b_current_piece << 9;
+            if (self.b_current_piece & B_NOT_UL_EDGE != 0) && 
+                (b_destination & self.b_black != 0) && 
                 self.add_move_if_valid(child, b_destination) 
             {
-                if b_destination & b_not_last_rank != 0 {
+                if b_destination & B_NOT_TOP_EDGE != 0 {
                     self.move_id = 40;
                 } else {
                     self.generate_promotion_moves(child, 30);
@@ -137,22 +108,12 @@ impl Reset {
 
         // Capture Right
         if self.move_id < 50 {
-            if self.white_to_move() {
-                b_destination = self.b_current_piece << 7;
-                b_can_capture_right = B_NOT_UR_EDGE;
-                b_opponent = self.b_black;
-                b_not_last_rank = B_NOT_TOP_EDGE;
-            } else {
-                b_destination = self.b_current_piece >> 7;
-                b_can_capture_right = B_NOT_DL_EDGE;
-                b_opponent = self.b_white;
-                b_not_last_rank = B_NOT_BOTTOM_EDGE;
-            }
-            if (self.b_current_piece & b_can_capture_right != 0) && 
-                (b_destination & b_opponent != 0) && 
+            b_destination = self.b_current_piece << 7;
+            if (self.b_current_piece & B_NOT_UR_EDGE != 0) && 
+                (b_destination & self.b_black != 0) && 
                 self.add_move_if_valid(child, b_destination) 
             {
-                if b_destination & b_not_last_rank != 0 {
+                if b_destination & B_NOT_TOP_EDGE != 0 {
                     self.move_id = 50;
                 } else {
                     self.generate_promotion_moves(child, 40);
@@ -166,9 +127,84 @@ impl Reset {
     }
 
     pub fn generate_next_black_pawn_move(&mut self, child: &mut Reset) -> bool {
-        true
+        let mut b_destination: u64;
+
+        // Forward one (not promotion)
+        if self.move_id < 20 {
+            b_destination = self.b_current_piece >> 8;
+            if self.b_current_piece & B_NOT_BOTTOM_EDGE != 0 {
+                if (b_destination & self.b_all == 0) && 
+                    self.add_move_if_valid(child, b_destination) 
+                {
+                    if b_destination & B_NOT_BOTTOM_EDGE != 0 {
+                        self.move_id = 20;
+                    } else {
+                        self.generate_promotion_moves(child, 10);
+                    }
+                    return true;
+                }
+            }
+        }
+                
+        // Forward two
+        if self.move_id < 30 {
+            self.move_id = 30;
+            let b_forward_one: u64 = self.b_current_piece >> 8;
+            b_destination = self.b_current_piece >> 16;
+
+            if (self.b_current_piece & B_RANK_7 != 0) &&
+                ((b_forward_one & self.b_all) == 0) &&
+                ((b_destination & self.b_all) == 0) &&
+                self.add_move_if_valid(child, b_destination)
+            {
+                //Don't forget to set the EP square!
+                return true;
+            }
+        }
+
+        // Capture Left
+        if self.move_id < 40 {
+            b_destination = self.b_current_piece >> 9;
+            if (self.b_current_piece & B_NOT_DR_EDGE != 0) && 
+                (b_destination & self.b_white != 0) && 
+                self.add_move_if_valid(child, b_destination) 
+            {
+                if b_destination & B_NOT_BOTTOM_EDGE != 0 {
+                    self.move_id = 40;
+                } else {
+                    self.generate_promotion_moves(child, 30);
+                }
+                return true;
+            }
+        }
+
+        // Capture Right
+        if self.move_id < 50 {
+            b_destination = self.b_current_piece >> 7;
+            if (self.b_current_piece & B_NOT_DL_EDGE != 0) && 
+                (b_destination & self.b_white != 0) && 
+                self.add_move_if_valid(child, b_destination) 
+            {
+                if b_destination & B_NOT_BOTTOM_EDGE != 0 {
+                    self.move_id = 50;
+                } else {
+                    self.generate_promotion_moves(child, 40);
+                }
+                return true;
+            }
+        }
+
+        self.consider_next_moveable_piece();
+        false
     }
 
+    pub fn generate_next_pawn_move(&mut self, child: &mut Reset) -> bool {
+        if self.white_to_move() {
+            self.generate_next_white_pawn_move(child)
+        } else {
+            self.generate_next_black_pawn_move(child)
+        }
+    }
 }
 
 #[cfg(test)]

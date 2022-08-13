@@ -122,6 +122,58 @@ impl Reset {
             }
         }
 
+        // Capture Left En Passant
+        if self.b_en_passant != 0 && self.move_id < 60 {
+            b_destination = self.b_current_piece << 9;
+            if b_destination == self.b_en_passant &&
+                (self.b_current_piece & B_NOT_UL_EDGE != 0) && 
+                self.add_move_if_valid(child, b_destination) 
+            {
+                let b_pawn_to_remove = self.b_en_passant >> 8;
+                child.b_all &= !b_pawn_to_remove;
+                child.b_black &= !b_pawn_to_remove;
+                child.b_pawns &= !b_pawn_to_remove;
+                child.material += 1;
+                child.capture = 1;
+                child.ep_capture = 1;
+                if !child.white_is_safe(child.b_kings & child.b_white) {
+                    println!("White is not safe!");
+                    return false;
+                }
+                if !child.black_is_safe(child.b_kings & child.b_black) {
+                    child.in_check = 1;
+                }
+                self.consider_next_moveable_piece();
+                return true;
+            }
+        }
+
+        // Capture Right En Passant
+        if self.b_en_passant != 0 && self.move_id < 70 {
+            b_destination = self.b_current_piece << 7;
+            if b_destination == self.b_en_passant &&
+                (self.b_current_piece & B_NOT_UR_EDGE != 0) && 
+                self.add_move_if_valid(child, b_destination) 
+            {
+                let b_pawn_to_remove = self.b_en_passant >> 8;
+                child.b_all &= !b_pawn_to_remove;
+                child.b_black &= !b_pawn_to_remove;
+                child.b_pawns &= !b_pawn_to_remove;
+                child.material += 1;
+                child.capture = 1;
+                child.ep_capture = 1;
+                if !child.white_is_safe(child.b_kings & child.b_white) {
+                    println!("White is not safe!");
+                    return false;
+                }
+                if !child.black_is_safe(child.b_kings & child.b_black) {
+                    child.in_check = 1;
+                }
+                self.consider_next_moveable_piece();
+                return true;
+            }
+        }
+
         self.consider_next_moveable_piece();
         false
     }
@@ -190,6 +242,57 @@ impl Reset {
                 } else {
                     self.generate_promotion_moves(child, 40);
                 }
+                return true;
+            }
+        }
+
+        // Capture Left En Passant
+        if self.b_en_passant != 0 && self.move_id < 60 {
+            b_destination = self.b_current_piece >> 9;
+            if b_destination == self.b_en_passant &&
+                (self.b_current_piece & B_NOT_DR_EDGE != 0) && 
+                self.add_move_if_valid(child, b_destination) 
+            {
+                let b_pawn_to_remove = self.b_en_passant << 8;
+                child.b_all &= !b_pawn_to_remove;
+                child.b_white &= !b_pawn_to_remove;
+                child.b_pawns &= !b_pawn_to_remove;
+                child.material -= 1;
+                child.capture = 1;
+                child.ep_capture = 1;
+                if !child.black_is_safe(child.b_kings & child.b_black) {
+                    return false;
+                }
+                if !child.white_is_safe(child.b_kings & child.b_white) {
+                    child.in_check = 1;
+                }
+                self.consider_next_moveable_piece();
+                return true;
+            }
+        }
+
+        // Capture Right En Passant
+        if self.b_en_passant != 0 && self.move_id < 70 {
+            b_destination = self.b_current_piece >> 7;
+            if b_destination == self.b_en_passant &&
+                (self.b_current_piece & B_NOT_DL_EDGE != 0) && 
+                self.add_move_if_valid(child, b_destination) 
+            {
+                let b_pawn_to_remove = self.b_en_passant << 8;
+                child.b_all &= !b_pawn_to_remove;
+                child.b_white &= !b_pawn_to_remove;
+                child.b_pawns &= !b_pawn_to_remove;
+                child.material -= 1;
+                child.capture = 1;
+                child.ep_capture = 1;
+                child.print();
+                if !child.black_is_safe(child.b_kings & child.b_black) {
+                    return false;
+                }
+                if !child.white_is_safe(child.b_kings & child.b_white) {
+                    child.in_check = 1;
+                }
+                self.consider_next_moveable_piece();
                 return true;
             }
         }
@@ -1281,4 +1384,109 @@ mod tests {
         assert_eq!(r.move_id,10);
 
     }
+
+    #[test]
+    fn pawn_moves_white_ep_capture_right() {
+        let mut r = prep_board("rnbqkbnr/ppppp1p1/8/5pPp/8/8/PPPPPP1P/RNBQKBNR w KQkq f6 0 1");
+        let mut child = reset::new();
+        r.b_current_piece = utils::convert_square_to_bitstring("g5".to_string());
+
+        // g5 to g6
+        let fen = String::from("rnbqkbnr/ppppp1p1/6P1/5p1p/8/8/PPPPPP1P/RNBQKBNR b KQkq - 0 1");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("g5".to_string()));
+        assert_eq!(r.move_id,20);
+        assert_eq!(child.capture,0);
+
+        // g5 to f6 (EP)
+        let fen = String::from("rnbqkbnr/ppppp1p1/5P2/7p/8/8/PPPPPP1P/RNBQKBNR b KQkq - 0 1");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,0);
+        assert_eq!(r.move_id,10);
+        assert_eq!(child.capture,1);
+        assert_eq!(child.ep_capture,1);
+    }
+
+    #[test]
+    fn pawn_moves_white_ep_capture_left() {
+        let mut r = prep_board("rnbqkbnr/ppppp1p1/8/5pPp/8/8/PPPPPP1P/RNBQKBNR w KQkq h6 0 1");
+        let mut child = reset::new();
+        r.b_current_piece = utils::convert_square_to_bitstring("g5".to_string());
+
+        // g5 to g6
+        let fen = String::from("rnbqkbnr/ppppp1p1/6P1/5p1p/8/8/PPPPPP1P/RNBQKBNR b KQkq - 0 1");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("g5".to_string()));
+        assert_eq!(r.move_id,20);
+        assert_eq!(child.capture,0);
+
+        // g5 to h6 (EP)
+        let fen = String::from("rnbqkbnr/ppppp1p1/7P/5p2/8/8/PPPPPP1P/RNBQKBNR b KQkq - 0 1");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,0);
+        assert_eq!(r.move_id,10);
+        assert_eq!(child.capture,1);
+        assert_eq!(child.ep_capture,1);
+    }
+
+    #[test]
+    fn pawn_moves_black_ep_capture_right() {
+        let mut r = prep_board("rnbqkb1r/pppp1ppp/7n/8/3PpP2/8/PPP1P1PP/RNBQKBNR b KQkq d3 0 1");
+        let mut child = reset::new();
+        r.b_current_piece = utils::convert_square_to_bitstring("e4".to_string());
+
+        // e4 to e3
+        let fen = String::from("rnbqkb1r/pppp1ppp/7n/8/3P1P2/4p3/PPP1P1PP/RNBQKBNR w KQkq - 0 2");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e4".to_string()));
+        assert_eq!(r.move_id,20);
+        assert_eq!(child.capture,0);
+
+        // e4 to f3 (EP)
+        let fen = String::from("rnbqkb1r/pppp1ppp/7n/8/5P2/3p4/PPP1P1PP/RNBQKBNR w KQkq - 0 2");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("h6".to_string()));
+        assert_eq!(r.move_id,10);
+        assert_eq!(child.capture,1);
+        assert_eq!(child.ep_capture,1);
+    }
+
+    #[test]
+    fn pawn_moves_black_ep_capture_left() {
+        let mut r = prep_board("rnbqkb1r/pppp1ppp/7n/8/3PpP2/8/PPP1P1PP/RNBQKBNR b KQkq f3 0 1");
+        let mut child = reset::new();
+        r.b_current_piece = utils::convert_square_to_bitstring("e4".to_string());
+
+        // e4 to e3
+        let fen = String::from("rnbqkb1r/pppp1ppp/7n/8/3P1P2/4p3/PPP1P1PP/RNBQKBNR w KQkq - 0 2");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e4".to_string()));
+        assert_eq!(r.move_id,20);
+        assert_eq!(child.capture,0);
+
+        // e4 to d3
+        let fen = String::from("rnbqkb1r/pppp1ppp/7n/8/3P4/5p2/PPP1P1PP/RNBQKBNR w KQkq - 0 2");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("h6".to_string()));
+        assert_eq!(r.move_id,10);
+        assert_eq!(child.capture,1);
+        assert_eq!(child.ep_capture,1);
+    }
+
 }

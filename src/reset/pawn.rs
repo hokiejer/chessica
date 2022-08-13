@@ -54,6 +54,23 @@ impl Reset {
         }
     }
 
+    pub fn white_en_passant_cleanup(&mut self, child: &mut Reset) -> bool {
+        let b_pawn_to_remove = self.b_en_passant >> 8;
+        child.b_all &= !b_pawn_to_remove;
+        child.b_black &= !b_pawn_to_remove;
+        child.b_pawns &= !b_pawn_to_remove;
+        child.material += 1;
+        child.capture = 1;
+        child.ep_capture = 1;
+        if !child.white_is_safe(child.b_kings & child.b_white) {
+            return false;
+        }
+        if !child.black_is_safe(child.b_kings & child.b_black) {
+            child.in_check = 1;
+        }
+        true
+    }
+
     pub fn generate_next_white_pawn_move(&mut self, child: &mut Reset) -> bool {
         let mut b_destination: u64;
 
@@ -122,60 +139,47 @@ impl Reset {
             }
         }
 
-        // Capture Left En Passant
-        if self.b_en_passant != 0 && self.move_id < 60 {
+        if self.b_en_passant != 0 {
+            // Capture Left En Passant
             b_destination = self.b_current_piece << 9;
             if b_destination == self.b_en_passant &&
                 (self.b_current_piece & B_NOT_UL_EDGE != 0) && 
                 self.add_move_if_valid(child, b_destination) 
             {
-                let b_pawn_to_remove = self.b_en_passant >> 8;
-                child.b_all &= !b_pawn_to_remove;
-                child.b_black &= !b_pawn_to_remove;
-                child.b_pawns &= !b_pawn_to_remove;
-                child.material += 1;
-                child.capture = 1;
-                child.ep_capture = 1;
-                if !child.white_is_safe(child.b_kings & child.b_white) {
-                    println!("White is not safe!");
-                    return false;
-                }
-                if !child.black_is_safe(child.b_kings & child.b_black) {
-                    child.in_check = 1;
-                }
                 self.consider_next_moveable_piece();
-                return true;
+                return self.white_en_passant_cleanup(child);
             }
-        }
 
-        // Capture Right En Passant
-        if self.b_en_passant != 0 && self.move_id < 70 {
+            // Capture Right En Passant
             b_destination = self.b_current_piece << 7;
             if b_destination == self.b_en_passant &&
                 (self.b_current_piece & B_NOT_UR_EDGE != 0) && 
                 self.add_move_if_valid(child, b_destination) 
             {
-                let b_pawn_to_remove = self.b_en_passant >> 8;
-                child.b_all &= !b_pawn_to_remove;
-                child.b_black &= !b_pawn_to_remove;
-                child.b_pawns &= !b_pawn_to_remove;
-                child.material += 1;
-                child.capture = 1;
-                child.ep_capture = 1;
-                if !child.white_is_safe(child.b_kings & child.b_white) {
-                    println!("White is not safe!");
-                    return false;
-                }
-                if !child.black_is_safe(child.b_kings & child.b_black) {
-                    child.in_check = 1;
-                }
                 self.consider_next_moveable_piece();
-                return true;
+                return self.white_en_passant_cleanup(child);
             }
         }
 
         self.consider_next_moveable_piece();
         false
+    }
+
+    pub fn black_en_passant_cleanup(&mut self, child: &mut Reset) -> bool {
+        let b_pawn_to_remove = self.b_en_passant << 8;
+        child.b_all &= !b_pawn_to_remove;
+        child.b_white &= !b_pawn_to_remove;
+        child.b_pawns &= !b_pawn_to_remove;
+        child.material -= 1;
+        child.capture = 1;
+        child.ep_capture = 1;
+        if !child.black_is_safe(child.b_kings & child.b_black) {
+            return false;
+        }
+        if !child.white_is_safe(child.b_kings & child.b_white) {
+            child.in_check = 1;
+        }
+        true
     }
 
     pub fn generate_next_black_pawn_move(&mut self, child: &mut Reset) -> bool {
@@ -246,54 +250,25 @@ impl Reset {
             }
         }
 
-        // Capture Left En Passant
-        if self.b_en_passant != 0 && self.move_id < 60 {
+        if self.b_en_passant != 0 {
+            // Capture Left En Passant
             b_destination = self.b_current_piece >> 9;
             if b_destination == self.b_en_passant &&
                 (self.b_current_piece & B_NOT_DR_EDGE != 0) && 
                 self.add_move_if_valid(child, b_destination) 
             {
-                let b_pawn_to_remove = self.b_en_passant << 8;
-                child.b_all &= !b_pawn_to_remove;
-                child.b_white &= !b_pawn_to_remove;
-                child.b_pawns &= !b_pawn_to_remove;
-                child.material -= 1;
-                child.capture = 1;
-                child.ep_capture = 1;
-                if !child.black_is_safe(child.b_kings & child.b_black) {
-                    return false;
-                }
-                if !child.white_is_safe(child.b_kings & child.b_white) {
-                    child.in_check = 1;
-                }
                 self.consider_next_moveable_piece();
-                return true;
+                return self.black_en_passant_cleanup(child);
             }
-        }
 
-        // Capture Right En Passant
-        if self.b_en_passant != 0 && self.move_id < 70 {
+            // Capture Right En Passant
             b_destination = self.b_current_piece >> 7;
             if b_destination == self.b_en_passant &&
                 (self.b_current_piece & B_NOT_DL_EDGE != 0) && 
                 self.add_move_if_valid(child, b_destination) 
             {
-                let b_pawn_to_remove = self.b_en_passant << 8;
-                child.b_all &= !b_pawn_to_remove;
-                child.b_white &= !b_pawn_to_remove;
-                child.b_pawns &= !b_pawn_to_remove;
-                child.material -= 1;
-                child.capture = 1;
-                child.ep_capture = 1;
-                child.print();
-                if !child.black_is_safe(child.b_kings & child.b_black) {
-                    return false;
-                }
-                if !child.white_is_safe(child.b_kings & child.b_white) {
-                    child.in_check = 1;
-                }
                 self.consider_next_moveable_piece();
-                return true;
+                return self.black_en_passant_cleanup(child);
             }
         }
 

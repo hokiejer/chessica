@@ -117,10 +117,8 @@ impl Reset {
             if !self.white_is_safe(self.b_kings & self.b_white) {
                 self.in_check = 1;
             }
-        } else {
-            if !self.black_is_safe(self.b_kings & self.b_black) {
-                self.in_check = 1;
-            }
+        } else if !self.black_is_safe(self.b_kings & self.b_black) {
+            self.in_check = 1;
         }
     }
 

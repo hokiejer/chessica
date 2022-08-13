@@ -47,10 +47,8 @@ impl Reset {
             if !child.black_is_safe(child.b_kings & child.b_black) {
                 child.in_check = 1;
             }
-        } else {
-            if !child.white_is_safe(child.b_kings & child.b_white) {
-                child.in_check = 1;
-            }
+        } else if !child.white_is_safe(child.b_kings & child.b_white) {
+            child.in_check = 1;
         }
     }
 
@@ -74,20 +72,19 @@ impl Reset {
     pub fn generate_next_white_pawn_move(&mut self, child: &mut Reset) -> bool {
         let mut b_destination: u64;
 
-        // Forward one (not promotion)
+        // Forward one
         if self.move_id < 20 {
             b_destination = self.b_current_piece << 8;
-            if self.b_current_piece & B_NOT_TOP_EDGE != 0 {
-                if (b_destination & self.b_all == 0) && 
-                    self.add_move_if_valid(child, b_destination) 
-                {
-                    if b_destination & B_NOT_TOP_EDGE != 0 {
-                        self.move_id = 20;
-                    } else {
-                        self.generate_promotion_moves(child, 10);
-                    }
-                    return true;
+            if self.b_current_piece & B_NOT_TOP_EDGE != 0 &&
+                (b_destination & self.b_all == 0) && 
+                self.add_move_if_valid(child, b_destination) 
+            {
+                if b_destination & B_NOT_TOP_EDGE != 0 {
+                    self.move_id = 20;
+                } else {
+                    self.generate_promotion_moves(child, 10);
                 }
+                return true;
             }
         }
                 
@@ -185,20 +182,19 @@ impl Reset {
     pub fn generate_next_black_pawn_move(&mut self, child: &mut Reset) -> bool {
         let mut b_destination: u64;
 
-        // Forward one (not promotion)
+        // Forward one
         if self.move_id < 20 {
             b_destination = self.b_current_piece >> 8;
-            if self.b_current_piece & B_NOT_BOTTOM_EDGE != 0 {
-                if (b_destination & self.b_all == 0) && 
-                    self.add_move_if_valid(child, b_destination) 
-                {
-                    if b_destination & B_NOT_BOTTOM_EDGE != 0 {
-                        self.move_id = 20;
-                    } else {
-                        self.generate_promotion_moves(child, 10);
-                    }
-                    return true;
+            if self.b_current_piece & B_NOT_BOTTOM_EDGE != 0 &&
+                (b_destination & self.b_all == 0) && 
+                self.add_move_if_valid(child, b_destination) 
+            {
+                if b_destination & B_NOT_BOTTOM_EDGE != 0 {
+                    self.move_id = 20;
+                } else {
+                    self.generate_promotion_moves(child, 10);
                 }
+                return true;
             }
         }
                 

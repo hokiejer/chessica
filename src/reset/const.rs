@@ -15,6 +15,15 @@ pub const B_NOT_RIGHT_EDGE: u64 = 0xfefefefefefefefe;
 pub const B_NOT_LEFT_EDGE: u64 = 0x7f7f7f7f7f7f7f7f;
 pub const B_NOT_BOTTOM_EDGE: u64 = 0xffffffffffffff00;
 
+pub const B_RANK_1: u64 = 0x00000000000000ff;
+pub const B_RANK_2: u64 = 0x000000000000ff00;
+pub const B_RANK_3: u64 = 0x0000000000ff0000;
+pub const B_RANK_4: u64 = 0x00000000ff000000;
+pub const B_RANK_5: u64 = 0x000000ff00000000;
+pub const B_RANK_6: u64 = 0x0000ff0000000000;
+pub const B_RANK_7: u64 = 0x00ff000000000000;
+pub const B_RANK_8: u64 = 0xff00000000000000;
+
 pub const B_KNIGHT_CAN_MOVE_0100: u64 = 0x0000fefefefefefe;
 pub const B_KNIGHT_CAN_MOVE_0200: u64 = 0x00fcfcfcfcfcfcfc;
 pub const B_KNIGHT_CAN_MOVE_0400: u64 = 0xfcfcfcfcfcfcfc00;
@@ -23,3 +32,4 @@ pub const B_KNIGHT_CAN_MOVE_0700: u64 = 0x7f7f7f7f7f7f0000;
 pub const B_KNIGHT_CAN_MOVE_0800: u64 = 0x3f3f3f3f3f3f3f00;
 pub const B_KNIGHT_CAN_MOVE_1000: u64 = 0x003f3f3f3f3f3f3f;
 pub const B_KNIGHT_CAN_MOVE_1100: u64 = 0x00007f7f7f7f7f7f;
+

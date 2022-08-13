@@ -1384,6 +1384,7 @@ mod tests {
         assert_eq!(r.move_id,10);
         assert_eq!(child.capture,1);
         assert_eq!(child.ep_capture,1);
+        assert_eq!(child.material,1);
     }
 
     #[test]
@@ -1410,6 +1411,7 @@ mod tests {
         assert_eq!(r.move_id,10);
         assert_eq!(child.capture,1);
         assert_eq!(child.ep_capture,1);
+        assert_eq!(child.material,1);
     }
 
     #[test]
@@ -1436,6 +1438,7 @@ mod tests {
         assert_eq!(r.move_id,10);
         assert_eq!(child.capture,1);
         assert_eq!(child.ep_capture,1);
+        assert_eq!(child.material,-1);
     }
 
     #[test]
@@ -1462,6 +1465,7 @@ mod tests {
         assert_eq!(r.move_id,10);
         assert_eq!(child.capture,1);
         assert_eq!(child.ep_capture,1);
+        assert_eq!(child.material,-1);
     }
 
 }

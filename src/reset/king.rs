@@ -307,5 +307,89 @@ mod tests {
         assert_eq!(r.move_id,10);
     }
 
+    #[test]
+    fn black_king_moves_basic() {
+        let mut r = prep_board("8/8/3k4/8/8/2K5/8/8 b - - 0 1");
+        let mut child = reset::new();
+        r.b_current_piece = utils::convert_square_to_bitstring("d6".to_string());
+
+        // d6 to d7
+        let fen = String::from("8/3k4/8/8/8/2K5/8/8 w - - 1 2");
+        let retval = r.generate_next_king_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d6".to_string()));
+        assert_eq!(r.move_id,20);
+        assert_eq!(child.capture,0);
+
+        // d6 to e7
+        let fen = String::from("8/4k3/8/8/8/2K5/8/8 w - - 1 2");
+        let retval = r.generate_next_king_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d6".to_string()));
+        assert_eq!(r.move_id,30);
+        assert_eq!(child.capture,0);
+
+        // d6 to e6
+        let fen = String::from("8/8/4k3/8/8/2K5/8/8 w - - 1 2");
+        let retval = r.generate_next_king_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d6".to_string()));
+        assert_eq!(r.move_id,40);
+        assert_eq!(child.capture,0);
+
+        // d6 to e5
+        let fen = String::from("8/8/8/4k3/8/2K5/8/8 w - - 1 2");
+        let retval = r.generate_next_king_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d6".to_string()));
+        assert_eq!(r.move_id,50);
+        assert_eq!(child.capture,0);
+
+        // d6 to d5
+        let fen = String::from("8/8/8/3k4/8/2K5/8/8 w - - 1 2");
+        let retval = r.generate_next_king_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d6".to_string()));
+        assert_eq!(r.move_id,60);
+        assert_eq!(child.capture,0);
+
+        // d6 to c5
+        let fen = String::from("8/8/8/2k5/8/2K5/8/8 w - - 1 2");
+        let retval = r.generate_next_king_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d6".to_string()));
+        assert_eq!(r.move_id,70);
+        assert_eq!(child.capture,0);
+
+        // d6 to c6
+        let fen = String::from("8/8/2k5/8/8/2K5/8/8 w - - 1 2");
+        let retval = r.generate_next_king_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d6".to_string()));
+        assert_eq!(r.move_id,80);
+        assert_eq!(child.capture,0);
+
+        // d6 to c7
+        let fen = String::from("8/2k5/8/8/8/2K5/8/8 w - - 1 2");
+        let retval = r.generate_next_king_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d6".to_string()));
+        assert_eq!(r.move_id,90);
+        assert_eq!(child.capture,0);
+
+        let retval = r.generate_next_king_move(&mut child);
+        assert!(!retval);
+        assert_eq!(r.b_current_piece,0);
+        assert_eq!(r.move_id,10);
+    }
+
 }
 

@@ -155,10 +155,13 @@ impl Reset {
             println!("King move");
             child.b_kings &= !child.b_from;
             child.b_kings |= child.b_to;
-            child.white_castle_k = 0;
-            child.white_castle_q = 0;
-            child.black_castle_k = 0;
-            child.black_castle_q = 0;
+            if self.white_to_move() {
+                child.white_castle_k = 0;
+                child.white_castle_q = 0;
+            } else {
+                child.black_castle_k = 0;
+                child.black_castle_q = 0;
+            }
         }
         // Move is invalid if I'm moving into check
         if self.white_to_move() {

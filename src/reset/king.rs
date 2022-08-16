@@ -119,6 +119,21 @@ impl Reset {
 
         if self.white_to_move() {
 
+            if self.move_id < 100 { 
+                println!("move_id < 100"); 
+            }
+            if self.white_castle_k != 0 {
+                println!("white_castle_k != 0");
+            }
+            if (self.b_all & B_WHITE_CASTLEK_EMPTY == 0) {
+                println!("squares empty");
+            }
+            if self.white_is_safe(B_WHITE_CASTLEK_SAFETY) {
+                println!("white is safe");
+            }
+            if self.add_move_if_valid(child, B_WHITE_CASTLEK_DESTINATION) {
+                println!("add move was valid");
+            }
             // White Castle Kingside
             if self.move_id < 100 && 
                 self.white_castle_k != 0 &&
@@ -126,16 +141,16 @@ impl Reset {
                 self.white_is_safe(B_WHITE_CASTLEK_SAFETY) &&
                 self.add_move_if_valid(child, B_WHITE_CASTLEK_DESTINATION)
             {
-                child.b_all &= 0xffffffffffffff7f;
-                child.b_white &= 0xffffffffffffff7f;
-                child.b_rooks &= 0xffffffffffffff7f;
-                child.b_all |= 0x0000000000000020;
-                child.b_white |= 0x0000000000000020;
-                child.b_rooks |= 0x0000000000000020;
+                child.b_all &= 0xfffffffffffffffe;
+                child.b_white &= 0xfffffffffffffffe;
+                child.b_rooks &= 0xfffffffffffffffe;
+                child.b_all |= 0x0000000000000004;
+                child.b_white |= 0x0000000000000004;
+                child.b_rooks |= 0x0000000000000004;
                 if !child.black_is_safe(child.b_kings & child.b_black) {
                     child.in_check = 1;
                 }
-                self.move_id = 110;
+                self.move_id = 100;
                 return true;
             }
 
@@ -146,12 +161,12 @@ impl Reset {
                 self.white_is_safe(B_WHITE_CASTLEQ_SAFETY) &&
                 self.add_move_if_valid(child, B_WHITE_CASTLEQ_DESTINATION)
             {
-                child.b_all &= 0xfffffffffffffffe;
-                child.b_white &= 0xfffffffffffffffe;
-                child.b_rooks &= 0xfffffffffffffffe;
-                child.b_all |= 0x0000000000000080;
-                child.b_white |= 0x0000000000000080;
-                child.b_rooks |= 0x0000000000000080;
+                child.b_all &= 0xffffffffffffff7f;
+                child.b_white &= 0xffffffffffffff7f;
+                child.b_rooks &= 0xffffffffffffff7f;
+                child.b_all |= 0x0000000000000010;
+                child.b_white |= 0x0000000000000010;
+                child.b_rooks |= 0x0000000000000010;
                 if !child.black_is_safe(child.b_kings & child.b_black) {
                     child.in_check = 1;
                 }
@@ -168,16 +183,16 @@ impl Reset {
                 self.black_is_safe(B_BLACK_CASTLEK_SAFETY) &&
                 self.add_move_if_valid(child, B_BLACK_CASTLEK_DESTINATION)
             {
-                child.b_all &= 0x7fffffffffffffff;
-                child.b_black &= 0x7fffffffffffffff;
-                child.b_rooks &= 0x7fffffffffffffff;
-                child.b_all |= 0x2000000000000000;
-                child.b_black |= 0x2000000000000000;
-                child.b_rooks |= 0x2000000000000000;
+                child.b_all &= 0xfeffffffffffffff;
+                child.b_black &= 0xfeffffffffffffff;
+                child.b_rooks &= 0xfeffffffffffffff;
+                child.b_all |= 0x0400000000000000;
+                child.b_black |= 0x0400000000000000;
+                child.b_rooks |= 0x0400000000000000;
                 if !child.white_is_safe(child.b_kings & child.b_white) {
                     child.in_check = 1;
                 }
-                self.move_id = 110;
+                self.move_id = 100;
                 return true;
             }
 
@@ -188,12 +203,12 @@ impl Reset {
                 self.black_is_safe(B_BLACK_CASTLEQ_SAFETY) &&
                 self.add_move_if_valid(child, B_BLACK_CASTLEQ_DESTINATION)
             {
-                child.b_all &= 0xfeffffffffffffff;
-                child.b_black &= 0xfeffffffffffffff;
-                child.b_rooks &= 0xfeffffffffffffff;
-                child.b_all |= 0x8000000000000000;
-                child.b_black |= 0x8000000000000000;
-                child.b_rooks |= 0x8000000000000000;
+                child.b_all &= 0x7fffffffffffffff;
+                child.b_black &= 0x7fffffffffffffff;
+                child.b_rooks &= 0x7fffffffffffffff;
+                child.b_all |= 0x1000000000000000;
+                child.b_black |= 0x1000000000000000;
+                child.b_rooks |= 0x1000000000000000;
                 if !child.white_is_safe(child.b_kings & child.b_white) {
                     child.in_check = 1;
                 }
@@ -388,6 +403,45 @@ mod tests {
         let retval = r.generate_next_king_move(&mut child);
         assert!(!retval);
         assert_eq!(r.b_current_piece,0);
+        assert_eq!(r.move_id,10);
+    }
+
+    #[test]
+    fn white_king_castle_kingside_valid() {
+        let mut r = prep_board("r1bqkbnr/pppp2pp/2n2p2/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 1");
+        let mut child = reset::new();
+        r.b_current_piece = utils::convert_square_to_bitstring("e1".to_string());
+
+        // e1 to e2
+        let fen = String::from("r1bqkbnr/pppp2pp/2n2p2/1B2p3/4P3/5N2/PPPPKPPP/RNBQ3R b kq - 1 1");
+        let retval = r.generate_next_king_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e1".to_string()));
+        assert_eq!(r.move_id,20);
+        assert_eq!(child.capture,0);
+
+        // e1 to f1
+        let fen = String::from("r1bqkbnr/pppp2pp/2n2p2/1B2p3/4P3/5N2/PPPP1PPP/RNBQ1K1R b kq - 1 1");
+        let retval = r.generate_next_king_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e1".to_string()));
+        assert_eq!(r.move_id,40);
+        assert_eq!(child.capture,0);
+
+        // e1 castle kingside
+        let fen = String::from("r1bqkbnr/pppp2pp/2n2p2/1B2p3/4P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 1 1");
+        let retval = r.generate_next_king_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e1".to_string()));
+        assert_eq!(r.move_id,100);
+        assert_eq!(child.capture,0);
+
+        let retval = r.generate_next_king_move(&mut child);
+        assert!(!retval);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d1".to_string()));
         assert_eq!(r.move_id,10);
     }
 

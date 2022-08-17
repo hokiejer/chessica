@@ -119,21 +119,6 @@ impl Reset {
 
         if self.white_to_move() {
 
-            if self.move_id < 100 { 
-                println!("move_id < 100"); 
-            }
-            if self.white_castle_k != 0 {
-                println!("white_castle_k != 0");
-            }
-            if (self.b_all & B_WHITE_CASTLEK_EMPTY == 0) {
-                println!("squares empty");
-            }
-            if self.white_is_safe(B_WHITE_CASTLEK_SAFETY) {
-                println!("white is safe");
-            }
-            if self.add_move_if_valid(child, B_WHITE_CASTLEK_DESTINATION) {
-                println!("add move was valid");
-            }
             // White Castle Kingside
             if self.move_id < 100 && 
                 self.white_castle_k != 0 &&
@@ -469,6 +454,19 @@ mod tests {
     }
 
     #[test]
+    fn white_king_castle_queenside_invalid() {
+        let mut r = prep_board("r3kr2/8/7b/8/8/8/8/R3K3 w Qq - 0 1");
+        let mut child = reset::new();
+        r.b_current_piece = utils::convert_square_to_bitstring("e1".to_string());
+        r.move_id = 90;
+
+        let retval = r.generate_next_king_move(&mut child);
+        assert!(!retval);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("a1".to_string()));
+        assert_eq!(r.move_id,10);
+    }
+
+    #[test]
     fn black_king_castle_kingside_valid() {
         let mut r = prep_board("rnbqk2r/ppppbppp/5n2/4p3/2B1P3/3P1N2/PPP2PPP/RNBQK2R b KQkq - 0 1");
         let mut child = reset::new();
@@ -495,6 +493,19 @@ mod tests {
         let retval = r.generate_next_king_move(&mut child);
         assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d8".to_string()));
+        assert_eq!(r.move_id,10);
+    }
+
+    #[test]
+    fn black_king_castle_kingside_invalid() {
+        let mut r = prep_board("4k2r/8/8/8/B7/8/8/R3K3 w Qk - 0 1");
+        let mut child = reset::new();
+        r.b_current_piece = utils::convert_square_to_bitstring("e8".to_string());
+        r.move_id = 90;
+
+        let retval = r.generate_next_king_move(&mut child);
+        assert!(!retval);
+        assert_eq!(r.b_current_piece,0);
         assert_eq!(r.move_id,10);
     }
 

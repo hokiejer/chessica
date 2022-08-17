@@ -445,5 +445,28 @@ mod tests {
         assert_eq!(r.move_id,10);
     }
 
+    #[test]
+    fn white_king_castle_queenside_valid() {
+        let mut r = prep_board("rnb1kb1r/ppp1qppp/4pn2/3p4/3P1B2/2N5/PPPQPPPP/R3KBNR w KQkq - 0 1");
+        let mut child = reset::new();
+        r.b_current_piece = utils::convert_square_to_bitstring("e1".to_string());
+
+        // e1 to d1
+        let fen = String::from("rnb1kb1r/ppp1qppp/4pn2/3p4/3P1B2/2N5/PPPQPPPP/R2K1BNR b kq - 1 1");
+        let retval = r.generate_next_king_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e1".to_string()));
+        assert_eq!(r.move_id,80);
+
+        // e1 castle queenside
+        let fen = String::from("rnb1kb1r/ppp1qppp/4pn2/3p4/3P1B2/2N5/PPPQPPPP/2KR1BNR b kq - 1 1");
+        let retval = r.generate_next_king_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("a1".to_string()));
+        assert_eq!(r.move_id,10);
+    }
+
 }
 

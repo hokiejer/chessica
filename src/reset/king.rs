@@ -469,6 +469,36 @@ mod tests {
     }
 
     #[test]
+    fn black_king_castle_kingside_valid() {
+        let mut r = prep_board("rnbqk2r/ppppbppp/5n2/4p3/2B1P3/3P1N2/PPP2PPP/RNBQK2R b KQkq - 0 1");
+        let mut child = reset::new();
+        r.b_current_piece = utils::convert_square_to_bitstring("e8".to_string());
+
+        // e8 to f8
+        let fen = String::from("rnbq1k1r/ppppbppp/5n2/4p3/2B1P3/3P1N2/PPP2PPP/RNBQK2R w KQ - 1 2");
+        let retval = r.generate_next_king_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e8".to_string()));
+        assert_eq!(r.move_id,40);
+        assert_eq!(child.capture,0);
+
+        // e1 castle kingside
+        let fen = String::from("rnbq1rk1/ppppbppp/5n2/4p3/2B1P3/3P1N2/PPP2PPP/RNBQK2R w KQ - 1 2");
+        let retval = r.generate_next_king_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e8".to_string()));
+        assert_eq!(r.move_id,100);
+        assert_eq!(child.capture,0);
+
+        let retval = r.generate_next_king_move(&mut child);
+        assert!(!retval);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d8".to_string()));
+        assert_eq!(r.move_id,10);
+    }
+
+    #[test]
     fn black_king_castle_queenside_valid() {
         let mut r = prep_board("r3kb1r/pppbqppp/2n1pn2/3p4/3P1B2/2N3P1/PPPQPPBP/2KR2NR b kq - 0 1");
         let mut child = reset::new();

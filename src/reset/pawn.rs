@@ -5,10 +5,8 @@ use crate::reset::r#const::B_NOT_UL_EDGE;
 use crate::reset::r#const::B_NOT_UR_EDGE;
 use crate::reset::r#const::B_NOT_DL_EDGE;
 use crate::reset::r#const::B_NOT_DR_EDGE;
-use crate::reset::r#const::B_RANK_1;
 use crate::reset::r#const::B_RANK_2;
 use crate::reset::r#const::B_RANK_7;
-use crate::reset::r#const::B_RANK_8;
 
 impl Reset {
 

@@ -1,10 +1,13 @@
 pub mod r#const;
+pub mod moves;
 
 use crate::reset::Reset;
+use std::rc::Rc;
 
 pub struct Tree<Reset> 
 {
     pub reset: Reset,
+    pub parent: Option<Rc<Tree<Reset>>>,
     pub children: Vec<Tree<Reset>>,
 }
 
@@ -14,6 +17,7 @@ pub fn new(reset: Reset) -> Tree<Reset> {
     let emptyvec = Vec::<Tree<Reset>>::with_capacity(MAX_EXPECTED_CHILD_MOVES);
     Tree {
         reset: reset,
+        parent: None,
         children: emptyvec,
     }
 }

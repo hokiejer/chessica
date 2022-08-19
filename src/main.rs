@@ -1,13 +1,19 @@
 pub mod utils; //include "utils/mod.rs"
 pub mod reset; //include "reset/mod.rs"
 pub mod bitops; //include "bitops/mod.rs";
+pub mod tree; //include "tree/mod.rs";
 
 fn main() {
-      let mut r = reset::new();
-      let starting_fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-      r.init_from_fen(starting_fen);
-      use std::mem;
-      use crate::reset::Reset;
-      println!("Size of Reset: {}",mem::size_of::<Reset>());
-      r.print();
+    let mut r = reset::new();
+    let starting_fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    r.init_from_fen(starting_fen);
+    use std::mem;
+    use crate::reset::Reset;
+    println!("Size of Reset: {}",mem::size_of::<Reset>());
+    r.print();
+    println!("");
+    println!("");
+
+    use crate::tree::Tree;
+    let t: Tree<Reset> = tree::new(r);
 }

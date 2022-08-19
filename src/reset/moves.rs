@@ -192,9 +192,6 @@ mod tests {
     use crate::utils;
     use crate::reset::Reset;
 
-    fn verify_generated_move(child: Reset, fen: &str) {
-    }
-
     #[test]
     fn move_init_move_generation() {
         let mut r = reset::new();

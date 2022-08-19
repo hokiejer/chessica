@@ -61,14 +61,12 @@ impl Reset {
     /// ```
     pub fn generate_next_move(&mut self, child: &mut Reset) -> bool {
         while self.b_current_piece != 0 {
-            println!("Current Piece: {:x}",self.b_current_piece);
             if self.b_current_piece & self.b_pawns != 0 { // Pawn
                 if self.generate_next_pawn_move(child) {
                     break;
                 }
             } else if self.b_current_piece & self.b_knights != 0 { // Knight
                 if self.generate_next_knight_move(child) {
-                    println!("Found a knight move!");
                     break;
                 }
             } else if self.b_current_piece & self.b_bishops != 0 { // Bishop

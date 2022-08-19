@@ -61,12 +61,14 @@ impl Reset {
     /// ```
     pub fn generate_next_move(&mut self, child: &mut Reset) -> bool {
         while self.b_current_piece != 0 {
+            println!("Current Piece: {:x}",self.b_current_piece);
             if self.b_current_piece & self.b_pawns != 0 { // Pawn
                 if self.generate_next_pawn_move(child) {
                     break;
                 }
             } else if self.b_current_piece & self.b_knights != 0 { // Knight
                 if self.generate_next_knight_move(child) {
+                    println!("Found a knight move!");
                     break;
                 }
             } else if self.b_current_piece & self.b_bishops != 0 { // Bishop
@@ -86,9 +88,6 @@ impl Reset {
                     break;
                 }
             }
-
-            // do stuff
-            self.consider_next_moveable_piece();
         }
         self.b_current_piece > 0
     }
@@ -193,6 +192,10 @@ impl Reset {
 mod tests {
     use crate::reset;
     use crate::utils;
+    use crate::reset::Reset;
+
+    fn verify_generated_move(child: Reset, fen: &str) {
+    }
 
     #[test]
     fn move_init_move_generation() {
@@ -305,6 +308,120 @@ mod tests {
         child.print();
         assert!(result);
         assert_eq!(child.in_check,1);
+    }
+
+    #[test]
+    fn generate_next_move_board_1() {
+        let mut r = reset::new();
+        let mut child: Reset = reset::new();
+        let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        r.init_from_fen(fen.to_string());
+        r.initialize_move_generation();
+
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/7N/PPPPPPPP/RNBQKB1R b KQkq - 1 1");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq - 1 1");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/2N5/PPPPPPPP/R1BQKBNR b KQkq - 1 1");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/N7/PPPPPPPP/R1BQKBNR b KQkq - 1 1");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/7P/PPPPPPP1/RNBQKBNR b KQkq - 0 1");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/7P/8/PPPPPPP1/RNBQKBNR b KQkq - 0 1");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/6P1/PPPPPP1P/RNBQKBNR b KQkq - 0 1");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/6P1/8/PPPPPP1P/RNBQKBNR b KQkq - 0 1");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/5P2/PPPPP1PP/RNBQKBNR b KQkq - 0 1");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/5P2/8/PPPPP1PP/RNBQKBNR b KQkq - 0 1");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/4P3/PPPP1PPP/RNBQKBNR b KQkq - 0 1");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/3P4/PPP1PPPP/RNBQKBNR b KQkq - 0 1");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/2P5/PP1PPPPP/RNBQKBNR b KQkq - 0 1");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/2P5/8/PP1PPPPP/RNBQKBNR b KQkq - 0 1");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/1P6/P1PPPPPP/RNBQKBNR b KQkq - 0 1");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/1P6/8/P1PPPPPP/RNBQKBNR b KQkq - 0 1");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/P7/1PPPPPPP/RNBQKBNR b KQkq - 0 1");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/P7/8/1PPPPPPP/RNBQKBNR b KQkq - 0 1");
+        let result = r.generate_next_move(&mut child);
+        assert!(!result);
+    }
+
+    #[test]
+    fn generate_next_move_board_2() {
+        let mut r = reset::new();
+        let mut child: Reset = reset::new();
+        let fen = "1rb2rqk/p3R1pp/1p6/5BP1/5P1Q/8/P4N1P/R5K1 b - - 0 1";
+        //assert_eq!(child.to_fen(),"1rb2rqk/p3R1pp/1p6/5BP1/5P1Q/8/P4N1P/R5K1 w - - 0 2");
+        //let result = r.generate_next_move(&mut child);
+        r.init_from_fen(fen.to_string());
+        r.initialize_move_generation();
+
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"1rb2rqk/p3R1pp/8/1p3BP1/5P1Q/8/P4N1P/R5K1 w - - 0 2");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"1rb2rqk/p3R1p1/1p5p/5BP1/5P1Q/8/P4N1P/R5K1 w - - 0 2");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"1rb2rqk/p3R1p1/1p6/5BPp/5P1Q/8/P4N1P/R5K1 w - - 0 2");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"1rb2rqk/p3R2p/1p4p1/5BP1/5P1Q/8/P4N1P/R5K1 w - - 0 2");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"1rb2rqk/4R1pp/pp6/5BP1/5P1Q/8/P4N1P/R5K1 w - - 0 2");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"1rb2rqk/4R1pp/1p6/p4BP1/5P1Q/8/P4N1P/R5K1 w - - 0 2");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"1rb2r1k/p3Rqpp/1p6/5BP1/5P1Q/8/P4N1P/R5K1 w - - 1 2");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"1rb2r1k/p3R1pp/1p2q3/5BP1/5P1Q/8/P4N1P/R5K1 w - - 1 2");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"1rb2r1k/p3R1pp/1p6/3q1BP1/5P1Q/8/P4N1P/R5K1 w - - 1 2");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"1rb2r1k/p3R1pp/1p6/5BP1/2q2P1Q/8/P4N1P/R5K1 w - - 1 2");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"1rb2r1k/p3R1pp/1p6/5BP1/5P1Q/1q6/P4N1P/R5K1 w - - 1 2");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"1rb2r1k/p3R1pp/1p6/5BP1/5P1Q/8/q4N1P/R5K1 w - - 0 2");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"1rb3qk/p3Rrpp/1p6/5BP1/5P1Q/8/P4N1P/R5K1 w - - 1 2");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"1rb3qk/p3R1pp/1p3r2/5BP1/5P1Q/8/P4N1P/R5K1 w - - 1 2");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"1rb3qk/p3R1pp/1p6/5rP1/5P1Q/8/P4N1P/R5K1 w - - 0 2");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"1rb1r1qk/p3R1pp/1p6/5BP1/5P1Q/8/P4N1P/R5K1 w - - 1 2");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"1rbr2qk/p3R1pp/1p6/5BP1/5P1Q/8/P4N1P/R5K1 w - - 1 2");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"1r3rqk/p2bR1pp/1p6/5BP1/5P1Q/8/P4N1P/R5K1 w - - 1 2");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"1r3rqk/p3R1pp/1p2b3/5BP1/5P1Q/8/P4N1P/R5K1 w - - 1 2");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"1r3rqk/p3R1pp/1p6/5bP1/5P1Q/8/P4N1P/R5K1 w - - 0 2");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"1r3rqk/pb2R1pp/1p6/5BP1/5P1Q/8/P4N1P/R5K1 w - - 1 2");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"1r3rqk/p3R1pp/bp6/5BP1/5P1Q/8/P4N1P/R5K1 w - - 1 2");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"2b2rqk/pr2R1pp/1p6/5BP1/5P1Q/8/P4N1P/R5K1 w - - 1 2");
+        let result = r.generate_next_move(&mut child);
+        assert_eq!(child.to_fen(),"r1b2rqk/p3R1pp/1p6/5BP1/5P1Q/8/P4N1P/R5K1 w - - 1 2");
+        let result = r.generate_next_move(&mut child);
+        assert!(!result);
     }
 
 }

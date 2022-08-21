@@ -7,7 +7,9 @@ use crate::reset::r#const::B_UPPER_RIGHT_CORNER;
 
 impl Reset {
 
-    /// Prepare a Reset to generate moves
+    /// Prepare a Reset to generate moves.  This is called from both `init_from_fen` and after a
+    /// child is created by `generate_next_move`.  That way any new Reset is ready to generate
+    /// moves.
     ///
     /// # Examples
     /// ```
@@ -29,10 +31,6 @@ impl Reset {
     ///
     /// # Examples
     /// ```
-    /// let mut r = chessica::reset::new();
-    /// let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    /// r.init_from_fen(fen.to_string());
-    /// r.initialize_move_generation();
     /// ```
     pub fn consider_next_moveable_piece(&mut self) {
         if self.white_to_move() {
@@ -56,7 +54,6 @@ impl Reset {
     /// let mut child = chessica::reset::new();
     /// let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     /// r.init_from_fen(fen.to_string());
-    /// r.initialize_move_generation();
     /// r.generate_next_move(&mut child);
     /// ```
     pub fn generate_next_move(&mut self, child: &mut Reset) -> bool {
@@ -87,6 +84,7 @@ impl Reset {
                 }
             }
         }
+        child.initialize_move_generation();
         self.b_current_piece > 0
     }
 
@@ -214,7 +212,6 @@ mod tests {
         let mut r = reset::new();
         let fen = "4k2r/8/8/8/8/8/8/R3K3 w Qk - 0 1";
         r.init_from_fen(fen.to_string());
-        r.initialize_move_generation();
         assert_eq!(r.b_current_piece,0x0000000000000008);
         r.consider_next_moveable_piece();
         assert_eq!(r.b_current_piece,0x0000000000000080);
@@ -224,7 +221,6 @@ mod tests {
         let mut r = reset::new();
         let fen = "4k2r/8/8/8/8/8/8/R3K3 b Qk - 0 1";
         r.init_from_fen(fen.to_string());
-        r.initialize_move_generation();
         assert_eq!(r.b_current_piece,0x0100000000000000);
         r.consider_next_moveable_piece();
         assert_eq!(r.b_current_piece,0x0800000000000000);
@@ -311,7 +307,6 @@ mod tests {
         let mut child: Reset = reset::new();
         let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         r.init_from_fen(fen.to_string());
-        r.initialize_move_generation();
 
         let result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/7N/PPPPPPPP/RNBQKB1R b KQkq - 1 1");
@@ -365,7 +360,6 @@ mod tests {
         //assert_eq!(child.to_fen(),"1rb2rqk/p3R1pp/1p6/5BP1/5P1Q/8/P4N1P/R5K1 w - - 0 2");
         //let result = r.generate_next_move(&mut child);
         r.init_from_fen(fen.to_string());
-        r.initialize_move_generation();
 
         let result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1rb2rqk/p3R1pp/8/1p3BP1/5P1Q/8/P4N1P/R5K1 w - - 0 2");

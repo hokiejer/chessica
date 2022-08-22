@@ -85,7 +85,7 @@ impl Reset {
             }
         }
         child.initialize_move_generation();
-        self.b_current_piece > 0
+        self.b_current_piece != 0
     }
 
 

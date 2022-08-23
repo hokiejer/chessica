@@ -26,7 +26,6 @@ impl Reset {
         if self.move_id < next_line {
             let mut b_target = self.b_current_piece << ((self.move_id % 10) * 7);
             loop {
-                println!("Move ID == {}",self.move_id);
                 // If we can't move any farther, give up on this line
                 if b_target & B_NOT_UR_EDGE == 0 {
                     self.move_id = next_line;
@@ -54,7 +53,6 @@ impl Reset {
         if self.move_id < next_line {
             let mut b_target = self.b_current_piece >> ((self.move_id % 10) * 9);
             loop {
-                println!("Move ID == {}",self.move_id);
                 // If we can't move any farther, give up on this line
                 if b_target & B_NOT_DR_EDGE == 0 {
                     self.move_id = next_line;
@@ -82,7 +80,6 @@ impl Reset {
         if self.move_id < next_line {
             let mut b_target = self.b_current_piece >> ((self.move_id % 10) * 7);
             loop {
-                println!("Move ID == {}",self.move_id);
                 // If we can't move any farther, give up on this line
                 if b_target & B_NOT_DL_EDGE == 0 {
                     self.move_id = next_line;
@@ -108,7 +105,6 @@ impl Reset {
         // Up Left
         let mut b_target = self.b_current_piece << ((self.move_id % 10) * 9);
         loop {
-            println!("Move ID == {}",self.move_id);
             // If we can't move any farther, give up on this line
             if b_target & B_NOT_UL_EDGE == 0 {
                 break;

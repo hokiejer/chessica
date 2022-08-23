@@ -8,15 +8,15 @@ fn main() {
     use crate::reset::Reset;
     use crate::tree::Tree;
 
-    let mut r = reset::new();
     let starting_fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     println!("Size of Reset: {}",mem::size_of::<Reset>());
 
     let mut t: Tree = tree::from_fen(starting_fen);
-    if t.add_next_child() {
-        let mut child = t.children.last().unwrap();
+
+    let mut i = 0;
+    while t.add_next_child() {
+        let mut child = &mut t.children[i];
         child.print();
-    } else {
-        // no child added
+        i += 1;
     }
 }

@@ -3,12 +3,14 @@ pub mod moves;
 
 use crate::reset::Reset;
 use std::cell::RefCell;
-use std::rc::{Rc, Weak};
+//use std::sync::Arc;
+use std::rc::{Weak};
+
 
 pub struct Tree
 {
     pub reset: Reset,
-    pub parent: Option<Rc<Tree>>,
+    pub parent: Option<Weak<Tree>>,
     pub children: Vec<Tree>,
 }
 
@@ -43,20 +45,20 @@ impl Tree {
         self.children.push(child);
     }
 
-    pub fn add_child_first(&mut self, child: Tree) {
+    //pub fn add_child_first(&mut self, child: Tree) {
 
-        let child = crate::tree::new();
-        self.children.insert(0,child);
-    }
+        //let child = crate::tree::new();
+        //self.children.insert(0,child);
+    //}
 
-    pub fn get_child_last(&mut self, child: Tree) {
+    //pub fn get_child_last(&mut self, child: Tree) {
 
-        let child = crate::tree::new();
-        self.children.push(child);
-    }
+        //let child = crate::tree::new();
+        //self.children.push(child);
+    //}
 
-    pub fn swap_with_first(&mut self) {
-    }
+    //pub fn swap_with_first(&mut self) {
+    //}
 }
 
 #[cfg(test)]

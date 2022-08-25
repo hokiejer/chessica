@@ -120,6 +120,7 @@ impl Reset {
         } else if !self.black_is_safe(self.b_kings & self.b_black) {
             self.in_check = 1;
         }
+        self.initialize_move_generation();
     }
 
     /// Generate a FEN notation string from a reset

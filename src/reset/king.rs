@@ -219,7 +219,6 @@ mod tests {
         let mut r = reset::new();
         let fen = String::from(fen);
         r.init_from_fen(fen);
-        r.initialize_move_generation();
         r
     }
 

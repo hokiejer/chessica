@@ -8,7 +8,11 @@ pub fn lowest_bit(bitstring: u64) -> u64 {
 }
 
 pub fn next_lowest_bit(bitstring: u64, singlebit: u64) -> u64 {
-    lowest_bit(!((singlebit << 1) - 1) & bitstring)
+    if singlebit == 0x8000000000000000 {
+        0
+    } else {
+        lowest_bit(!((singlebit << 1) - 1) & bitstring)
+    }
 }
 
 // I think O(log(log(n)) is the best I can do here
@@ -57,7 +61,7 @@ mod tests {
     fn bitops_next_lowest_bit() {
         assert_eq!(bitops::next_lowest_bit(0x0000000000000000,0x0000000100000000),
             0x0000000000000000, "empty string");
-        assert_eq!(bitops::next_lowest_bit(0x1000000000000000,0x1000000000000000),
+        assert_eq!(bitops::next_lowest_bit(0x8000000000000000,0x8000000000000000),
             0x0000000000000000, "left-most");
         assert_eq!(bitops::next_lowest_bit(0x0000000000000001,0x0000000000000001),
             0x0000000000000000, "right-most");

@@ -7,7 +7,9 @@ use crate::reset::r#const::B_UPPER_RIGHT_CORNER;
 
 impl Reset {
 
-    /// Prepare a Reset to generate moves
+    /// Prepare a Reset to generate moves.  This is called from both `init_from_fen` and after a
+    /// child is created by `generate_next_move`.  That way any new Reset is ready to generate
+    /// moves.
     ///
     /// # Examples
     /// ```
@@ -29,10 +31,6 @@ impl Reset {
     ///
     /// # Examples
     /// ```
-    /// let mut r = chessica::reset::new();
-    /// let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    /// r.init_from_fen(fen.to_string());
-    /// r.initialize_move_generation();
     /// ```
     pub fn consider_next_moveable_piece(&mut self) {
         if self.white_to_move() {
@@ -46,9 +44,9 @@ impl Reset {
 
     /// Generate the next move for a Reset
     ///
-    /// Returns Boolean indicating `true` if move options have not been exhausted
-    /// and `false` if they have.  Expects the child reset to already be initialized 
-    /// from the parent.
+    /// Returns Boolean indicating `true` if a move was successfully returned
+    /// and `false` if no moves remain.  Expects the child reset to already be 
+    /// initialized from the parent.
     ///
     /// # Examples
     /// ```
@@ -56,38 +54,49 @@ impl Reset {
     /// let mut child = chessica::reset::new();
     /// let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     /// r.init_from_fen(fen.to_string());
-    /// r.initialize_move_generation();
     /// r.generate_next_move(&mut child);
     /// ```
     pub fn generate_next_move(&mut self, child: &mut Reset) -> bool {
+        let mut found_move: bool = false;
         while self.b_current_piece != 0 {
             if self.b_current_piece & self.b_pawns != 0 { // Pawn
                 if self.generate_next_pawn_move(child) {
+                    found_move = true;
                     break;
                 }
             } else if self.b_current_piece & self.b_knights != 0 { // Knight
                 if self.generate_next_knight_move(child) {
+                    found_move = true;
                     break;
                 }
             } else if self.b_current_piece & self.b_bishops != 0 { // Bishop
                 if self.generate_next_bishop_move(child) {
+                    found_move = true;
                     break;
                 }
             } else if self.b_current_piece & self.b_rooks != 0 { // Rook
                 if self.generate_next_rook_move(child) {
+                    found_move = true;
                     break;
                 }
             } else if self.b_current_piece & self.b_queens != 0 { // Queen
                 if self.generate_next_queen_move(child) {
+                    found_move = true;
                     break;
                 }
             } else { // King
                 if self.generate_next_king_move(child) {
+                    found_move = true;
                     break;
                 }
             }
         }
-        self.b_current_piece > 0
+        if found_move {
+            child.initialize_move_generation();
+            true
+        } else {
+            false
+        }
     }
 
 
@@ -96,13 +105,11 @@ impl Reset {
     pub fn add_move_if_valid(&mut self, child: &mut Reset, b_destination: u64) -> bool {
 
         use crate::utils;
-        println!("In add_move_if_valid ({} to {})", utils::convert_bitstring_to_square(self.b_current_piece),utils::convert_bitstring_to_square(b_destination));
         self.init_child(child);
         child.b_from = self.b_current_piece;
         child.b_to = b_destination;
 
         if child.b_to & child.b_all != 0 { // Capture
-            println!("Capture Processing!!");
             child.capture_processing();
         }
         child.b_all &= !child.b_from;
@@ -114,23 +121,17 @@ impl Reset {
             child.b_black &= !child.b_from;
             child.b_black |= child.b_to;
         }
-        child.b_white &= !child.b_from;
-        child.b_black &= !child.b_from;
         if child.b_from & child.b_pawns != 0 {
-            println!("Pawn move");
             child.b_pawns &= !child.b_from;
             child.b_pawns |= child.b_to;
             child.halfmove_clock = 0; // Resets on pawn move
         } else if child.b_from & child.b_knights != 0 {
-            println!("Knight move");
             child.b_knights &= !child.b_from;
             child.b_knights |= child.b_to;
         } else if child.b_from & child.b_bishops != 0 {
-            println!("Bishop move");
             child.b_bishops &= !child.b_from;
             child.b_bishops |= child.b_to;
         } else if child.b_from & child.b_rooks != 0 {
-            println!("Rook move");
             child.b_rooks &= !child.b_from;
             child.b_rooks |= child.b_to;
             if child.b_from & B_FOUR_CORNERS != 0 {
@@ -145,11 +146,9 @@ impl Reset {
                 }
             }
         } else if child.b_from & child.b_queens != 0 {
-            println!("Queen move");
             child.b_queens &= !child.b_from;
             child.b_queens |= child.b_to;
         } else {
-            println!("King move");
             child.b_kings &= !child.b_from;
             child.b_kings |= child.b_to;
             if self.white_to_move() {
@@ -162,21 +161,16 @@ impl Reset {
         }
         // Move is invalid if I'm moving into check
         if self.white_to_move() {
-            println!("White move - safety check");
             if !child.white_is_safe(child.b_kings & child.b_white) {
-                println!("White is not safe!");
                 return false;
             }
-            println!("White is safe!");
             if !child.black_is_safe(child.b_kings & child.b_black) {
                 child.in_check = 1;
             }
         } else {
-            println!("Black move - safety check");
             if !child.black_is_safe(child.b_kings & child.b_black) {
                 return false;
             }
-            println!("Black is safe!");
             if !child.white_is_safe(child.b_kings & child.b_white) {
                 child.in_check = 1;
             }
@@ -184,6 +178,7 @@ impl Reset {
 
         true
     }
+
 }
 
 #[cfg(test)]
@@ -191,9 +186,6 @@ mod tests {
     use crate::reset;
     use crate::utils;
     use crate::reset::Reset;
-
-    fn verify_generated_move(child: Reset, fen: &str) {
-    }
 
     #[test]
     fn move_init_move_generation() {
@@ -217,7 +209,6 @@ mod tests {
         let mut r = reset::new();
         let fen = "4k2r/8/8/8/8/8/8/R3K3 w Qk - 0 1";
         r.init_from_fen(fen.to_string());
-        r.initialize_move_generation();
         assert_eq!(r.b_current_piece,0x0000000000000008);
         r.consider_next_moveable_piece();
         assert_eq!(r.b_current_piece,0x0000000000000080);
@@ -227,7 +218,6 @@ mod tests {
         let mut r = reset::new();
         let fen = "4k2r/8/8/8/8/8/8/R3K3 b Qk - 0 1";
         r.init_from_fen(fen.to_string());
-        r.initialize_move_generation();
         assert_eq!(r.b_current_piece,0x0100000000000000);
         r.consider_next_moveable_piece();
         assert_eq!(r.b_current_piece,0x0800000000000000);
@@ -314,7 +304,6 @@ mod tests {
         let mut child: Reset = reset::new();
         let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         r.init_from_fen(fen.to_string());
-        r.initialize_move_generation();
 
         let result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/7N/PPPPPPPP/RNBQKB1R b KQkq - 1 1");
@@ -327,35 +316,35 @@ mod tests {
         let result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/7P/PPPPPPP1/RNBQKBNR b KQkq - 0 1");
         let result = r.generate_next_move(&mut child);
-        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/7P/8/PPPPPPP1/RNBQKBNR b KQkq - 0 1");
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/7P/8/PPPPPPP1/RNBQKBNR b KQkq h3 0 1");
         let result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/6P1/PPPPPP1P/RNBQKBNR b KQkq - 0 1");
         let result = r.generate_next_move(&mut child);
-        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/6P1/8/PPPPPP1P/RNBQKBNR b KQkq - 0 1");
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/6P1/8/PPPPPP1P/RNBQKBNR b KQkq g3 0 1");
         let result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/5P2/PPPPP1PP/RNBQKBNR b KQkq - 0 1");
         let result = r.generate_next_move(&mut child);
-        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/5P2/8/PPPPP1PP/RNBQKBNR b KQkq - 0 1");
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/5P2/8/PPPPP1PP/RNBQKBNR b KQkq f3 0 1");
         let result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/4P3/PPPP1PPP/RNBQKBNR b KQkq - 0 1");
         let result = r.generate_next_move(&mut child);
-        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1");
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1");
         let result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/3P4/PPP1PPPP/RNBQKBNR b KQkq - 0 1");
         let result = r.generate_next_move(&mut child);
-        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1");
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq d3 0 1");
         let result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/2P5/PP1PPPPP/RNBQKBNR b KQkq - 0 1");
         let result = r.generate_next_move(&mut child);
-        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/2P5/8/PP1PPPPP/RNBQKBNR b KQkq - 0 1");
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/2P5/8/PP1PPPPP/RNBQKBNR b KQkq c3 0 1");
         let result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/1P6/P1PPPPPP/RNBQKBNR b KQkq - 0 1");
         let result = r.generate_next_move(&mut child);
-        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/1P6/8/P1PPPPPP/RNBQKBNR b KQkq - 0 1");
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/1P6/8/P1PPPPPP/RNBQKBNR b KQkq b3 0 1");
         let result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/P7/1PPPPPPP/RNBQKBNR b KQkq - 0 1");
         let result = r.generate_next_move(&mut child);
-        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/P7/8/1PPPPPPP/RNBQKBNR b KQkq - 0 1");
+        assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/P7/8/1PPPPPPP/RNBQKBNR b KQkq a3 0 1");
         let result = r.generate_next_move(&mut child);
         assert!(!result);
     }
@@ -368,20 +357,19 @@ mod tests {
         //assert_eq!(child.to_fen(),"1rb2rqk/p3R1pp/1p6/5BP1/5P1Q/8/P4N1P/R5K1 w - - 0 2");
         //let result = r.generate_next_move(&mut child);
         r.init_from_fen(fen.to_string());
-        r.initialize_move_generation();
 
         let result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1rb2rqk/p3R1pp/8/1p3BP1/5P1Q/8/P4N1P/R5K1 w - - 0 2");
         let result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1rb2rqk/p3R1p1/1p5p/5BP1/5P1Q/8/P4N1P/R5K1 w - - 0 2");
         let result = r.generate_next_move(&mut child);
-        assert_eq!(child.to_fen(),"1rb2rqk/p3R1p1/1p6/5BPp/5P1Q/8/P4N1P/R5K1 w - - 0 2");
+        assert_eq!(child.to_fen(),"1rb2rqk/p3R1p1/1p6/5BPp/5P1Q/8/P4N1P/R5K1 w - h6 0 2");
         let result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1rb2rqk/p3R2p/1p4p1/5BP1/5P1Q/8/P4N1P/R5K1 w - - 0 2");
         let result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1rb2rqk/4R1pp/pp6/5BP1/5P1Q/8/P4N1P/R5K1 w - - 0 2");
         let result = r.generate_next_move(&mut child);
-        assert_eq!(child.to_fen(),"1rb2rqk/4R1pp/1p6/p4BP1/5P1Q/8/P4N1P/R5K1 w - - 0 2");
+        assert_eq!(child.to_fen(),"1rb2rqk/4R1pp/1p6/p4BP1/5P1Q/8/P4N1P/R5K1 w - a6 0 2");
         let result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1rb2r1k/p3Rqpp/1p6/5BP1/5P1Q/8/P4N1P/R5K1 w - - 1 2");
         let result = r.generate_next_move(&mut child);

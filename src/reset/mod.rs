@@ -185,3 +185,27 @@ pub fn new() -> Reset {
     }
 }
 
+/// Bitstring of all black pieces
+///
+/// This dynamically replaces `b_black` that used to be a Reset field
+impl Reset {
+    pub fn b_black(&self) -> u64 {
+        self.b_all & !self.b_white
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::reset;
+
+    #[test]
+    fn reset_b_black() {
+        let mut r = reset::new();
+        r.b_all = 0xf0f0f0f0f0f0f0f0;
+        r.b_white = 0xf000f000f000f000;
+        assert_eq!(r.b_black(),0x00f000f000f000f0);
+        r.b_all = 0x0000700000000002;
+        r.b_white = 0x0000600000000000;
+        assert_eq!(r.b_black(),0x0000100000000002);
+    }
+}

@@ -65,17 +65,14 @@ pub mod profiling;
 /// | ----------------- | ---- | ---- | ----- | ----------- |
 /// | b_current_piece   | u64  | 8    |    8  | Bitstring representing the piece currently under consideration for move generation |
 /// | b_en_passant      | u64  | 8    |   16  | Bitstring representing a piece that is eligible for en passant capture.  This is an entire bitstring to represent a single bit, which seems wasteful. |
-/// | b_move_data       | u64  | 8    |   24  | Is this even needed anymore? |
-/// | score             | i32  | 4    |   28  | Score of this reset.  White is positive, Black negative.  If white is up exactly a pawn, the score will be 1,000,000.  Checkmate for Black is -128,000,000. |
-/// | move_id           | u8   | 1    |   29  | ID of tne next move to be considered for a given piece type |
-/// | to_move           | u8   | 1    |   30  | `0` if it is white's move, `1` if it is black's move |
-/// | move_data         | u8   | 1    |   31  | Is this even needed anymore? |
-/// | capture           | u8   | 1    |   32  | `1` if the last move was a capture, `0` otherwise |
-/// | in_check          | u8   | 1    |   33  | `1` if the side moving is currently in check, `0` otherwise |
-/// | ep_capture        | u8   | 1    |   34  | `1` if the last move was an en passant capture, `0` otherwise |
-/// | promotion         | u8   | 1    |   35  | `1` if the last move was a promotion, `0` otherwise |
-/// | king_castled      | u8   | 1    |   36  | `1` if the last move was a castle, `0` otherwise |
-/// | game_over         | u8   | 1    |   37  | `1` if the game is over |
+/// | score             | i32  | 4    |   20  | Score of this reset.  White is positive, Black negative.  If white is up exactly a pawn, the score will be 1,000,000.  Checkmate for Black is -128,000,000. |
+/// | move_id           | u8   | 1    |   21  | ID of tne next move to be considered for a given piece type |
+/// | to_move           | u8   | 1    |   22  | `0` if it is white's move, `1` if it is black's move |
+/// | capture           | u8   | 1    |   23  | `1` if the last move was a capture, `0` otherwise |
+/// | in_check          | u8   | 1    |   24  | `1` if the side moving is currently in check, `0` otherwise |
+/// | promotion         | u8   | 1    |   25  | `1` if the last move was a promotion, `0` otherwise |
+/// | king_castled      | u8   | 1    |   26  | `1` if the last move was a castle, `0` otherwise |
+/// | game_over         | u8   | 1    |   27  | `1` if the game is over |
 ///
 ///
 /// ## Fields that can be garbage in a new child
@@ -104,28 +101,25 @@ pub struct Reset {
     b_kings: u64,               // 8 bytes ( 72)
     material: i8,               // 1 byte  ( 73)
     halfmove_clock: u8,         // 1 byte  ( 74)
-    fullmove_number: u8,        // 1 byte  ( 74)
-    white_king_square: u8,      // 1 byte  ( 75)
-    black_king_square: u8,      // 1 byte  ( 76)
-    white_castle_q: u8,         // 1 byte  ( 77) bit
-    white_castle_k: u8,         // 1 byte  ( 78) bit
-    black_castle_q: u8,         // 1 byte  ( 79) bit
-    black_castle_k: u8,         // 1 byte  ( 80) bit
+    fullmove_number: u8,        // 1 byte  ( 75)
+    white_king_square: u8,      // 1 byte  ( 76)
+    black_king_square: u8,      // 1 byte  ( 77)
+    white_castle_q: u8,         // 1 byte  ( 78) bit
+    white_castle_k: u8,         // 1 byte  ( 79) bit
+    black_castle_q: u8,         // 1 byte  ( 80) bit
+    black_castle_k: u8,         // 1 byte  ( 81) bit
 
     //Fields cleared in a new child
     b_current_piece: u64,       // 8 bytes (  8)
     b_en_passant: u64,          // 8 bytes ( 16)
-    b_move_data: u64,           // 8 bytes ( 24)
-    score: i32,                 // 4 bytes ( 28)
-    move_id: u8,                // 1 byte  ( 29)
-    to_move: u8,                // 1 byte  ( 30) bit
-    move_data: u8,              // 1 byte  ( 31)
-    capture: u8,                // 1 byte  ( 32) bit
-    in_check: u8,               // 1 byte  ( 33) bit
-    ep_capture: u8,             // 1 byte  ( 34) bit
-    promotion: u8,              // 1 byte  ( 35) bit
-    king_castled: u8,           // 1 byte  ( 36) bit
-    game_over: u8,              // 1 byte  ( 37) bit
+    score: i32,                 // 4 bytes ( 20)
+    move_id: u8,                // 1 byte  ( 21)
+    to_move: u8,                // 1 byte  ( 22) bit
+    capture: u8,                // 1 byte  ( 23) bit
+    in_check: u8,               // 1 byte  ( 24) bit
+    promotion: u8,              // 1 byte  ( 25) bit
+    king_castled: u8,           // 1 byte  ( 26) bit
+    game_over: u8,              // 1 byte  ( 27) bit
 
     //Fields that can be garbage in a new child
     b_from: u64,                // 8 bytes (  8)
@@ -170,14 +164,11 @@ pub fn new() -> Reset {
 
         b_current_piece: 0,
         b_en_passant: 0,
-        b_move_data: 0,
         score: 0,
         move_id: 0,
         to_move: 0,
-        move_data: 0,
         capture: 0,
         in_check: 0,
-        ep_capture: 0,
         promotion: 0,
         king_castled: 0,
         game_over: 0,

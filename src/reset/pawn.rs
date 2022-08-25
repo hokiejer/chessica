@@ -57,7 +57,6 @@ impl Reset {
         child.b_pawns &= !b_pawn_to_remove;
         child.material += 1;
         child.capture = 1;
-        child.ep_capture = 1;
         if !child.white_is_safe(child.b_kings & child.b_white) {
             return false;
         }
@@ -167,7 +166,6 @@ impl Reset {
         child.b_pawns &= !b_pawn_to_remove;
         child.material -= 1;
         child.capture = 1;
-        child.ep_capture = 1;
         if !child.black_is_safe(child.b_kings & child.b_black) {
             return false;
         }
@@ -1376,7 +1374,6 @@ mod tests {
         assert_eq!(r.b_current_piece,0);
         assert_eq!(r.move_id,10);
         assert_eq!(child.capture,1);
-        assert_eq!(child.ep_capture,1);
         assert_eq!(child.material,1);
     }
 
@@ -1403,7 +1400,6 @@ mod tests {
         assert_eq!(r.b_current_piece,0);
         assert_eq!(r.move_id,10);
         assert_eq!(child.capture,1);
-        assert_eq!(child.ep_capture,1);
         assert_eq!(child.material,1);
     }
 
@@ -1430,7 +1426,6 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("h6".to_string()));
         assert_eq!(r.move_id,10);
         assert_eq!(child.capture,1);
-        assert_eq!(child.ep_capture,1);
         assert_eq!(child.material,-1);
     }
 
@@ -1457,7 +1452,6 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("h6".to_string()));
         assert_eq!(r.move_id,10);
         assert_eq!(child.capture,1);
-        assert_eq!(child.ep_capture,1);
         assert_eq!(child.material,-1);
     }
 

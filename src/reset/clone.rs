@@ -38,14 +38,11 @@ impl Reset {
 
         clone.b_current_piece = self.b_current_piece;
         clone.b_en_passant = self.b_en_passant;
-        clone.b_move_data = self.b_move_data;
         clone.score = self.score;
         clone.move_id = self.move_id;
         clone.to_move = self.to_move;
-        clone.move_data = self.move_data;
         clone.capture = self.capture;
         clone.in_check = self.in_check;
-        clone.ep_capture = self.ep_capture;
         clone.promotion = self.promotion;
         clone.king_castled = self.king_castled;
         clone.game_over = self.game_over;
@@ -103,12 +100,9 @@ mod tests {
         r.move_id = 30;
         r.b_current_piece = 111;
         r.b_en_passant = 222;
-        r.b_move_data = 333;
         r.score = 44;
-        r.move_data = 66;
         r.capture = 1;
         r.in_check = 1;
-        r.ep_capture = 1;
         r.promotion = 1;
         r.king_castled = 1;
         r.game_over = 1;
@@ -135,12 +129,9 @@ mod tests {
         assert_eq!(child.move_id,30);
         assert_eq!(child.b_current_piece,111);
         assert_eq!(child.b_en_passant,222);
-        assert_eq!(child.b_move_data,333);
         assert_eq!(child.score,44);
-        assert_eq!(child.move_data,66);
         assert_eq!(child.capture,1);
         assert_eq!(child.in_check,1);
-        assert_eq!(child.ep_capture,1);
         assert_eq!(child.promotion,1);
         assert_eq!(child.king_castled,1);
         assert_eq!(child.game_over,1);

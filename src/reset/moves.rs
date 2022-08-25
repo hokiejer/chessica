@@ -22,7 +22,7 @@ impl Reset {
         if self.white_to_move() {
             self.b_current_piece = bitops::lowest_bit(self.b_white);
         } else {
-            self.b_current_piece = bitops::lowest_bit(self.b_black);
+            self.b_current_piece = bitops::lowest_bit(self.b_black());
         }
         self.move_id = 10;	//Prime the first move
     }
@@ -36,7 +36,7 @@ impl Reset {
         if self.white_to_move() {
             self.b_current_piece = bitops::next_lowest_bit(self.b_white, self.b_current_piece);
         } else {
-            self.b_current_piece = bitops::next_lowest_bit(self.b_black, self.b_current_piece);
+            self.b_current_piece = bitops::next_lowest_bit(self.b_black(), self.b_current_piece);
         }
         self.move_id = 10;
     }
@@ -117,9 +117,6 @@ impl Reset {
         if self.white_to_move() {
             child.b_white &= !child.b_from;
             child.b_white |= child.b_to;
-        } else {
-            child.b_black &= !child.b_from;
-            child.b_black |= child.b_to;
         }
         if child.b_from & child.b_pawns != 0 {
             child.b_pawns &= !child.b_from;
@@ -164,11 +161,11 @@ impl Reset {
             if !child.white_is_safe(child.b_kings & child.b_white) {
                 return false;
             }
-            if !child.black_is_safe(child.b_kings & child.b_black) {
+            if !child.black_is_safe(child.b_kings & child.b_black()) {
                 child.in_check = 1;
             }
         } else {
-            if !child.black_is_safe(child.b_kings & child.b_black) {
+            if !child.black_is_safe(child.b_kings & child.b_black()) {
                 return false;
             }
             if !child.white_is_safe(child.b_kings & child.b_white) {

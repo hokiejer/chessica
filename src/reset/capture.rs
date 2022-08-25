@@ -17,7 +17,6 @@ impl Reset {
             -1
         } else {
             // Parent moved white
-            self.b_black &= !self.b_to;
             1
         };
 

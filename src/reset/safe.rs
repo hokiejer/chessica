@@ -47,14 +47,14 @@ impl Reset {
             self.b_white
         } else {
             // Pawns - Up Left
-            if ((b_squares & B_NOT_UL_EDGE) << 9) & (self.b_pawns & self.b_black) != 0 {
+            if ((b_squares & B_NOT_UL_EDGE) << 9) & (self.b_pawns & self.b_black()) != 0 {
                 return false;
             }
             // Pawns - Up Right
-            if ((b_squares & B_NOT_UR_EDGE) << 7) & (self.b_pawns & self.b_black) != 0 {
+            if ((b_squares & B_NOT_UR_EDGE) << 7) & (self.b_pawns & self.b_black()) != 0 {
                 return false;
             }
-            self.b_black
+            self.b_black()
         };
 
         // Bishop or Queen

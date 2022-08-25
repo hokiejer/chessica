@@ -41,23 +41,22 @@ pub mod profiling;
 /// | field             | type | size | total | description |
 /// | ----------------- | ---- | ---- | ----- | ----------- |
 /// | b_all             | u64  | 8    |    8  | Bitstring representing the presence of any piece |
-/// | b_white           | u64  | 8    |   16  | Bitstring representing the presence of white pieces |
-/// | b_black           | u64  | 8    |   24  | Bitstring representing the presence of black pieces |
-/// | b_pawns           | u64  | 8    |   32  | Bitstring representing the presence of pawns |
-/// | b_knights         | u64  | 8    |   40  | Bitstring representing the presence of knights |
-/// | b_bishops         | u64  | 8    |   48  | Bitstring representing the presence of bishops |
-/// | b_rooks           | u64  | 8    |   56  | Bitstring representing the presence of rooks |
-/// | b_queens          | u64  | 8    |   64  | Bitstring representing the presence of queens |
-/// | b_kings           | u64  | 8    |   72  | Bitstring representing the presence of kings |
-/// | material          | i8   | 1    |   73  | Material score of this board |
-/// | halfmove_clock    | u8   | 1    |   74  | Halfmoves elapsed since last pawn move or capture |
-/// | fullmove_number   | u8   | 1    |   75  | Full moves elapsed since beginning of the game |
-/// | white_king_square | u8   | 1    |   76  | Square number of the white king |
-/// | black_king_square | u8   | 1    |   77  | Square number of the black king |
-/// | white_castle_q    | u8   | 1    |   78  | `1` if white is eligible to castle queenside, `0` if not |
-/// | white_castle_k    | u8   | 1    |   79  | `1` if white is eligible to castle kingside, `0` if not |
-/// | black_castle_q    | u8   | 1    |   80  | `1` if black is eligible to castle queenside, `0` if not |
-/// | black_castle_k    | u8   | 1    |   81  | `1` if black is eligible to castle kingside, `0` if not |
+/// | b_white           | u64  | 8    |   16  | Bitstring representing the presence of white pieces.  Note that there is no `b_black` - a user must call `b_black()` to derive this value. |
+/// | b_pawns           | u64  | 8    |   24  | Bitstring representing the presence of pawns |
+/// | b_knights         | u64  | 8    |   32  | Bitstring representing the presence of knights |
+/// | b_bishops         | u64  | 8    |   40  | Bitstring representing the presence of bishops |
+/// | b_rooks           | u64  | 8    |   48  | Bitstring representing the presence of rooks |
+/// | b_queens          | u64  | 8    |   56  | Bitstring representing the presence of queens |
+/// | b_kings           | u64  | 8    |   64  | Bitstring representing the presence of kings |
+/// | material          | i8   | 1    |   65  | Material score of this board |
+/// | halfmove_clock    | u8   | 1    |   66  | Halfmoves elapsed since last pawn move or capture |
+/// | fullmove_number   | u8   | 1    |   67  | Full moves elapsed since beginning of the game |
+/// | white_king_square | u8   | 1    |   68  | Square number of the white king |
+/// | black_king_square | u8   | 1    |   69  | Square number of the black king |
+/// | white_castle_q    | u8   | 1    |   70  | `1` if white is eligible to castle queenside, `0` if not |
+/// | white_castle_k    | u8   | 1    |   71  | `1` if white is eligible to castle kingside, `0` if not |
+/// | black_castle_q    | u8   | 1    |   72  | `1` if black is eligible to castle queenside, `0` if not |
+/// | black_castle_k    | u8   | 1    |   73  | `1` if black is eligible to castle kingside, `0` if not |
 ///
 /// ## Fields cleared in a new child
 ///
@@ -92,22 +91,21 @@ pub struct Reset {
     //Fields passed from parent to child
     b_all: u64,                 // 8 bytes (  8)
     b_white: u64,               // 8 bytes ( 16)
-    b_black: u64,               // 8 bytes ( 24)
-    b_pawns: u64,               // 8 bytes ( 32)
-    b_knights: u64,             // 8 bytes ( 40)
-    b_bishops: u64,             // 8 bytes ( 48)
-    b_rooks: u64,               // 8 bytes ( 56)
-    b_queens: u64,              // 8 bytes ( 64)
-    b_kings: u64,               // 8 bytes ( 72)
-    material: i8,               // 1 byte  ( 73)
-    halfmove_clock: u8,         // 1 byte  ( 74)
-    fullmove_number: u8,        // 1 byte  ( 75)
-    white_king_square: u8,      // 1 byte  ( 76)
-    black_king_square: u8,      // 1 byte  ( 77)
-    white_castle_q: u8,         // 1 byte  ( 78) bit
-    white_castle_k: u8,         // 1 byte  ( 79) bit
-    black_castle_q: u8,         // 1 byte  ( 80) bit
-    black_castle_k: u8,         // 1 byte  ( 81) bit
+    b_pawns: u64,               // 8 bytes ( 24)
+    b_knights: u64,             // 8 bytes ( 32)
+    b_bishops: u64,             // 8 bytes ( 40)
+    b_rooks: u64,               // 8 bytes ( 48)
+    b_queens: u64,              // 8 bytes ( 56)
+    b_kings: u64,               // 8 bytes ( 64)
+    material: i8,               // 1 byte  ( 65)
+    halfmove_clock: u8,         // 1 byte  ( 66)
+    fullmove_number: u8,        // 1 byte  ( 67)
+    white_king_square: u8,      // 1 byte  ( 68)
+    black_king_square: u8,      // 1 byte  ( 69)
+    white_castle_q: u8,         // 1 byte  ( 70) bit
+    white_castle_k: u8,         // 1 byte  ( 71) bit
+    black_castle_q: u8,         // 1 byte  ( 72) bit
+    black_castle_k: u8,         // 1 byte  ( 73) bit
 
     //Fields cleared in a new child
     b_current_piece: u64,       // 8 bytes (  8)
@@ -145,7 +143,6 @@ pub fn new() -> Reset {
     Reset {
         b_all: 0,
         b_white: 0,
-        b_black: 0,
         b_pawns: 0,
         b_knights: 0,
         b_bishops: 0,

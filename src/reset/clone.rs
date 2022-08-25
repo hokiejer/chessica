@@ -19,7 +19,6 @@ impl Reset {
     pub fn clone_to(&self, clone: &mut Reset) {
         clone.b_all = self.b_all;
         clone.b_white = self.b_white;
-        clone.b_black = self.b_black;
         clone.b_pawns = self.b_pawns;
         clone.b_knights = self.b_knights;
         clone.b_bishops = self.b_bishops;
@@ -80,7 +79,6 @@ mod tests {
         //Fields passed from parent to child
         r.b_all = 123;
         r.b_white = 234;
-        r.b_black = 456;
         r.b_pawns = 1001;
         r.b_knights = 1002;
         r.b_bishops = 1003;
@@ -109,7 +107,6 @@ mod tests {
         r.clone_to(&mut child);
         assert_eq!(child.b_all,123);
         assert_eq!(child.b_white,234);
-        assert_eq!(child.b_black,456);
         assert_eq!(child.b_pawns,1001);
         assert_eq!(child.b_knights,1002);
         assert_eq!(child.b_bishops,1003);

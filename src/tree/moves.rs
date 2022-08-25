@@ -26,6 +26,10 @@ impl Tree {
             child.simple_move_tree(depth - 1, move_count);
             i += 1;
         }
+        if i == 0 {
+            //println!("Found checkmate!");
+            //self.print();
+        }
         //println!("Has {} children",i);
     }
 }

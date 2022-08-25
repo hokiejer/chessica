@@ -97,7 +97,7 @@ impl Reset {
                 ((b_destination & self.b_all) == 0) &&
                 self.add_move_if_valid(child, b_destination)
             {
-                //Don't forget to set the EP square!
+                child.b_en_passant = b_forward_one;
                 return true;
             }
         }
@@ -207,7 +207,7 @@ impl Reset {
                 ((b_destination & self.b_all) == 0) &&
                 self.add_move_if_valid(child, b_destination)
             {
-                //Don't forget to set the EP square!
+                child.b_en_passant = b_forward_one;
                 return true;
             }
         }
@@ -307,7 +307,7 @@ mod tests {
         assert_eq!(r.move_id,20);
 
         // h2 to h4
-        let fen = String::from("rnbqkbnr/pppppppp/8/8/7P/8/PPPPPPP1/RNBQKBNR b KQkq - 0 1");
+        let fen = String::from("rnbqkbnr/pppppppp/8/8/7P/8/PPPPPPP1/RNBQKBNR b KQkq h3 0 1");
         let retval = r.generate_next_pawn_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -329,7 +329,7 @@ mod tests {
         assert_eq!(r.move_id,20);
 
         // g2 to g4
-        let fen = String::from("rnbqkbnr/pppppppp/8/8/6P1/8/PPPPPP1P/RNBQKBNR b KQkq - 0 1");
+        let fen = String::from("rnbqkbnr/pppppppp/8/8/6P1/8/PPPPPP1P/RNBQKBNR b KQkq g3 0 1");
         let retval = r.generate_next_pawn_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -351,7 +351,7 @@ mod tests {
         assert_eq!(r.move_id,20);
 
         // f2 to f4
-        let fen = String::from("rnbqkbnr/pppppppp/8/8/5P2/8/PPPPP1PP/RNBQKBNR b KQkq - 0 1");
+        let fen = String::from("rnbqkbnr/pppppppp/8/8/5P2/8/PPPPP1PP/RNBQKBNR b KQkq f3 0 1");
         let retval = r.generate_next_pawn_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -373,7 +373,7 @@ mod tests {
         assert_eq!(r.move_id,20);
 
         // e2 to e4
-        let fen = String::from("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1");
+        let fen = String::from("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1");
         let retval = r.generate_next_pawn_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -395,7 +395,7 @@ mod tests {
         assert_eq!(r.move_id,20);
 
         // d2 to d4
-        let fen = String::from("rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1");
+        let fen = String::from("rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq d3 0 1");
         let retval = r.generate_next_pawn_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -417,7 +417,7 @@ mod tests {
         assert_eq!(r.move_id,20);
 
         // c2 to c4
-        let fen = String::from("rnbqkbnr/pppppppp/8/8/2P5/8/PP1PPPPP/RNBQKBNR b KQkq - 0 1");
+        let fen = String::from("rnbqkbnr/pppppppp/8/8/2P5/8/PP1PPPPP/RNBQKBNR b KQkq c3 0 1");
         let retval = r.generate_next_pawn_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -439,7 +439,7 @@ mod tests {
         assert_eq!(r.move_id,20);
 
         // b2 to b4
-        let fen = String::from("rnbqkbnr/pppppppp/8/8/1P6/8/P1PPPPPP/RNBQKBNR b KQkq - 0 1");
+        let fen = String::from("rnbqkbnr/pppppppp/8/8/1P6/8/P1PPPPPP/RNBQKBNR b KQkq b3 0 1");
         let retval = r.generate_next_pawn_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -461,7 +461,7 @@ mod tests {
         assert_eq!(r.move_id,20);
 
         // a2 to a4
-        let fen = String::from("rnbqkbnr/pppppppp/8/8/P7/8/1PPPPPPP/RNBQKBNR b KQkq - 0 1");
+        let fen = String::from("rnbqkbnr/pppppppp/8/8/P7/8/1PPPPPPP/RNBQKBNR b KQkq a3 0 1");
         let retval = r.generate_next_pawn_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -491,7 +491,7 @@ mod tests {
         assert_eq!(r.move_id,20);
 
         // h7 to h5
-        let fen = String::from("rnbqkbnr/ppppppp1/8/7p/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 2");
+        let fen = String::from("rnbqkbnr/ppppppp1/8/7p/8/8/PPPPPPPP/RNBQKBNR w KQkq h6 0 2");
         let retval = r.generate_next_pawn_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -513,7 +513,7 @@ mod tests {
         assert_eq!(r.move_id,20);
 
         // g7 to g5
-        let fen = String::from("rnbqkbnr/pppppp1p/8/6p1/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 2");
+        let fen = String::from("rnbqkbnr/pppppp1p/8/6p1/8/8/PPPPPPPP/RNBQKBNR w KQkq g6 0 2");
         let retval = r.generate_next_pawn_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -535,7 +535,7 @@ mod tests {
         assert_eq!(r.move_id,20);
 
         // f7 to f5
-        let fen = String::from("rnbqkbnr/ppppp1pp/8/5p2/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 2");
+        let fen = String::from("rnbqkbnr/ppppp1pp/8/5p2/8/8/PPPPPPPP/RNBQKBNR w KQkq f6 0 2");
         let retval = r.generate_next_pawn_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -557,7 +557,7 @@ mod tests {
         assert_eq!(r.move_id,20);
 
         // e7 to e5
-        let fen = String::from("rnbqkbnr/pppp1ppp/8/4p3/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 2");
+        let fen = String::from("rnbqkbnr/pppp1ppp/8/4p3/8/8/PPPPPPPP/RNBQKBNR w KQkq e6 0 2");
         let retval = r.generate_next_pawn_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -579,7 +579,7 @@ mod tests {
         assert_eq!(r.move_id,20);
 
         // d7 to d5
-        let fen = String::from("rnbqkbnr/ppp1pppp/8/3p4/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 2");
+        let fen = String::from("rnbqkbnr/ppp1pppp/8/3p4/8/8/PPPPPPPP/RNBQKBNR w KQkq d6 0 2");
         let retval = r.generate_next_pawn_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -601,7 +601,7 @@ mod tests {
         assert_eq!(r.move_id,20);
 
         // c7 to c5
-        let fen = String::from("rnbqkbnr/pp1ppppp/8/2p5/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 2");
+        let fen = String::from("rnbqkbnr/pp1ppppp/8/2p5/8/8/PPPPPPPP/RNBQKBNR w KQkq c6 0 2");
         let retval = r.generate_next_pawn_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -623,7 +623,7 @@ mod tests {
         assert_eq!(r.move_id,20);
 
         // b7 to b5
-        let fen = String::from("rnbqkbnr/p1pppppp/8/1p6/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 2");
+        let fen = String::from("rnbqkbnr/p1pppppp/8/1p6/8/8/PPPPPPPP/RNBQKBNR w KQkq b6 0 2");
         let retval = r.generate_next_pawn_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
@@ -645,7 +645,7 @@ mod tests {
         assert_eq!(r.move_id,20);
 
         // a7 to a5
-        let fen = String::from("rnbqkbnr/1ppppppp/8/p7/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 2");
+        let fen = String::from("rnbqkbnr/1ppppppp/8/p7/8/8/PPPPPPPP/RNBQKBNR w KQkq a6 0 2");
         let retval = r.generate_next_pawn_move(&mut child);
         assert!(retval);
         assert_eq!(child.to_fen(),fen);

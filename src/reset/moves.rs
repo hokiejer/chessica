@@ -44,9 +44,9 @@ impl Reset {
 
     /// Generate the next move for a Reset
     ///
-    /// Returns Boolean indicating `true` if move options have not been exhausted
-    /// and `false` if they have.  Expects the child reset to already be initialized 
-    /// from the parent.
+    /// Returns Boolean indicating `true` if a move was successfully returned
+    /// and `false` if no moves remain.  Expects the child reset to already be 
+    /// initialized from the parent.
     ///
     /// # Examples
     /// ```
@@ -57,35 +57,46 @@ impl Reset {
     /// r.generate_next_move(&mut child);
     /// ```
     pub fn generate_next_move(&mut self, child: &mut Reset) -> bool {
+        let mut found_move: bool = false;
         while self.b_current_piece != 0 {
             if self.b_current_piece & self.b_pawns != 0 { // Pawn
                 if self.generate_next_pawn_move(child) {
+                    found_move = true;
                     break;
                 }
             } else if self.b_current_piece & self.b_knights != 0 { // Knight
                 if self.generate_next_knight_move(child) {
+                    found_move = true;
                     break;
                 }
             } else if self.b_current_piece & self.b_bishops != 0 { // Bishop
                 if self.generate_next_bishop_move(child) {
+                    found_move = true;
                     break;
                 }
             } else if self.b_current_piece & self.b_rooks != 0 { // Rook
                 if self.generate_next_rook_move(child) {
+                    found_move = true;
                     break;
                 }
             } else if self.b_current_piece & self.b_queens != 0 { // Queen
                 if self.generate_next_queen_move(child) {
+                    found_move = true;
                     break;
                 }
             } else { // King
                 if self.generate_next_king_move(child) {
+                    found_move = true;
                     break;
                 }
             }
         }
-        child.initialize_move_generation();
-        self.b_current_piece != 0
+        if found_move {
+            child.initialize_move_generation();
+            true
+        } else {
+            false
+        }
     }
 
 

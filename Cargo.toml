@@ -9,3 +9,6 @@ edition = "2021"
 
 [dependencies]
 
+[profile.dev]
+opt-level = 3   # Full throttle optimization
+

@@ -13,10 +13,7 @@ fn main() {
 
     let mut t: Tree = tree::from_fen(starting_fen);
 
-    let mut i = 0;
-    while t.add_next_child() {
-        let mut child = &mut t.children[i];
-        child.print();
-        i += 1;
-    }
+    let mut move_count: u64 = 0;
+    t.simple_move_tree(5, &mut move_count);
+    println!("Move count = {}",move_count);
 }

@@ -13,6 +13,21 @@ impl Tree {
         }
     }
 
+    pub fn simple_move_tree(&mut self, depth: i32, move_count: &mut u64) {
+        if depth == 0 {
+            *move_count += 1;
+            return
+        }
+        let mut i = 0;
+
+        while self.add_next_child() {
+            let mut child = &mut self.children[i];
+            //child.print();
+            child.simple_move_tree(depth - 1, move_count);
+            i += 1;
+        }
+        //println!("Has {} children",i);
+    }
 }
 
 #[cfg(test)]

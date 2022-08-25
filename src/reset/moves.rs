@@ -121,8 +121,6 @@ impl Reset {
             child.b_black &= !child.b_from;
             child.b_black |= child.b_to;
         }
-        child.b_white &= !child.b_from;
-        child.b_black &= !child.b_from;
         if child.b_from & child.b_pawns != 0 {
             child.b_pawns &= !child.b_from;
             child.b_pawns |= child.b_to;
@@ -180,6 +178,7 @@ impl Reset {
 
         true
     }
+
 }
 
 #[cfg(test)]

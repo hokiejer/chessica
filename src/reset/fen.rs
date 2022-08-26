@@ -42,7 +42,6 @@ impl Reset {
                                 self.b_kings |= bit;
                             },
                             'q'|'Q' => {
-                                self.b_queens |= bit;
                                 self.material += material_multiplier * 9;
                             },
                             'r'|'R' => {
@@ -161,7 +160,7 @@ impl Reset {
                         if pointer & self.b_rooks != 0 {
                             fen.push('R');
                         }
-                        if pointer & self.b_queens != 0 {
+                        if pointer & self.b_queens() != 0 {
                             fen.push('Q');
                         }
                         if pointer & self.b_kings != 0 {
@@ -180,7 +179,7 @@ impl Reset {
                         if pointer & self.b_rooks != 0 {
                             fen.push('r');
                         }
-                        if pointer & self.b_queens != 0 {
+                        if pointer & self.b_queens() != 0 {
                             fen.push('q');
                         }
                         if pointer & self.b_kings != 0 {
@@ -267,7 +266,7 @@ mod tests {
         assert_eq!(r.b_knights,0x4200000000000042,"b_knights");
         assert_eq!(r.b_bishops,0x2400000000000024,"b_bishops");
         assert_eq!(r.b_rooks,0x8100000000000081,"b_rooks");
-        assert_eq!(r.b_queens,0x1000000000000010,"b_queens");
+        assert_eq!(r.b_queens(),0x1000000000000010,"b_queens");
         assert_eq!(r.b_kings,0x0800000000000008,"b_kings");
         assert_eq!(r.material,0,"material");
         assert_eq!(r.to_move,0,"to_move");
@@ -296,7 +295,7 @@ mod tests {
         assert_eq!(r.b_knights,0x0000240000000800,"b_knights");
         assert_eq!(r.b_bishops,0x0000000000004000,"b_bishops");
         assert_eq!(r.b_rooks,0x880000000000000c,"b_rooks");
-        assert_eq!(r.b_queens,0x0010000000002000,"b_queens");
+        assert_eq!(r.b_queens(),0x0010000000002000,"b_queens");
         assert_eq!(r.b_kings,0x0200000000000002,"b_kings");
         assert_eq!(r.material,0,"material");
         assert_eq!(r.to_move,0,"to_move");
@@ -325,7 +324,7 @@ mod tests {
         assert_eq!(r.b_knights,0x0040800000008000,"b_knights");
         assert_eq!(r.b_bishops,0x0000000000024000,"b_bishops");
         assert_eq!(r.b_rooks,0x8000000001800000,"b_rooks");
-        assert_eq!(r.b_queens,0x0011000000002000,"b_queens");
+        assert_eq!(r.b_queens(),0x0011000000002000,"b_queens");
         assert_eq!(r.b_kings,0x4000000000000002,"b_kings");
         assert_eq!(r.material,-16,"material");
         assert_eq!(r.to_move,1,"to_move");
@@ -354,7 +353,7 @@ mod tests {
         assert_eq!(r.b_knights,0x4200000000000042,"b_knights");
         assert_eq!(r.b_bishops,0x2400000000000024,"b_bishops");
         assert_eq!(r.b_rooks,0x8100000000000081,"b_rooks");
-        assert_eq!(r.b_queens,0x1000000000000010,"b_queens");
+        assert_eq!(r.b_queens(),0x1000000000000010,"b_queens");
         assert_eq!(r.b_kings,0x0800000000000008,"b_kings");
         assert_eq!(r.material,0,"material");
         assert_eq!(r.to_move,1,"to_move");

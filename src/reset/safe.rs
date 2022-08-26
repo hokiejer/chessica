@@ -58,7 +58,8 @@ impl Reset {
         };
 
         // Bishop or Queen
-        let b_attackers: u64 = b_opponent & (self.b_bishops | self.b_queens);
+        let b_other_stuff: u64 = (self.b_pawns | self.b_knights | self.b_kings);
+        let b_attackers: u64 = b_opponent & !(b_other_stuff | self.b_rooks);
 
         if b_attackers != 0 {
             // Bishop or Queen: Up Left
@@ -103,7 +104,7 @@ impl Reset {
         }
 
         // Rook or Queen
-        let b_attackers: u64 = b_opponent & (self.b_rooks | self.b_queens);
+        let b_attackers: u64 = b_opponent & !(b_other_stuff | self.b_bishops);
 
         if b_attackers != 0 {
             // Rook or Queen: Up

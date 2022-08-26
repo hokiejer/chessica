@@ -23,7 +23,6 @@ impl Reset {
         child.b_knights = self.b_knights;
         child.b_bishops = self.b_bishops;
         child.b_rooks = self.b_rooks;
-        child.b_queens = self.b_queens;
         child.b_kings = self.b_kings;
         child.material = self.material;
         child.halfmove_clock = self.halfmove_clock + 1;
@@ -84,7 +83,6 @@ mod tests {
         r.b_knights = 1002;
         r.b_bishops = 1003;
         r.b_rooks = 1004;
-        r.b_queens = 1005;
         r.b_kings = 1006;
         r.material = 42;
         r.halfmove_clock = 11;
@@ -112,7 +110,6 @@ mod tests {
         assert_eq!(child.b_knights,1002);
         assert_eq!(child.b_bishops,1003);
         assert_eq!(child.b_rooks,1004);
-        assert_eq!(child.b_queens,1005);
         assert_eq!(child.b_kings,1006);
         assert_eq!(child.material,42);
         assert_eq!(child.halfmove_clock,12); //Note the incremented value

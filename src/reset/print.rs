@@ -36,17 +36,17 @@ impl Reset {
             } else {
                 "R"
             }
-        } else if self.b_to & self.b_queens != 0 {
-            if self.white_to_move() {
-                "q"
-            } else {
-                "Q"
-            }
-        } else {
+        } else if self.b_to & self.b_kings != 0 {
             if self.white_to_move() {
                 "k"
             } else {
                 "K"
+            }
+        } else {
+            if self.white_to_move() {
+                "q"
+            } else {
+                "Q"
             }
         };
         let from_text = convert_bitstring_to_square(self.b_from);

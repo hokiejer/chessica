@@ -23,7 +23,6 @@ impl Reset {
         clone.b_knights = self.b_knights;
         clone.b_bishops = self.b_bishops;
         clone.b_rooks = self.b_rooks;
-        clone.b_queens = self.b_queens;
         clone.b_kings = self.b_kings;
         clone.material = self.material;
         clone.halfmove_clock = self.halfmove_clock;
@@ -83,7 +82,6 @@ mod tests {
         r.b_knights = 1002;
         r.b_bishops = 1003;
         r.b_rooks = 1004;
-        r.b_queens = 1005;
         r.b_kings = 1006;
         r.material = 42;
         r.halfmove_clock = 11;
@@ -111,7 +109,6 @@ mod tests {
         assert_eq!(child.b_knights,1002);
         assert_eq!(child.b_bishops,1003);
         assert_eq!(child.b_rooks,1004);
-        assert_eq!(child.b_queens,1005);
         assert_eq!(child.b_kings,1006);
         assert_eq!(child.material,42);
         assert_eq!(child.halfmove_clock,11);

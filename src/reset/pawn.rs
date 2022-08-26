@@ -35,7 +35,6 @@ impl Reset {
                 self.move_id = move_base + 3;
             },
             3 => { // Promote to queen
-                child.b_queens |= child.b_to;
                 child.material += 8 * multiplier;
                 self.move_id = move_base + 10;
             },

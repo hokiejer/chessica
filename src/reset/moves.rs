@@ -79,13 +79,13 @@ impl Reset {
                     found_move = true;
                     break;
                 }
-            } else if self.b_current_piece & self.b_queens != 0 { // Queen
-                if self.generate_next_queen_move(child) {
+            } else if self.b_current_piece & self.b_kings != 0 { // King
+                if self.generate_next_king_move(child) {
                     found_move = true;
                     break;
                 }
-            } else { // King
-                if self.generate_next_king_move(child) {
+            } else { // Queen
+                if self.generate_next_queen_move(child) {
                     found_move = true;
                     break;
                 }
@@ -142,10 +142,7 @@ impl Reset {
                     child.black_castle_q = 0;
                 }
             }
-        } else if child.b_from & child.b_queens != 0 {
-            child.b_queens &= !child.b_from;
-            child.b_queens |= child.b_to;
-        } else {
+        } else if child.b_from & child.b_kings != 0 {
             child.b_kings &= !child.b_from;
             child.b_kings |= child.b_to;
             if self.white_to_move() {
@@ -155,6 +152,8 @@ impl Reset {
                 child.black_castle_k = 0;
                 child.black_castle_q = 0;
             }
+        } else {
+            // Queen moved
         }
         // Move is invalid if I'm moving into check
         if self.white_to_move() {

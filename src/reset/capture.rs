@@ -50,7 +50,6 @@ impl Reset {
             }
         } else {
             // Queens (Default - no king captures)
-            self.b_queens &= !self.b_to;
             self.material += material_multiplier * 9;
         }
     }

@@ -42,12 +42,10 @@ impl Reset {
             } else {
                 "K"
             }
+        } else if self.white_to_move() {
+            "q"
         } else {
-            if self.white_to_move() {
-                "q"
-            } else {
-                "Q"
-            }
+            "Q"
         };
         let from_text = convert_bitstring_to_square(self.b_from);
         let to_text = convert_bitstring_to_square(self.b_to);

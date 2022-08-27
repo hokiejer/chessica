@@ -58,7 +58,7 @@ impl Reset {
         };
 
         // Bishop or Queen
-        let b_other_stuff: u64 = (self.b_pawns | self.b_knights | self.b_kings);
+        let b_other_stuff: u64 = self.b_pawns | self.b_knights | self.b_kings;
         let b_attackers: u64 = b_opponent & !(b_other_stuff | self.b_rooks);
 
         if b_attackers != 0 {

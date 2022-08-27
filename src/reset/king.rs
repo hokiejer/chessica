@@ -26,7 +26,7 @@ impl Reset {
         let b_available_moves: u64 = if self.white_to_move() {
             !self.b_white
         } else {
-            !self.b_black
+            self.b_white | !self.b_all
         };
 
         // Up
@@ -132,7 +132,7 @@ impl Reset {
                 child.b_all |= 0x0000000000000004;
                 child.b_white |= 0x0000000000000004;
                 child.b_rooks |= 0x0000000000000004;
-                if !child.black_is_safe(child.b_kings & child.b_black) {
+                if !child.black_is_safe(child.b_kings & child.b_black()) {
                     child.in_check = 1;
                 }
                 self.move_id = 100;
@@ -152,7 +152,7 @@ impl Reset {
                 child.b_all |= 0x0000000000000010;
                 child.b_white |= 0x0000000000000010;
                 child.b_rooks |= 0x0000000000000010;
-                if !child.black_is_safe(child.b_kings & child.b_black) {
+                if !child.black_is_safe(child.b_kings & child.b_black()) {
                     child.in_check = 1;
                 }
                 self.consider_next_moveable_piece();
@@ -169,10 +169,8 @@ impl Reset {
                 self.add_move_if_valid(child, B_BLACK_CASTLEK_DESTINATION)
             {
                 child.b_all &= 0xfeffffffffffffff;
-                child.b_black &= 0xfeffffffffffffff;
                 child.b_rooks &= 0xfeffffffffffffff;
                 child.b_all |= 0x0400000000000000;
-                child.b_black |= 0x0400000000000000;
                 child.b_rooks |= 0x0400000000000000;
                 if !child.white_is_safe(child.b_kings & child.b_white) {
                     child.in_check = 1;
@@ -189,10 +187,8 @@ impl Reset {
                 self.add_move_if_valid(child, B_BLACK_CASTLEQ_DESTINATION)
             {
                 child.b_all &= 0x7fffffffffffffff;
-                child.b_black &= 0x7fffffffffffffff;
                 child.b_rooks &= 0x7fffffffffffffff;
                 child.b_all |= 0x1000000000000000;
-                child.b_black |= 0x1000000000000000;
                 child.b_rooks |= 0x1000000000000000;
                 if !child.white_is_safe(child.b_kings & child.b_white) {
                     child.in_check = 1;

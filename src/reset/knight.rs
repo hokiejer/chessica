@@ -22,7 +22,7 @@ impl Reset {
         let b_available_moves: u64 = if self.white_to_move() {
             !self.b_white
         } else {
-            !self.b_black
+            self.b_white | !self.b_all
         };
 
         if self.move_id < 20 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_0100 != 0) {

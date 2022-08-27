@@ -30,7 +30,6 @@ impl Reset {
                         self.b_all |= bit;
                         let material_multiplier: i8 = match c {
                             'k'|'q'|'r'|'b'|'n'|'p' => {
-                                self.b_black |= bit;
                                 -1
                             },
                             _ => {
@@ -43,7 +42,6 @@ impl Reset {
                                 self.b_kings |= bit;
                             },
                             'q'|'Q' => {
-                                self.b_queens |= bit;
                                 self.material += material_multiplier * 9;
                             },
                             'r'|'R' => {
@@ -117,7 +115,7 @@ impl Reset {
             if !self.white_is_safe(self.b_kings & self.b_white) {
                 self.in_check = 1;
             }
-        } else if !self.black_is_safe(self.b_kings & self.b_black) {
+        } else if !self.black_is_safe(self.b_kings & self.b_black()) {
             self.in_check = 1;
         }
         self.initialize_move_generation();
@@ -162,7 +160,7 @@ impl Reset {
                         if pointer & self.b_rooks != 0 {
                             fen.push('R');
                         }
-                        if pointer & self.b_queens != 0 {
+                        if pointer & self.b_queens() != 0 {
                             fen.push('Q');
                         }
                         if pointer & self.b_kings != 0 {
@@ -181,7 +179,7 @@ impl Reset {
                         if pointer & self.b_rooks != 0 {
                             fen.push('r');
                         }
-                        if pointer & self.b_queens != 0 {
+                        if pointer & self.b_queens() != 0 {
                             fen.push('q');
                         }
                         if pointer & self.b_kings != 0 {
@@ -263,12 +261,12 @@ mod tests {
         r.init_from_fen(fen);
         assert_eq!(r.b_all,0xffff00000000ffff,"b_all");
         assert_eq!(r.b_white,0x000000000000ffff,"b_white");
-        assert_eq!(r.b_black,0xffff000000000000,"b_black");
+        assert_eq!(r.b_black(),0xffff000000000000,"b_black");
         assert_eq!(r.b_pawns,0x00ff00000000ff00,"b_pawns");
         assert_eq!(r.b_knights,0x4200000000000042,"b_knights");
         assert_eq!(r.b_bishops,0x2400000000000024,"b_bishops");
         assert_eq!(r.b_rooks,0x8100000000000081,"b_rooks");
-        assert_eq!(r.b_queens,0x1000000000000010,"b_queens");
+        assert_eq!(r.b_queens(),0x1000000000000010,"b_queens");
         assert_eq!(r.b_kings,0x0800000000000008,"b_kings");
         assert_eq!(r.material,0,"material");
         assert_eq!(r.to_move,0,"to_move");
@@ -292,12 +290,12 @@ mod tests {
         r.init_from_fen(fen);
         assert_eq!(r.b_all,0x8a976410b0286f0e,"b_all");
         assert_eq!(r.b_white,0x0000000090286f0e,"b_white");
-        assert_eq!(r.b_black,0x8a97641020000000,"b_black");
+        assert_eq!(r.b_black(),0x8a97641020000000,"b_black");
         assert_eq!(r.b_pawns,0x00874010b0280700,"b_pawns");
         assert_eq!(r.b_knights,0x0000240000000800,"b_knights");
         assert_eq!(r.b_bishops,0x0000000000004000,"b_bishops");
         assert_eq!(r.b_rooks,0x880000000000000c,"b_rooks");
-        assert_eq!(r.b_queens,0x0010000000002000,"b_queens");
+        assert_eq!(r.b_queens(),0x0010000000002000,"b_queens");
         assert_eq!(r.b_kings,0x0200000000000002,"b_kings");
         assert_eq!(r.material,0,"material");
         assert_eq!(r.to_move,0,"to_move");
@@ -321,12 +319,12 @@ mod tests {
         r.init_from_fen(fen);
         assert_eq!(r.b_all,0xc0ddc80aa98be202,"b_all");
         assert_eq!(r.b_white,0x000808088089e202,"b_white");
-        assert_eq!(r.b_black,0xc0d5c00229020000,"b_black");
+        assert_eq!(r.b_black(),0xc0d5c00229020000,"b_black");
         assert_eq!(r.b_pawns,0x008c480aa8090200,"b_pawns");
         assert_eq!(r.b_knights,0x0040800000008000,"b_knights");
         assert_eq!(r.b_bishops,0x0000000000024000,"b_bishops");
         assert_eq!(r.b_rooks,0x8000000001800000,"b_rooks");
-        assert_eq!(r.b_queens,0x0011000000002000,"b_queens");
+        assert_eq!(r.b_queens(),0x0011000000002000,"b_queens");
         assert_eq!(r.b_kings,0x4000000000000002,"b_kings");
         assert_eq!(r.material,-16,"material");
         assert_eq!(r.to_move,1,"to_move");
@@ -350,12 +348,12 @@ mod tests {
         r.init_from_fen(fen);
         assert_eq!(r.b_all,0xfffb00080600f5ff,"b_all");
         assert_eq!(r.b_white,0x000000080200f5ff,"b_white");
-        assert_eq!(r.b_black,0xfffb000004000000,"b_black");
+        assert_eq!(r.b_black(),0xfffb000004000000,"b_black");
         assert_eq!(r.b_pawns,0x00fb00080600f500,"b_pawns");
         assert_eq!(r.b_knights,0x4200000000000042,"b_knights");
         assert_eq!(r.b_bishops,0x2400000000000024,"b_bishops");
         assert_eq!(r.b_rooks,0x8100000000000081,"b_rooks");
-        assert_eq!(r.b_queens,0x1000000000000010,"b_queens");
+        assert_eq!(r.b_queens(),0x1000000000000010,"b_queens");
         assert_eq!(r.b_kings,0x0800000000000008,"b_kings");
         assert_eq!(r.material,0,"material");
         assert_eq!(r.to_move,1,"to_move");

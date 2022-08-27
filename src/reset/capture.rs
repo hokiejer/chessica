@@ -17,7 +17,6 @@ impl Reset {
             -1
         } else {
             // Parent moved white
-            self.b_black &= !self.b_to;
             1
         };
 
@@ -51,7 +50,6 @@ impl Reset {
             }
         } else {
             // Queens (Default - no king captures)
-            self.b_queens &= !self.b_to;
             self.material += material_multiplier * 9;
         }
     }

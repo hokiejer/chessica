@@ -35,14 +35,13 @@ impl Reset {
                 self.move_id = move_base + 3;
             },
             3 => { // Promote to queen
-                child.b_queens |= child.b_to;
                 child.material += 8 * multiplier;
                 self.move_id = move_base + 10;
             },
             _ => panic!("Shouldn't get here!"),
         }
         if self.white_to_move() {
-            if !child.black_is_safe(child.b_kings & child.b_black) {
+            if !child.black_is_safe(child.b_kings & child.b_black()) {
                 child.in_check = 1;
             }
         } else if !child.white_is_safe(child.b_kings & child.b_white) {
@@ -53,15 +52,13 @@ impl Reset {
     pub fn white_en_passant_cleanup(&mut self, child: &mut Reset) -> bool {
         let b_pawn_to_remove = self.b_en_passant >> 8;
         child.b_all &= !b_pawn_to_remove;
-        child.b_black &= !b_pawn_to_remove;
         child.b_pawns &= !b_pawn_to_remove;
         child.material += 1;
         child.capture = 1;
-        child.ep_capture = 1;
         if !child.white_is_safe(child.b_kings & child.b_white) {
             return false;
         }
-        if !child.black_is_safe(child.b_kings & child.b_black) {
+        if !child.black_is_safe(child.b_kings & child.b_black()) {
             child.in_check = 1;
         }
         true
@@ -106,7 +103,7 @@ impl Reset {
         if self.move_id < 40 {
             b_destination = self.b_current_piece << 9;
             if (self.b_current_piece & B_NOT_UL_EDGE != 0) && 
-                (b_destination & self.b_black != 0) && 
+                (b_destination & self.b_black() != 0) && 
                 self.add_move_if_valid(child, b_destination) 
             {
                 if b_destination & B_NOT_TOP_EDGE != 0 {
@@ -122,7 +119,7 @@ impl Reset {
         if self.move_id < 50 {
             b_destination = self.b_current_piece << 7;
             if (self.b_current_piece & B_NOT_UR_EDGE != 0) && 
-                (b_destination & self.b_black != 0) && 
+                (b_destination & self.b_black() != 0) && 
                 self.add_move_if_valid(child, b_destination) 
             {
                 if b_destination & B_NOT_TOP_EDGE != 0 {
@@ -167,8 +164,7 @@ impl Reset {
         child.b_pawns &= !b_pawn_to_remove;
         child.material -= 1;
         child.capture = 1;
-        child.ep_capture = 1;
-        if !child.black_is_safe(child.b_kings & child.b_black) {
+        if !child.black_is_safe(child.b_kings & child.b_black()) {
             return false;
         }
         if !child.white_is_safe(child.b_kings & child.b_white) {
@@ -1376,7 +1372,6 @@ mod tests {
         assert_eq!(r.b_current_piece,0);
         assert_eq!(r.move_id,10);
         assert_eq!(child.capture,1);
-        assert_eq!(child.ep_capture,1);
         assert_eq!(child.material,1);
     }
 
@@ -1403,7 +1398,6 @@ mod tests {
         assert_eq!(r.b_current_piece,0);
         assert_eq!(r.move_id,10);
         assert_eq!(child.capture,1);
-        assert_eq!(child.ep_capture,1);
         assert_eq!(child.material,1);
     }
 
@@ -1430,7 +1424,6 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("h6".to_string()));
         assert_eq!(r.move_id,10);
         assert_eq!(child.capture,1);
-        assert_eq!(child.ep_capture,1);
         assert_eq!(child.material,-1);
     }
 
@@ -1457,7 +1450,6 @@ mod tests {
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("h6".to_string()));
         assert_eq!(r.move_id,10);
         assert_eq!(child.capture,1);
-        assert_eq!(child.ep_capture,1);
         assert_eq!(child.material,-1);
     }
 

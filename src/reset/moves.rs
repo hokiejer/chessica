@@ -22,7 +22,7 @@ impl Reset {
         if self.white_to_move() {
             self.b_current_piece = bitops::lowest_bit(self.b_white);
         } else {
-            self.b_current_piece = bitops::lowest_bit(self.b_black);
+            self.b_current_piece = bitops::lowest_bit(self.b_black());
         }
         self.move_id = 10;	//Prime the first move
     }
@@ -36,7 +36,7 @@ impl Reset {
         if self.white_to_move() {
             self.b_current_piece = bitops::next_lowest_bit(self.b_white, self.b_current_piece);
         } else {
-            self.b_current_piece = bitops::next_lowest_bit(self.b_black, self.b_current_piece);
+            self.b_current_piece = bitops::next_lowest_bit(self.b_black(), self.b_current_piece);
         }
         self.move_id = 10;
     }
@@ -79,13 +79,13 @@ impl Reset {
                     found_move = true;
                     break;
                 }
-            } else if self.b_current_piece & self.b_queens != 0 { // Queen
-                if self.generate_next_queen_move(child) {
+            } else if self.b_current_piece & self.b_kings != 0 { // King
+                if self.generate_next_king_move(child) {
                     found_move = true;
                     break;
                 }
-            } else { // King
-                if self.generate_next_king_move(child) {
+            } else { // Queen
+                if self.generate_next_queen_move(child) {
                     found_move = true;
                     break;
                 }
@@ -104,7 +104,6 @@ impl Reset {
     ///
     pub fn add_move_if_valid(&mut self, child: &mut Reset, b_destination: u64) -> bool {
 
-        use crate::utils;
         self.init_child(child);
         child.b_from = self.b_current_piece;
         child.b_to = b_destination;
@@ -117,9 +116,6 @@ impl Reset {
         if self.white_to_move() {
             child.b_white &= !child.b_from;
             child.b_white |= child.b_to;
-        } else {
-            child.b_black &= !child.b_from;
-            child.b_black |= child.b_to;
         }
         if child.b_from & child.b_pawns != 0 {
             child.b_pawns &= !child.b_from;
@@ -145,10 +141,7 @@ impl Reset {
                     child.black_castle_q = 0;
                 }
             }
-        } else if child.b_from & child.b_queens != 0 {
-            child.b_queens &= !child.b_from;
-            child.b_queens |= child.b_to;
-        } else {
+        } else if child.b_from & child.b_kings != 0 {
             child.b_kings &= !child.b_from;
             child.b_kings |= child.b_to;
             if self.white_to_move() {
@@ -158,17 +151,19 @@ impl Reset {
                 child.black_castle_k = 0;
                 child.black_castle_q = 0;
             }
+        } else {
+            // Queen moved
         }
         // Move is invalid if I'm moving into check
         if self.white_to_move() {
             if !child.white_is_safe(child.b_kings & child.b_white) {
                 return false;
             }
-            if !child.black_is_safe(child.b_kings & child.b_black) {
+            if !child.black_is_safe(child.b_kings & child.b_black()) {
                 child.in_check = 1;
             }
         } else {
-            if !child.black_is_safe(child.b_kings & child.b_black) {
+            if !child.black_is_safe(child.b_kings & child.b_black()) {
                 return false;
             }
             if !child.white_is_safe(child.b_kings & child.b_white) {
@@ -305,45 +300,45 @@ mod tests {
         let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         r.init_from_fen(fen.to_string());
 
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/7N/PPPPPPPP/RNBQKB1R b KQkq - 1 1");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq - 1 1");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/2N5/PPPPPPPP/R1BQKBNR b KQkq - 1 1");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/N7/PPPPPPPP/R1BQKBNR b KQkq - 1 1");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/7P/PPPPPPP1/RNBQKBNR b KQkq - 0 1");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/7P/8/PPPPPPP1/RNBQKBNR b KQkq h3 0 1");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/6P1/PPPPPP1P/RNBQKBNR b KQkq - 0 1");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/6P1/8/PPPPPP1P/RNBQKBNR b KQkq g3 0 1");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/5P2/PPPPP1PP/RNBQKBNR b KQkq - 0 1");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/5P2/8/PPPPP1PP/RNBQKBNR b KQkq f3 0 1");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/4P3/PPPP1PPP/RNBQKBNR b KQkq - 0 1");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/3P4/PPP1PPPP/RNBQKBNR b KQkq - 0 1");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq d3 0 1");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/2P5/PP1PPPPP/RNBQKBNR b KQkq - 0 1");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/2P5/8/PP1PPPPP/RNBQKBNR b KQkq c3 0 1");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/1P6/P1PPPPPP/RNBQKBNR b KQkq - 0 1");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/1P6/8/P1PPPPPP/RNBQKBNR b KQkq b3 0 1");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/8/P7/1PPPPPPP/RNBQKBNR b KQkq - 0 1");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"rnbqkbnr/pppppppp/8/8/P7/8/1PPPPPPP/RNBQKBNR b KQkq a3 0 1");
         let result = r.generate_next_move(&mut child);
         assert!(!result);
@@ -358,53 +353,53 @@ mod tests {
         //let result = r.generate_next_move(&mut child);
         r.init_from_fen(fen.to_string());
 
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1rb2rqk/p3R1pp/8/1p3BP1/5P1Q/8/P4N1P/R5K1 w - - 0 2");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1rb2rqk/p3R1p1/1p5p/5BP1/5P1Q/8/P4N1P/R5K1 w - - 0 2");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1rb2rqk/p3R1p1/1p6/5BPp/5P1Q/8/P4N1P/R5K1 w - h6 0 2");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1rb2rqk/p3R2p/1p4p1/5BP1/5P1Q/8/P4N1P/R5K1 w - - 0 2");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1rb2rqk/4R1pp/pp6/5BP1/5P1Q/8/P4N1P/R5K1 w - - 0 2");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1rb2rqk/4R1pp/1p6/p4BP1/5P1Q/8/P4N1P/R5K1 w - a6 0 2");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1rb2r1k/p3Rqpp/1p6/5BP1/5P1Q/8/P4N1P/R5K1 w - - 1 2");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1rb2r1k/p3R1pp/1p2q3/5BP1/5P1Q/8/P4N1P/R5K1 w - - 1 2");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1rb2r1k/p3R1pp/1p6/3q1BP1/5P1Q/8/P4N1P/R5K1 w - - 1 2");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1rb2r1k/p3R1pp/1p6/5BP1/2q2P1Q/8/P4N1P/R5K1 w - - 1 2");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1rb2r1k/p3R1pp/1p6/5BP1/5P1Q/1q6/P4N1P/R5K1 w - - 1 2");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1rb2r1k/p3R1pp/1p6/5BP1/5P1Q/8/q4N1P/R5K1 w - - 0 2");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1rb3qk/p3Rrpp/1p6/5BP1/5P1Q/8/P4N1P/R5K1 w - - 1 2");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1rb3qk/p3R1pp/1p3r2/5BP1/5P1Q/8/P4N1P/R5K1 w - - 1 2");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1rb3qk/p3R1pp/1p6/5rP1/5P1Q/8/P4N1P/R5K1 w - - 0 2");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1rb1r1qk/p3R1pp/1p6/5BP1/5P1Q/8/P4N1P/R5K1 w - - 1 2");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1rbr2qk/p3R1pp/1p6/5BP1/5P1Q/8/P4N1P/R5K1 w - - 1 2");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1r3rqk/p2bR1pp/1p6/5BP1/5P1Q/8/P4N1P/R5K1 w - - 1 2");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1r3rqk/p3R1pp/1p2b3/5BP1/5P1Q/8/P4N1P/R5K1 w - - 1 2");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1r3rqk/p3R1pp/1p6/5bP1/5P1Q/8/P4N1P/R5K1 w - - 0 2");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1r3rqk/pb2R1pp/1p6/5BP1/5P1Q/8/P4N1P/R5K1 w - - 1 2");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"1r3rqk/p3R1pp/bp6/5BP1/5P1Q/8/P4N1P/R5K1 w - - 1 2");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"2b2rqk/pr2R1pp/1p6/5BP1/5P1Q/8/P4N1P/R5K1 w - - 1 2");
-        let result = r.generate_next_move(&mut child);
+        let _result = r.generate_next_move(&mut child);
         assert_eq!(child.to_fen(),"r1b2rqk/p3R1pp/1p6/5BP1/5P1Q/8/P4N1P/R5K1 w - - 1 2");
         let result = r.generate_next_move(&mut child);
         assert!(!result);

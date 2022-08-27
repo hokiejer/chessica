@@ -19,12 +19,10 @@ impl Reset {
     pub fn clone_to(&self, clone: &mut Reset) {
         clone.b_all = self.b_all;
         clone.b_white = self.b_white;
-        clone.b_black = self.b_black;
         clone.b_pawns = self.b_pawns;
         clone.b_knights = self.b_knights;
         clone.b_bishops = self.b_bishops;
         clone.b_rooks = self.b_rooks;
-        clone.b_queens = self.b_queens;
         clone.b_kings = self.b_kings;
         clone.material = self.material;
         clone.halfmove_clock = self.halfmove_clock;
@@ -38,14 +36,11 @@ impl Reset {
 
         clone.b_current_piece = self.b_current_piece;
         clone.b_en_passant = self.b_en_passant;
-        clone.b_move_data = self.b_move_data;
         clone.score = self.score;
         clone.move_id = self.move_id;
         clone.to_move = self.to_move;
-        clone.move_data = self.move_data;
         clone.capture = self.capture;
         clone.in_check = self.in_check;
-        clone.ep_capture = self.ep_capture;
         clone.promotion = self.promotion;
         clone.king_castled = self.king_castled;
         clone.game_over = self.game_over;
@@ -83,12 +78,10 @@ mod tests {
         //Fields passed from parent to child
         r.b_all = 123;
         r.b_white = 234;
-        r.b_black = 456;
         r.b_pawns = 1001;
         r.b_knights = 1002;
         r.b_bishops = 1003;
         r.b_rooks = 1004;
-        r.b_queens = 1005;
         r.b_kings = 1006;
         r.material = 42;
         r.halfmove_clock = 11;
@@ -103,24 +96,19 @@ mod tests {
         r.move_id = 30;
         r.b_current_piece = 111;
         r.b_en_passant = 222;
-        r.b_move_data = 333;
         r.score = 44;
-        r.move_data = 66;
         r.capture = 1;
         r.in_check = 1;
-        r.ep_capture = 1;
         r.promotion = 1;
         r.king_castled = 1;
         r.game_over = 1;
         r.clone_to(&mut child);
         assert_eq!(child.b_all,123);
         assert_eq!(child.b_white,234);
-        assert_eq!(child.b_black,456);
         assert_eq!(child.b_pawns,1001);
         assert_eq!(child.b_knights,1002);
         assert_eq!(child.b_bishops,1003);
         assert_eq!(child.b_rooks,1004);
-        assert_eq!(child.b_queens,1005);
         assert_eq!(child.b_kings,1006);
         assert_eq!(child.material,42);
         assert_eq!(child.halfmove_clock,11);
@@ -135,12 +123,9 @@ mod tests {
         assert_eq!(child.move_id,30);
         assert_eq!(child.b_current_piece,111);
         assert_eq!(child.b_en_passant,222);
-        assert_eq!(child.b_move_data,333);
         assert_eq!(child.score,44);
-        assert_eq!(child.move_data,66);
         assert_eq!(child.capture,1);
         assert_eq!(child.in_check,1);
-        assert_eq!(child.ep_capture,1);
         assert_eq!(child.promotion,1);
         assert_eq!(child.king_castled,1);
         assert_eq!(child.game_over,1);

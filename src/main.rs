@@ -11,7 +11,7 @@ fn main() {
     let starting_fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     println!("Size of Reset: {}",mem::size_of::<Reset>());
     let mut move_count: u64 = 0;
-    //let mut t: Tree = tree::from_fen(starting_fen);
+    let mut t: Tree = tree::from_fen(starting_fen);
 
     //t.simple_move_tree(5, &mut move_count);
     //println!("Move count = {}",move_count);

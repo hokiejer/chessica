@@ -35,6 +35,7 @@ impl Reset {
         use crate::reset::r#const::B_KNIGHT_CAN_MOVE_1000;
         use crate::reset::r#const::B_KNIGHT_CAN_MOVE_1100;
 
+        // Pawns
         let b_opponent: u64 = if opponent == 0 {
             // Pawns - Down Left
             if ((b_squares & B_NOT_DL_EDGE) >> 7) & (self.b_pawns & self.b_white) != 0 {

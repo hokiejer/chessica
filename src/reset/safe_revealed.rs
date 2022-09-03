@@ -72,6 +72,87 @@ lazy_static! {
     };
 }
 
+pub fn revealed_check_bitmap(king: u8, search: RevealedCheckSearchType) -> u64 {
+    use crate::reset::r#const::B_NOT_UL_EDGE;
+    use crate::reset::r#const::B_NOT_UR_EDGE;
+    use crate::reset::r#const::B_NOT_DL_EDGE;
+    use crate::reset::r#const::B_NOT_DR_EDGE;
+    use crate::reset::r#const::B_NOT_TOP_EDGE;
+    use crate::reset::r#const::B_NOT_RIGHT_EDGE;
+    use crate::reset::r#const::B_NOT_LEFT_EDGE;
+    use crate::reset::r#const::B_NOT_BOTTOM_EDGE;
+
+    let b_king: u64 = 0x0000000000000001 << (king - 1);
+    let mut b_temp: u64 = b_king;
+    let mut b_map: u64 = 0x0000000000000000;
+    match search {
+        RevealedCheckSearchType::FromN => {
+            // Go N from the king
+            while b_temp & B_NOT_TOP_EDGE != 0 {
+                b_temp <<= 8;
+                b_map |= b_temp;
+            }
+        },
+        RevealedCheckSearchType::FromNE => {
+            // Go NE from the king
+            while b_temp & B_NOT_UR_EDGE != 0 {
+                b_temp <<= 7;
+                b_map |= b_temp;
+            }
+        },
+        RevealedCheckSearchType::FromE => {
+            // Go E from the king
+            while b_temp & B_NOT_RIGHT_EDGE != 0 {
+                b_temp >>= 1;
+                b_map |= b_temp;
+            }
+        },
+        RevealedCheckSearchType::FromSE => {
+            // Go SE from the king
+            while b_temp & B_NOT_DR_EDGE != 0 {
+                b_temp >>= 9;
+                b_map |= b_temp;
+            }
+        },
+        RevealedCheckSearchType::FromS => {
+            // Go S from the king
+            while b_temp & B_NOT_BOTTOM_EDGE != 0 {
+                b_temp >>= 8;
+                b_map |= b_temp;
+            }
+        },
+        RevealedCheckSearchType::FromSW => {
+            // Go SW from the king
+            while b_temp & B_NOT_DL_EDGE != 0 {
+                b_temp >>= 7;
+                b_map |= b_temp;
+            }
+        },
+        RevealedCheckSearchType::FromW => {
+            // Go W from the king
+            while b_temp & B_NOT_LEFT_EDGE != 0 {
+                b_temp <<= 1;
+                b_map |= b_temp;
+            }
+        },
+        RevealedCheckSearchType::FromNW => {
+            // Go NW from the king
+            while b_temp & B_NOT_UL_EDGE != 0 {
+                b_temp <<= 9;
+                b_map |= b_temp;
+            }
+        },
+        _ => {},
+    }
+    b_map
+}
+
+//lazy_static! {
+//    static ref REVEALED_CHECK_BITMAPS: Vec<Array<u64>> = {
+//        Vec::new()
+//    }
+//}
+
 impl Reset {
 
     pub fn white_is_safe_from_revealed_check(&mut self) -> bool {
@@ -256,6 +337,7 @@ mod tests {
 
     #[test]
     fn revealed_check_routes() {
+        // Trusts revealed_check_router, this just ensures that the matrix matches the function
         use crate::reset::safe_revealed::revealed_check_router;
         use crate::reset::safe_revealed::RevealedCheckSearchType;
         use crate::reset::safe_revealed::REVEALED_CHECK_ROUTES;
@@ -265,6 +347,41 @@ mod tests {
                 assert_eq!(REVEALED_CHECK_ROUTES[king][revealed],revealed_check_router(king as u8,revealed as u8));
             }
         }
+    }
+
+    #[test]
+    fn revealed_check_bitmap_1() {
+        use crate::reset::safe_revealed::RevealedCheckSearchType;
+        use crate::reset::safe_revealed::revealed_check_bitmap;
+        assert_eq!(revealed_check_bitmap(17,RevealedCheckSearchType::FromN),0x0101010101000000);
+        assert_eq!(revealed_check_bitmap(17,RevealedCheckSearchType::FromNE),0x0000000000000000);
+        assert_eq!(revealed_check_bitmap(17,RevealedCheckSearchType::FromE),0x0000000000000000);
+        assert_eq!(revealed_check_bitmap(17,RevealedCheckSearchType::FromSE),0x0000000000000000);
+        assert_eq!(revealed_check_bitmap(17,RevealedCheckSearchType::FromS),0x0000000000000101);
+        assert_eq!(revealed_check_bitmap(17,RevealedCheckSearchType::FromSW),0x0000000000000204);
+        assert_eq!(revealed_check_bitmap(17,RevealedCheckSearchType::FromW),0x0000000000fe0000);
+        assert_eq!(revealed_check_bitmap(17,RevealedCheckSearchType::FromNW),0x2010080402000000);
+        assert_eq!(revealed_check_bitmap(17,RevealedCheckSearchType::DoNotSearch),0x0000000000000000);
+
+        assert_eq!(revealed_check_bitmap(24,RevealedCheckSearchType::FromN),0x8080808080000000);
+        assert_eq!(revealed_check_bitmap(24,RevealedCheckSearchType::FromNE),0x0408102040000000);
+        assert_eq!(revealed_check_bitmap(24,RevealedCheckSearchType::FromE),0x00000000007f0000);
+        assert_eq!(revealed_check_bitmap(24,RevealedCheckSearchType::FromSE),0x0000000000004020);
+        assert_eq!(revealed_check_bitmap(24,RevealedCheckSearchType::FromS),0x0000000000008080);
+        assert_eq!(revealed_check_bitmap(24,RevealedCheckSearchType::FromSW),0x0000000000000000);
+        assert_eq!(revealed_check_bitmap(24,RevealedCheckSearchType::FromW),0x0000000000000000);
+        assert_eq!(revealed_check_bitmap(24,RevealedCheckSearchType::FromNW),0x0000000000000000);
+        assert_eq!(revealed_check_bitmap(24,RevealedCheckSearchType::DoNotSearch),0x0000000000000000);
+
+        assert_eq!(revealed_check_bitmap(37,RevealedCheckSearchType::FromN),0x1010100000000000);
+        assert_eq!(revealed_check_bitmap(37,RevealedCheckSearchType::FromNE),0x0204080000000000);
+        assert_eq!(revealed_check_bitmap(37,RevealedCheckSearchType::FromE),0x0000000f00000000);
+        assert_eq!(revealed_check_bitmap(37,RevealedCheckSearchType::FromSE),0x0000000008040201);
+        assert_eq!(revealed_check_bitmap(37,RevealedCheckSearchType::FromS),0x0000000010101010);
+        assert_eq!(revealed_check_bitmap(37,RevealedCheckSearchType::FromSW),0x0000000020408000);
+        assert_eq!(revealed_check_bitmap(37,RevealedCheckSearchType::FromW),0x000000e000000000);
+        assert_eq!(revealed_check_bitmap(37,RevealedCheckSearchType::FromNW),0x8040200000000000);
+        assert_eq!(revealed_check_bitmap(37,RevealedCheckSearchType::DoNotSearch),0x0000000000000000);
     }
 
     #[test]

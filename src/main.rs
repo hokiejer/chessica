@@ -1,5 +1,6 @@
 #[macro_use]
 extern crate lazy_static;
+extern crate enum_map;
 
 pub mod utils; //include "utils/mod.rs"
 pub mod reset; //include "reset/mod.rs"

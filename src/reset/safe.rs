@@ -131,7 +131,7 @@ impl Reset {
             // Rook or Queen: Down
             let mut b_temp: u64 = b_squares;
             while b_temp & B_NOT_BOTTOM_EDGE != 0 {
-                b_temp = (b_temp & B_NOT_DL_EDGE) >> 8;
+                b_temp = (b_temp & B_NOT_BOTTOM_EDGE) >> 8;
                 if b_temp & b_attackers != 0 {
                     return false;
                 }

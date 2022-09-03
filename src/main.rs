@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate lazy_static;
+
 pub mod utils; //include "utils/mod.rs"
 pub mod reset; //include "reset/mod.rs"
 pub mod bitops; //include "bitops/mod.rs";

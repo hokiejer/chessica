@@ -13,66 +13,64 @@ pub enum RevealedCheckSearchType {
     FromNW,
 }
 
-    pub fn revealed_check_router(king: u8, revealed: u8) -> RevealedCheckSearchType {
 
-        println!("How Should I Search For Revealed Check: {} {}",king,revealed); 
-        if king == revealed {
-            println!("  This is the king's square.  Don't search.");
-            return RevealedCheckSearchType::DoNotSearch;
-        }
-
-        if king < revealed { // Attack from W, NW, N, or NE
-            let difference: u8 = (revealed - king);
-            println!("  revealed - king == {}",revealed - king); 
-            if difference % 8 == 0 {
-                println!("  Attack from N");
-                return RevealedCheckSearchType::FromN;
-            } else if difference % 9 == 0 {
-                println!("  revealed - 1 % 8 == {}",(revealed - 1) % 8);
-                println!("  king - 1 % 8 == {}",(king - 1) % 8);
-                if (revealed - 1) % 8 > (king - 1) % 8 {
-                    println!("  Attack from NW");
-                    return RevealedCheckSearchType::FromNW;
-                }
-            } else if difference % 7 == 0 {
-                println!("  revealed - 1 % 8 == {}",(revealed - 1) % 8);
-                println!("  king - 1 % 8 == {}",(king - 1) % 8);
-                if (revealed - 1) % 8 < (king - 1) % 8 {
-                    println!("  Attack from NE");
-                    return RevealedCheckSearchType::FromNE;
-                }
-            } else if revealed <= king - (king % 8) + 8 {
-                println!("  Attack from W");
-                return RevealedCheckSearchType::FromW;
-            }
-        } else { // Attack from E, SE, S, or SW
-            let difference: u8 = (king - revealed);
-            println!("  king - revealed == {}",king - revealed); 
-            if difference % 8 == 0 {
-                println!("  Attack from S");
-                return RevealedCheckSearchType::FromS;
-            } else if difference % 9 == 0 {
-                println!("  revealed - 1 % 8 == {}",(revealed - 1) % 8);
-                println!("  king - 1 % 8 == {}",(king - 1) % 8);
-                if (revealed - 1) % 8 < (king - 1) % 8 {
-                    println!("  Attack from SE");
-                    return RevealedCheckSearchType::FromSE;
-                }
-            } else if difference % 7 == 0 {
-                println!("  revealed - 1 % 8 == {}",(revealed - 1) % 8);
-                println!("  king - 1 % 8 == {}",(king - 1) % 8);
-                if (revealed - 1) % 8 > (king - 1) % 8 {
-                    println!("  Attack from SW");
-                    return RevealedCheckSearchType::FromSW;
-                }
-            } else if revealed > king - (king % 8) {
-                println!("  Attack from E");
-                return RevealedCheckSearchType::FromE;
-            }
-        }
-        println!("  Do Not Search");
-        RevealedCheckSearchType::DoNotSearch
+pub fn revealed_check_router(king: u8, revealed: u8) -> RevealedCheckSearchType {
+    if king == revealed {
+        return RevealedCheckSearchType::DoNotSearch;
     }
+
+    if king < revealed { // Attack from W, NW, N, or NE
+        let difference: u8 = revealed - king;
+        if difference % 8 == 0 {
+            return RevealedCheckSearchType::FromN;
+        } else if difference % 9 == 0 {
+            if (revealed - 1) % 8 > (king - 1) % 8 {
+                return RevealedCheckSearchType::FromNW;
+            }
+        } else if difference % 7 == 0 {
+            if (revealed - 1) % 8 < (king - 1) % 8 {
+                return RevealedCheckSearchType::FromNE;
+            }
+        } else if revealed <= king - (king % 8) + 8 {
+            return RevealedCheckSearchType::FromW;
+        }
+    } else { // Attack from E, SE, S, or SW
+        let difference: u8 = king - revealed;
+        if difference % 8 == 0 {
+            return RevealedCheckSearchType::FromS;
+        } else if difference % 9 == 0 {
+            if (revealed - 1) % 8 < (king - 1) % 8 {
+                return RevealedCheckSearchType::FromSE;
+            }
+        } else if difference % 7 == 0 {
+            if (revealed - 1) % 8 > (king - 1) % 8 {
+                return RevealedCheckSearchType::FromSW;
+            }
+        } else if revealed > king - (king % 8) {
+            return RevealedCheckSearchType::FromE;
+        }
+    }
+    RevealedCheckSearchType::DoNotSearch
+}
+
+lazy_static! {
+    static ref REVEALED_CHECK_ROUTES: Vec<Vec<RevealedCheckSearchType>> = {
+        let mut vec: Vec<Vec<RevealedCheckSearchType>> = Vec::new();
+
+        let mut blank: Vec<RevealedCheckSearchType> = Vec::new();
+        vec.push(blank); // push a blank at index 0
+
+        for king in 1..65 { // indexes 1 to 64
+            let mut mini_router: Vec<RevealedCheckSearchType> = Vec::new();
+            mini_router.push(RevealedCheckSearchType::DoNotSearch); // push a blank at index 0
+            for revealed in 1..65 { // indexes 1 to 64
+                mini_router.push(revealed_check_router(king as u8,revealed as u8));
+            }
+            vec.push(mini_router);
+        }
+        vec
+    };
+}
 
 impl Reset {
 
@@ -254,6 +252,19 @@ mod tests {
         assert_eq!(revealed_check_router(31,62),RevealedCheckSearchType::DoNotSearch);
         assert_eq!(revealed_check_router(31,63),RevealedCheckSearchType::FromN);
         assert_eq!(revealed_check_router(31,64),RevealedCheckSearchType::DoNotSearch);
+    }
+
+    #[test]
+    fn revealed_check_routes() {
+        use crate::reset::safe_revealed::revealed_check_router;
+        use crate::reset::safe_revealed::RevealedCheckSearchType;
+        use crate::reset::safe_revealed::REVEALED_CHECK_ROUTES;
+        for king in 1..65 {
+            for revealed in 1..65 {
+                println!("king == {}, revealed = {}",king,revealed);
+                assert_eq!(REVEALED_CHECK_ROUTES[king][revealed],revealed_check_router(king as u8,revealed as u8));
+            }
+        }
     }
 
     #[test]

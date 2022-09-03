@@ -8,6 +8,7 @@ edition = "2021"
 #path = "src/main.rs"
 
 [dependencies]
+lazy_static = "1.4.0"
 
 [profile.dev]
 opt-level = 3   # Full throttle optimization

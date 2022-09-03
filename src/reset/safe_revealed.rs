@@ -1,6 +1,8 @@
 use crate::reset::Reset;
+use enum_map::{enum_map,Enum,EnumMap};
+use std::collections::HashMap;
 
-#[derive(PartialEq,Debug)]
+#[derive(PartialEq,Eq,Hash,Debug)]
 pub enum RevealedCheckSearchType {
     DoNotSearch,
     FromN,
@@ -12,7 +14,6 @@ pub enum RevealedCheckSearchType {
     FromW,
     FromNW,
 }
-
 
 pub fn revealed_check_router(king: u8, revealed: u8) -> RevealedCheckSearchType {
     if king == revealed {
@@ -53,11 +54,100 @@ pub fn revealed_check_router(king: u8, revealed: u8) -> RevealedCheckSearchType 
     RevealedCheckSearchType::DoNotSearch
 }
 
+pub fn revealed_check_bitmapper(king: u8, search: RevealedCheckSearchType) -> u64 {
+    use crate::reset::r#const::B_NOT_NW_EDGE;
+    use crate::reset::r#const::B_NOT_NE_EDGE;
+    use crate::reset::r#const::B_NOT_SW_EDGE;
+    use crate::reset::r#const::B_NOT_SE_EDGE;
+    use crate::reset::r#const::B_NOT_N_EDGE;
+    use crate::reset::r#const::B_NOT_E_EDGE;
+    use crate::reset::r#const::B_NOT_W_EDGE;
+    use crate::reset::r#const::B_NOT_S_EDGE;
+
+    let b_king: u64 = 0x0000000000000001 << (king - 1);
+    let mut b_temp: u64 = b_king;
+    let mut b_map: u64 = 0x0000000000000000;
+    match search {
+        RevealedCheckSearchType::FromN => {
+            // Go N from the king
+            while b_temp & B_NOT_N_EDGE != 0 {
+                b_temp <<= 8;
+                b_map |= b_temp;
+            }
+        },
+        RevealedCheckSearchType::FromNE => {
+            // Go NE from the king
+            while b_temp & B_NOT_NE_EDGE != 0 {
+                b_temp <<= 7;
+                b_map |= b_temp;
+            }
+        },
+        RevealedCheckSearchType::FromE => {
+            // Go E from the king
+            while b_temp & B_NOT_E_EDGE != 0 {
+                b_temp >>= 1;
+                b_map |= b_temp;
+            }
+        },
+        RevealedCheckSearchType::FromSE => {
+            // Go SE from the king
+            while b_temp & B_NOT_SE_EDGE != 0 {
+                b_temp >>= 9;
+                b_map |= b_temp;
+            }
+        },
+        RevealedCheckSearchType::FromS => {
+            // Go S from the king
+            while b_temp & B_NOT_S_EDGE != 0 {
+                b_temp >>= 8;
+                b_map |= b_temp;
+            }
+        },
+        RevealedCheckSearchType::FromSW => {
+            // Go SW from the king
+            while b_temp & B_NOT_SW_EDGE != 0 {
+                b_temp >>= 7;
+                b_map |= b_temp;
+            }
+        },
+        RevealedCheckSearchType::FromW => {
+            // Go W from the king
+            while b_temp & B_NOT_W_EDGE != 0 {
+                b_temp <<= 1;
+                b_map |= b_temp;
+            }
+        },
+        RevealedCheckSearchType::FromNW => {
+            // Go NW from the king
+            while b_temp & B_NOT_NW_EDGE != 0 {
+                b_temp <<= 9;
+                b_map |= b_temp;
+            }
+        },
+        _ => {},
+    }
+    b_map
+}
+
 lazy_static! {
+    static ref SEARCH_TYPE_INDEX: HashMap<RevealedCheckSearchType,u8> = {
+        let mut map = HashMap::new();
+        map.insert(RevealedCheckSearchType::DoNotSearch,0);
+        map.insert(RevealedCheckSearchType::FromN,1);
+        map.insert(RevealedCheckSearchType::FromNE,2);
+        map.insert(RevealedCheckSearchType::FromE,3);
+        map.insert(RevealedCheckSearchType::FromSE,4);
+        map.insert(RevealedCheckSearchType::FromS,5);
+        map.insert(RevealedCheckSearchType::FromSW,6);
+        map.insert(RevealedCheckSearchType::FromW,7);
+        map.insert(RevealedCheckSearchType::FromNW,8);
+        map
+    };
+
     static ref REVEALED_CHECK_ROUTES: Vec<Vec<RevealedCheckSearchType>> = {
         let mut vec: Vec<Vec<RevealedCheckSearchType>> = Vec::new();
 
-        let mut blank: Vec<RevealedCheckSearchType> = Vec::new();
+        let blank: Vec<RevealedCheckSearchType> = Vec::new();
         vec.push(blank); // push a blank at index 0
 
         for king in 1..65 { // indexes 1 to 64
@@ -70,88 +160,29 @@ lazy_static! {
         }
         vec
     };
+
+    static ref REVEALED_CHECK_BITMAPS: Vec<Vec<u64>> = {
+        let mut vec: Vec<Vec<u64>> = Vec::new();
+
+        let blank: Vec<u64> = Vec::new();
+        vec.push(blank); // push a blank at index 0
+
+        for king in 1..65 { // indexes 1 to 64
+            let mut bit_strings: Vec<u64> = Vec::new();
+            bit_strings.push(revealed_check_bitmapper(king as u8,RevealedCheckSearchType::DoNotSearch));
+            bit_strings.push(revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromN));
+            bit_strings.push(revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromNE));
+            bit_strings.push(revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromE));
+            bit_strings.push(revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromSE));
+            bit_strings.push(revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromS));
+            bit_strings.push(revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromSW));
+            bit_strings.push(revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromW));
+            bit_strings.push(revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromNW));
+            vec.push(bit_strings);
+        }
+        vec
+    };
 }
-
-pub fn revealed_check_bitmap(king: u8, search: RevealedCheckSearchType) -> u64 {
-    use crate::reset::r#const::B_NOT_UL_EDGE;
-    use crate::reset::r#const::B_NOT_UR_EDGE;
-    use crate::reset::r#const::B_NOT_DL_EDGE;
-    use crate::reset::r#const::B_NOT_DR_EDGE;
-    use crate::reset::r#const::B_NOT_TOP_EDGE;
-    use crate::reset::r#const::B_NOT_RIGHT_EDGE;
-    use crate::reset::r#const::B_NOT_LEFT_EDGE;
-    use crate::reset::r#const::B_NOT_BOTTOM_EDGE;
-
-    let b_king: u64 = 0x0000000000000001 << (king - 1);
-    let mut b_temp: u64 = b_king;
-    let mut b_map: u64 = 0x0000000000000000;
-    match search {
-        RevealedCheckSearchType::FromN => {
-            // Go N from the king
-            while b_temp & B_NOT_TOP_EDGE != 0 {
-                b_temp <<= 8;
-                b_map |= b_temp;
-            }
-        },
-        RevealedCheckSearchType::FromNE => {
-            // Go NE from the king
-            while b_temp & B_NOT_UR_EDGE != 0 {
-                b_temp <<= 7;
-                b_map |= b_temp;
-            }
-        },
-        RevealedCheckSearchType::FromE => {
-            // Go E from the king
-            while b_temp & B_NOT_RIGHT_EDGE != 0 {
-                b_temp >>= 1;
-                b_map |= b_temp;
-            }
-        },
-        RevealedCheckSearchType::FromSE => {
-            // Go SE from the king
-            while b_temp & B_NOT_DR_EDGE != 0 {
-                b_temp >>= 9;
-                b_map |= b_temp;
-            }
-        },
-        RevealedCheckSearchType::FromS => {
-            // Go S from the king
-            while b_temp & B_NOT_BOTTOM_EDGE != 0 {
-                b_temp >>= 8;
-                b_map |= b_temp;
-            }
-        },
-        RevealedCheckSearchType::FromSW => {
-            // Go SW from the king
-            while b_temp & B_NOT_DL_EDGE != 0 {
-                b_temp >>= 7;
-                b_map |= b_temp;
-            }
-        },
-        RevealedCheckSearchType::FromW => {
-            // Go W from the king
-            while b_temp & B_NOT_LEFT_EDGE != 0 {
-                b_temp <<= 1;
-                b_map |= b_temp;
-            }
-        },
-        RevealedCheckSearchType::FromNW => {
-            // Go NW from the king
-            while b_temp & B_NOT_UL_EDGE != 0 {
-                b_temp <<= 9;
-                b_map |= b_temp;
-            }
-        },
-        _ => {},
-    }
-    b_map
-}
-
-//lazy_static! {
-//    static ref REVEALED_CHECK_BITMAPS: Vec<Array<u64>> = {
-//        Vec::new()
-//    }
-//}
 
 impl Reset {
 
@@ -187,6 +218,8 @@ mod tests {
     use crate::reset;
     use crate::reset::Reset;
     use crate::utils;
+    use crate::reset::safe_revealed::revealed_check_router;
+    use crate::reset::safe_revealed::RevealedCheckSearchType;
 
     fn prep_board(fen: &str) -> Reset {
         let mut r = reset::new();
@@ -196,9 +229,21 @@ mod tests {
     }
 
     #[test]
+    fn search_type_index_1() {
+        use crate::reset::safe_revealed::SEARCH_TYPE_INDEX;
+        assert_eq!(SEARCH_TYPE_INDEX[&RevealedCheckSearchType::DoNotSearch],0);
+        assert_eq!(SEARCH_TYPE_INDEX[&RevealedCheckSearchType::FromN],1);
+        assert_eq!(SEARCH_TYPE_INDEX[&RevealedCheckSearchType::FromNE],2);
+        assert_eq!(SEARCH_TYPE_INDEX[&RevealedCheckSearchType::FromE],3);
+        assert_eq!(SEARCH_TYPE_INDEX[&RevealedCheckSearchType::FromSE],4);
+        assert_eq!(SEARCH_TYPE_INDEX[&RevealedCheckSearchType::FromS],5);
+        assert_eq!(SEARCH_TYPE_INDEX[&RevealedCheckSearchType::FromSW],6);
+        assert_eq!(SEARCH_TYPE_INDEX[&RevealedCheckSearchType::FromW],7);
+        assert_eq!(SEARCH_TYPE_INDEX[&RevealedCheckSearchType::FromNW],8);
+    }
+
+    #[test]
     fn revealed_check_router_1() {
-        use crate::reset::safe_revealed::revealed_check_router;
-        use crate::reset::safe_revealed::RevealedCheckSearchType;
         assert_eq!(revealed_check_router(20, 1),RevealedCheckSearchType::DoNotSearch);
         assert_eq!(revealed_check_router(20, 2),RevealedCheckSearchType::FromSE);
         assert_eq!(revealed_check_router(20, 3),RevealedCheckSearchType::DoNotSearch);
@@ -267,8 +312,6 @@ mod tests {
 
     #[test]
     fn revealed_check_router_2() {
-        use crate::reset::safe_revealed::revealed_check_router;
-        use crate::reset::safe_revealed::RevealedCheckSearchType;
         assert_eq!(revealed_check_router(31, 1),RevealedCheckSearchType::DoNotSearch);
         assert_eq!(revealed_check_router(31, 2),RevealedCheckSearchType::DoNotSearch);
         assert_eq!(revealed_check_router(31, 3),RevealedCheckSearchType::DoNotSearch);
@@ -338,8 +381,6 @@ mod tests {
     #[test]
     fn revealed_check_routes() {
         // Trusts revealed_check_router, this just ensures that the matrix matches the function
-        use crate::reset::safe_revealed::revealed_check_router;
-        use crate::reset::safe_revealed::RevealedCheckSearchType;
         use crate::reset::safe_revealed::REVEALED_CHECK_ROUTES;
         for king in 1..65 {
             for revealed in 1..65 {
@@ -350,38 +391,57 @@ mod tests {
     }
 
     #[test]
-    fn revealed_check_bitmap_1() {
-        use crate::reset::safe_revealed::RevealedCheckSearchType;
-        use crate::reset::safe_revealed::revealed_check_bitmap;
-        assert_eq!(revealed_check_bitmap(17,RevealedCheckSearchType::FromN),0x0101010101000000);
-        assert_eq!(revealed_check_bitmap(17,RevealedCheckSearchType::FromNE),0x0000000000000000);
-        assert_eq!(revealed_check_bitmap(17,RevealedCheckSearchType::FromE),0x0000000000000000);
-        assert_eq!(revealed_check_bitmap(17,RevealedCheckSearchType::FromSE),0x0000000000000000);
-        assert_eq!(revealed_check_bitmap(17,RevealedCheckSearchType::FromS),0x0000000000000101);
-        assert_eq!(revealed_check_bitmap(17,RevealedCheckSearchType::FromSW),0x0000000000000204);
-        assert_eq!(revealed_check_bitmap(17,RevealedCheckSearchType::FromW),0x0000000000fe0000);
-        assert_eq!(revealed_check_bitmap(17,RevealedCheckSearchType::FromNW),0x2010080402000000);
-        assert_eq!(revealed_check_bitmap(17,RevealedCheckSearchType::DoNotSearch),0x0000000000000000);
+    fn revealed_check_bitmapper_1() {
+        use crate::reset::safe_revealed::revealed_check_bitmapper;
+        assert_eq!(revealed_check_bitmapper(17,RevealedCheckSearchType::FromN),0x0101010101000000);
+        assert_eq!(revealed_check_bitmapper(17,RevealedCheckSearchType::FromNE),0x0000000000000000);
+        assert_eq!(revealed_check_bitmapper(17,RevealedCheckSearchType::FromE),0x0000000000000000);
+        assert_eq!(revealed_check_bitmapper(17,RevealedCheckSearchType::FromSE),0x0000000000000000);
+        assert_eq!(revealed_check_bitmapper(17,RevealedCheckSearchType::FromS),0x0000000000000101);
+        assert_eq!(revealed_check_bitmapper(17,RevealedCheckSearchType::FromSW),0x0000000000000204);
+        assert_eq!(revealed_check_bitmapper(17,RevealedCheckSearchType::FromW),0x0000000000fe0000);
+        assert_eq!(revealed_check_bitmapper(17,RevealedCheckSearchType::FromNW),0x2010080402000000);
+        assert_eq!(revealed_check_bitmapper(17,RevealedCheckSearchType::DoNotSearch),0x0000000000000000);
 
-        assert_eq!(revealed_check_bitmap(24,RevealedCheckSearchType::FromN),0x8080808080000000);
-        assert_eq!(revealed_check_bitmap(24,RevealedCheckSearchType::FromNE),0x0408102040000000);
-        assert_eq!(revealed_check_bitmap(24,RevealedCheckSearchType::FromE),0x00000000007f0000);
-        assert_eq!(revealed_check_bitmap(24,RevealedCheckSearchType::FromSE),0x0000000000004020);
-        assert_eq!(revealed_check_bitmap(24,RevealedCheckSearchType::FromS),0x0000000000008080);
-        assert_eq!(revealed_check_bitmap(24,RevealedCheckSearchType::FromSW),0x0000000000000000);
-        assert_eq!(revealed_check_bitmap(24,RevealedCheckSearchType::FromW),0x0000000000000000);
-        assert_eq!(revealed_check_bitmap(24,RevealedCheckSearchType::FromNW),0x0000000000000000);
-        assert_eq!(revealed_check_bitmap(24,RevealedCheckSearchType::DoNotSearch),0x0000000000000000);
+        assert_eq!(revealed_check_bitmapper(24,RevealedCheckSearchType::FromN),0x8080808080000000);
+        assert_eq!(revealed_check_bitmapper(24,RevealedCheckSearchType::FromNE),0x0408102040000000);
+        assert_eq!(revealed_check_bitmapper(24,RevealedCheckSearchType::FromE),0x00000000007f0000);
+        assert_eq!(revealed_check_bitmapper(24,RevealedCheckSearchType::FromSE),0x0000000000004020);
+        assert_eq!(revealed_check_bitmapper(24,RevealedCheckSearchType::FromS),0x0000000000008080);
+        assert_eq!(revealed_check_bitmapper(24,RevealedCheckSearchType::FromSW),0x0000000000000000);
+        assert_eq!(revealed_check_bitmapper(24,RevealedCheckSearchType::FromW),0x0000000000000000);
+        assert_eq!(revealed_check_bitmapper(24,RevealedCheckSearchType::FromNW),0x0000000000000000);
+        assert_eq!(revealed_check_bitmapper(24,RevealedCheckSearchType::DoNotSearch),0x0000000000000000);
 
-        assert_eq!(revealed_check_bitmap(37,RevealedCheckSearchType::FromN),0x1010100000000000);
-        assert_eq!(revealed_check_bitmap(37,RevealedCheckSearchType::FromNE),0x0204080000000000);
-        assert_eq!(revealed_check_bitmap(37,RevealedCheckSearchType::FromE),0x0000000f00000000);
-        assert_eq!(revealed_check_bitmap(37,RevealedCheckSearchType::FromSE),0x0000000008040201);
-        assert_eq!(revealed_check_bitmap(37,RevealedCheckSearchType::FromS),0x0000000010101010);
-        assert_eq!(revealed_check_bitmap(37,RevealedCheckSearchType::FromSW),0x0000000020408000);
-        assert_eq!(revealed_check_bitmap(37,RevealedCheckSearchType::FromW),0x000000e000000000);
-        assert_eq!(revealed_check_bitmap(37,RevealedCheckSearchType::FromNW),0x8040200000000000);
-        assert_eq!(revealed_check_bitmap(37,RevealedCheckSearchType::DoNotSearch),0x0000000000000000);
+        assert_eq!(revealed_check_bitmapper(37,RevealedCheckSearchType::FromN),0x1010100000000000);
+        assert_eq!(revealed_check_bitmapper(37,RevealedCheckSearchType::FromNE),0x0204080000000000);
+        assert_eq!(revealed_check_bitmapper(37,RevealedCheckSearchType::FromE),0x0000000f00000000);
+        assert_eq!(revealed_check_bitmapper(37,RevealedCheckSearchType::FromSE),0x0000000008040201);
+        assert_eq!(revealed_check_bitmapper(37,RevealedCheckSearchType::FromS),0x0000000010101010);
+        assert_eq!(revealed_check_bitmapper(37,RevealedCheckSearchType::FromSW),0x0000000020408000);
+        assert_eq!(revealed_check_bitmapper(37,RevealedCheckSearchType::FromW),0x000000e000000000);
+        assert_eq!(revealed_check_bitmapper(37,RevealedCheckSearchType::FromNW),0x8040200000000000);
+        assert_eq!(revealed_check_bitmapper(37,RevealedCheckSearchType::DoNotSearch),0x0000000000000000);
+    }
+
+    #[test]
+    fn revealed_check_bitmaps() {
+        // Trusts revealed_check_bitmapper, this just ensures that the matrix matches the function
+        use crate::reset::safe_revealed::revealed_check_bitmapper;
+        use crate::reset::safe_revealed::SEARCH_TYPE_INDEX;
+        use crate::reset::safe_revealed::REVEALED_CHECK_BITMAPS;
+        for king in 1..65 {
+            println!("king == {}",king);
+            assert_eq!(REVEALED_CHECK_BITMAPS[king][0],revealed_check_bitmapper(king as u8,RevealedCheckSearchType::DoNotSearch));
+            assert_eq!(REVEALED_CHECK_BITMAPS[king][1],revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromN));
+            assert_eq!(REVEALED_CHECK_BITMAPS[king][2],revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromNE));
+            assert_eq!(REVEALED_CHECK_BITMAPS[king][3],revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromE));
+            assert_eq!(REVEALED_CHECK_BITMAPS[king][4],revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromSE));
+            assert_eq!(REVEALED_CHECK_BITMAPS[king][5],revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromS));
+            assert_eq!(REVEALED_CHECK_BITMAPS[king][6],revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromSW));
+            assert_eq!(REVEALED_CHECK_BITMAPS[king][7],revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromW));
+            assert_eq!(REVEALED_CHECK_BITMAPS[king][8],revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromNW));
+        }
     }
 
     #[test]

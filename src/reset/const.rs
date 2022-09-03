@@ -5,6 +5,11 @@ pub const B_LOWER_LEFT_CORNER: u64 = 0x0000000000000080;
 pub const B_UPPER_RIGHT_CORNER: u64 = 0x0100000000000000;
 pub const B_UPPER_LEFT_CORNER: u64 = 0x8000000000000000;
 
+pub const B_SE_CORNER: u64 = 0x0000000000000001;
+pub const B_SW_CORNER: u64 = 0x0000000000000080;
+pub const B_NE_CORNER: u64 = 0x0100000000000000;
+pub const B_NW_CORNER: u64 = 0x8000000000000000;
+
 pub const B_NOT_UL_EDGE: u64 = 0x007f7f7f7f7f7f7f;
 pub const B_NOT_UR_EDGE: u64 = 0x00fefefefefefefe;
 pub const B_NOT_DL_EDGE: u64 = 0x7f7f7f7f7f7f7f00;
@@ -14,6 +19,16 @@ pub const B_NOT_TOP_EDGE: u64 = 0x00ffffffffffffff;
 pub const B_NOT_RIGHT_EDGE: u64 = 0xfefefefefefefefe;
 pub const B_NOT_LEFT_EDGE: u64 = 0x7f7f7f7f7f7f7f7f;
 pub const B_NOT_BOTTOM_EDGE: u64 = 0xffffffffffffff00;
+
+pub const B_NOT_NW_EDGE: u64 = 0x007f7f7f7f7f7f7f;
+pub const B_NOT_NE_EDGE: u64 = 0x00fefefefefefefe;
+pub const B_NOT_SW_EDGE: u64 = 0x7f7f7f7f7f7f7f00;
+pub const B_NOT_SE_EDGE: u64 = 0xfefefefefefefe00;
+
+pub const B_NOT_N_EDGE: u64 = 0x00ffffffffffffff;
+pub const B_NOT_E_EDGE: u64 = 0xfefefefefefefefe;
+pub const B_NOT_W_EDGE: u64 = 0x7f7f7f7f7f7f7f7f;
+pub const B_NOT_S_EDGE: u64 = 0xffffffffffffff00;
 
 pub const B_RANK_1: u64 = 0x00000000000000ff;
 pub const B_RANK_2: u64 = 0x000000000000ff00;

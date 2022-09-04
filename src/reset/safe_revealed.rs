@@ -191,9 +191,6 @@ lazy_static! {
 impl Reset {
 
     pub fn is_safe_from_revealed_check_from_n(&mut self, king_square: u8, b_opponents: u64) -> bool {
-        if b_opponents == 0 {
-            return true
-        }
         let mut b_temp: u64 = 0x0000000000000001 << (king_square - 1);
         while b_temp & B_NOT_N_EDGE != 0 {
             b_temp <<= 8;
@@ -208,9 +205,6 @@ impl Reset {
     }
 
     pub fn is_safe_from_revealed_check_from_ne(&mut self, king_square: u8, b_opponents: u64) -> bool {
-        if b_opponents == 0 {
-            return true
-        }
         let mut b_temp: u64 = 0x0000000000000001 << (king_square - 1);
         while b_temp & B_NOT_NE_EDGE != 0 {
             b_temp <<= 7;
@@ -225,9 +219,6 @@ impl Reset {
     }
 
     pub fn is_safe_from_revealed_check_from_e(&mut self, king_square: u8, b_opponents: u64) -> bool {
-        if b_opponents == 0 {
-            return true
-        }
         let mut b_temp: u64 = 0x0000000000000001 << (king_square - 1);
         while b_temp & B_NOT_E_EDGE != 0 {
             b_temp >>= 1;
@@ -242,9 +233,6 @@ impl Reset {
     }
 
     pub fn is_safe_from_revealed_check_from_se(&mut self, king_square: u8, b_opponents: u64) -> bool {
-        if b_opponents == 0 {
-            return true
-        }
         let mut b_temp: u64 = 0x0000000000000001 << (king_square - 1);
         while b_temp & B_NOT_SE_EDGE != 0 {
             b_temp >>= 9;
@@ -259,9 +247,6 @@ impl Reset {
     }
 
     pub fn is_safe_from_revealed_check_from_s(&mut self, king_square: u8, b_opponents: u64) -> bool {
-        if b_opponents == 0 {
-            return true
-        }
         let mut b_temp: u64 = 0x0000000000000001 << (king_square - 1);
         while b_temp & B_NOT_S_EDGE != 0 {
             b_temp >>= 8;
@@ -276,9 +261,6 @@ impl Reset {
     }
 
     pub fn is_safe_from_revealed_check_from_sw(&mut self, king_square: u8, b_opponents: u64) -> bool {
-        if b_opponents == 0 {
-            return true
-        }
         let mut b_temp: u64 = 0x0000000000000001 << (king_square - 1);
         while b_temp & B_NOT_SW_EDGE != 0 {
             b_temp >>= 7;
@@ -293,9 +275,6 @@ impl Reset {
     }
 
     pub fn is_safe_from_revealed_check_from_w(&mut self, king_square: u8, b_opponents: u64) -> bool {
-        if b_opponents == 0 {
-            return true
-        }
         let mut b_temp: u64 = 0x0000000000000001 << (king_square - 1);
         while b_temp & B_NOT_W_EDGE != 0 {
             b_temp <<= 1;
@@ -310,9 +289,6 @@ impl Reset {
     }
 
     pub fn is_safe_from_revealed_check_from_nw(&mut self, king_square: u8, b_opponents: u64) -> bool {
-        if b_opponents == 0 {
-            return true
-        }
         let mut b_temp: u64 = 0x0000000000000001 << (king_square - 1);
         while b_temp & B_NOT_NW_EDGE != 0 {
             b_temp <<= 9;
@@ -353,41 +329,65 @@ impl Reset {
             RevealedCheckSearchType::FromN => {
                 let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][1];
                 b_opponents &= !(b_others | self.b_bishops);
+                if b_attacks & b_opponents == 0 {
+                    return true;
+                }
                 return self.is_safe_from_revealed_check_from_n(king_square,b_opponents)
             },
             RevealedCheckSearchType::FromNE => {
                 let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][2];
                 b_opponents &= !(b_others | self.b_rooks);
+                if b_attacks & b_opponents == 0 {
+                    return true;
+                }
                 return self.is_safe_from_revealed_check_from_ne(king_square,b_opponents)
             },
             RevealedCheckSearchType::FromE => {
                 let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][3];
                 b_opponents &= !(b_others | self.b_bishops);
+                if b_attacks & b_opponents == 0 {
+                    return true;
+                }
                 return self.is_safe_from_revealed_check_from_e(king_square,b_opponents)
             },
             RevealedCheckSearchType::FromSE => {
                 let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][4];
                 b_opponents &= !(b_others | self.b_rooks);
+                if b_attacks & b_opponents == 0 {
+                    return true;
+                }
                 return self.is_safe_from_revealed_check_from_se(king_square,b_opponents)
             },
             RevealedCheckSearchType::FromS => {
                 let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][5];
                 b_opponents &= !(b_others | self.b_bishops);
+                if b_attacks & b_opponents == 0 {
+                    return true;
+                }
                 return self.is_safe_from_revealed_check_from_s(king_square,b_opponents)
             },
             RevealedCheckSearchType::FromSW => {
                 let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][6];
                 b_opponents &= !(b_others | self.b_rooks);
+                if b_attacks & b_opponents == 0 {
+                    return true;
+                }
                 return self.is_safe_from_revealed_check_from_sw(king_square,b_opponents)
             },
             RevealedCheckSearchType::FromW => {
                 let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][7];
                 b_opponents &= !(b_others | self.b_bishops);
+                if b_attacks & b_opponents == 0 {
+                    return true;
+                }
                 return self.is_safe_from_revealed_check_from_w(king_square,b_opponents)
             },
             RevealedCheckSearchType::FromNW => {
                 let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][8];
                 b_opponents &= !(b_others | self.b_rooks);
+                if b_attacks & b_opponents == 0 {
+                    return true;
+                }
                 return self.is_safe_from_revealed_check_from_nw(king_square,b_opponents)
             },
             RevealedCheckSearchType::DoNotSearch => {
@@ -417,7 +417,6 @@ mod tests {
         r
     }
 
-    #[test]
     fn search_type_index_1() {
         use crate::reset::safe_revealed::SEARCH_TYPE_INDEX;
         assert_eq!(SEARCH_TYPE_INDEX[&RevealedCheckSearchType::DoNotSearch],0);
@@ -737,6 +736,11 @@ mod tests {
         let from: u8 = utils::convert_square_to_number("b7".to_string());
         let king: u8 = utils::convert_square_to_number("b8".to_string());
         assert!(r.is_safe_from_revealed_check(king,from,BLACK));
+
+        let mut r = prep_board("1k6/8/8/8/8/2pK4/2r5/1BQ5 w - - 0 1");
+        let from: u8 = utils::convert_square_to_number("b2".to_string());
+        let king: u8 = utils::convert_square_to_number("b8".to_string());
+        assert!(r.is_safe_from_revealed_check(king,from,BLACK));
     }
 
     #[test]
@@ -760,6 +764,11 @@ mod tests {
         assert!(!r.is_safe_from_revealed_check(king,from,BLACK));
 
         let mut r = prep_board("8/6k1/5p2/rR1K4/8/8/8/7Q b - - 0 1");
+        let from: u8 = utils::convert_square_to_number("c5".to_string());
+        let king: u8 = utils::convert_square_to_number("d5".to_string());
+        assert!(r.is_safe_from_revealed_check(king,from,WHITE));
+
+        let mut r = prep_board("8/6k1/5p2/b2K4/8/2R5/8/7Q b - - 0 1");
         let from: u8 = utils::convert_square_to_number("c5".to_string());
         let king: u8 = utils::convert_square_to_number("d5".to_string());
         assert!(r.is_safe_from_revealed_check(king,from,WHITE));

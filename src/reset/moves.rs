@@ -5,6 +5,9 @@ use crate::reset::r#const::B_LOWER_RIGHT_CORNER;
 use crate::reset::r#const::B_LOWER_LEFT_CORNER;
 use crate::reset::r#const::B_UPPER_RIGHT_CORNER;
 
+use crate::reset::r#const::BLACK;
+use crate::reset::r#const::WHITE;
+
 impl Reset {
 
     /// Prepare a Reset to generate moves.  This is called from both `init_from_fen` and after a
@@ -156,15 +159,31 @@ impl Reset {
         }
         // Move is invalid if I'm moving into check
         if self.white_to_move() {
-            if !child.white_is_safe(child.b_kings & child.b_white) {
-                return false;
+            if self.in_check != 0 {
+                if !child.white_is_safe(child.b_kings & child.b_white) {
+                    return false;
+                }
+            } else {
+                let white_king_square: u8 = bitops::get_bit_number(child.b_kings & child.b_white);
+                let from_square: u8 = bitops::get_bit_number(child.b_from);
+                if !child.is_safe_from_revealed_check(white_king_square,from_square,WHITE) {
+                    return false;
+                }
             }
             if !child.black_is_safe(child.b_kings & child.b_black()) {
                 child.in_check = 1;
             }
         } else {
-            if !child.black_is_safe(child.b_kings & child.b_black()) {
-                return false;
+            if self.in_check != 0 {
+                if !child.black_is_safe(child.b_kings & child.b_black()) {
+                    return false;
+                }
+            } else {
+                let black_king_square: u8 = bitops::get_bit_number(child.b_kings & child.b_black());
+                let from_square: u8 = bitops::get_bit_number(child.b_from);
+                if !child.is_safe_from_revealed_check(black_king_square,from_square,BLACK) {
+                    return false;
+                }
             }
             if !child.white_is_safe(child.b_kings & child.b_white) {
                 child.in_check = 1;

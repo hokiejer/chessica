@@ -312,7 +312,6 @@ impl Reset {
         use crate::reset::safe_revealed::RevealedCheckSearchType;
 
         let search_type = &REVEALED_CHECK_ROUTES[king_square as usize][from_square as usize];
-        println!("Search Type == {:?}",search_type);
         if matches!(search_type,RevealedCheckSearchType::DoNotSearch) {
             return true;
         }
@@ -613,7 +612,6 @@ mod tests {
         use crate::reset::safe_revealed::REVEALED_CHECK_ROUTES;
         for king in 1..65 {
             for revealed in 1..65 {
-                println!("king == {}, revealed = {}",king,revealed);
                 assert_eq!(REVEALED_CHECK_ROUTES[king][revealed],revealed_check_router(king as u8,revealed as u8));
             }
         }
@@ -660,7 +658,6 @@ mod tests {
         use crate::reset::safe_revealed::SEARCH_TYPE_INDEX;
         use crate::reset::safe_revealed::REVEALED_CHECK_BITMAPS;
         for king in 1..65 {
-            println!("king == {}",king);
             assert_eq!(REVEALED_CHECK_BITMAPS[king][0],revealed_check_bitmapper(king as u8,RevealedCheckSearchType::DoNotSearch));
             assert_eq!(REVEALED_CHECK_BITMAPS[king][1],revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromN));
             assert_eq!(REVEALED_CHECK_BITMAPS[king][2],revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromNE));

@@ -107,9 +107,12 @@ impl Reset {
     ///
     pub fn add_move_if_valid(&mut self, child: &mut Reset, b_destination: u64) -> bool {
 
+        let mut king_move: bool = false;
         self.init_child(child);
         child.b_from = self.b_current_piece;
         child.b_to = b_destination;
+        child.bi_from = bitops::get_bit_number(child.b_from);
+        child.bi_to = bitops::get_bit_number(child.b_to);
 
         if child.b_to & child.b_all != 0 { // Capture
             child.capture_processing();
@@ -147,6 +150,7 @@ impl Reset {
         } else if child.b_from & child.b_kings != 0 {
             child.b_kings &= !child.b_from;
             child.b_kings |= child.b_to;
+            king_move = true;
             if self.white_to_move() {
                 child.white_castle_k = 0;
                 child.white_castle_q = 0;
@@ -159,14 +163,13 @@ impl Reset {
         }
         // Move is invalid if I'm moving into check
         if self.white_to_move() {
-            if self.in_check != 0 {
+            if self.in_check != 0 || king_move {
                 if !child.white_is_safe(child.b_kings & child.b_white) {
                     return false;
                 }
             } else {
                 let white_king_square: u8 = bitops::get_bit_number(child.b_kings & child.b_white);
-                let from_square: u8 = bitops::get_bit_number(child.b_from);
-                if !child.is_safe_from_revealed_check(white_king_square,from_square,WHITE) {
+                if !child.is_safe_from_revealed_check(white_king_square,child.bi_from,WHITE) {
                     return false;
                 }
             }
@@ -174,14 +177,13 @@ impl Reset {
                 child.in_check = 1;
             }
         } else {
-            if self.in_check != 0 {
+            if self.in_check != 0 || king_move {
                 if !child.black_is_safe(child.b_kings & child.b_black()) {
                     return false;
                 }
             } else {
                 let black_king_square: u8 = bitops::get_bit_number(child.b_kings & child.b_black());
-                let from_square: u8 = bitops::get_bit_number(child.b_from);
-                if !child.is_safe_from_revealed_check(black_king_square,from_square,BLACK) {
+                if !child.is_safe_from_revealed_check(black_king_square,child.bi_from,BLACK) {
                     return false;
                 }
             }

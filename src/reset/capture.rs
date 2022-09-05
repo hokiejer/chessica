@@ -1,8 +1,8 @@
 use crate::reset::Reset;
 use crate::reset::r#const::B_FOUR_CORNERS;
-use crate::reset::r#const::B_LOWER_RIGHT_CORNER;
-use crate::reset::r#const::B_LOWER_LEFT_CORNER;
-use crate::reset::r#const::B_UPPER_RIGHT_CORNER;
+use crate::reset::r#const::B_SE_CORNER;
+use crate::reset::r#const::B_SW_CORNER;
+use crate::reset::r#const::B_NE_CORNER;
 
 impl Reset {
 
@@ -38,13 +38,13 @@ impl Reset {
             self.b_rooks &= !self.b_to;
             self.material += material_multiplier * 5;
             if self.b_to & B_FOUR_CORNERS != 0 {
-                if self.b_to & B_LOWER_RIGHT_CORNER != 0 {
+                if self.b_to & B_SE_CORNER != 0 {
                     self.white_castle_k = 0;
-                } else if self.b_to & B_LOWER_LEFT_CORNER != 0 {
+                } else if self.b_to & B_SW_CORNER != 0 {
                     self.white_castle_q = 0;
-                } else if self.b_to & B_UPPER_RIGHT_CORNER != 0 {
+                } else if self.b_to & B_NE_CORNER != 0 {
                     self.black_castle_k = 0;
-                } else { // B_UPPER_RIGHT_CORNER
+                } else { // B_NW_CORNER
                     self.black_castle_q = 0;
                 }
             }

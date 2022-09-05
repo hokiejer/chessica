@@ -1,9 +1,9 @@
 use crate::reset::Reset;
 use crate::bitops;
 use crate::reset::r#const::B_FOUR_CORNERS;
-use crate::reset::r#const::B_LOWER_RIGHT_CORNER;
-use crate::reset::r#const::B_LOWER_LEFT_CORNER;
-use crate::reset::r#const::B_UPPER_RIGHT_CORNER;
+use crate::reset::r#const::B_SE_CORNER;
+use crate::reset::r#const::B_SW_CORNER;
+use crate::reset::r#const::B_NE_CORNER;
 
 use crate::reset::r#const::BLACK;
 use crate::reset::r#const::WHITE;
@@ -137,13 +137,13 @@ impl Reset {
             child.b_rooks &= !child.b_from;
             child.b_rooks |= child.b_to;
             if child.b_from & B_FOUR_CORNERS != 0 {
-                if child.b_to & B_LOWER_RIGHT_CORNER != 0 {
+                if child.b_to & B_SE_CORNER != 0 {
                     child.white_castle_k = 0;
-                } else if child.b_to & B_LOWER_LEFT_CORNER != 0 {
+                } else if child.b_to & B_SW_CORNER != 0 {
                     child.white_castle_q = 0;
-                } else if child.b_to & B_UPPER_RIGHT_CORNER != 0 {
+                } else if child.b_to & B_NE_CORNER != 0 {
                     child.black_castle_k = 0;
-                } else { // B_UPPER_RIGHT_CORNER
+                } else { // B_NW_CORNER
                     child.black_castle_q = 0;
                 }
             }

@@ -12,16 +12,6 @@ pub const B_SW_CORNER: u64 = 0x0000000000000080;
 pub const B_NE_CORNER: u64 = 0x0100000000000000;
 pub const B_NW_CORNER: u64 = 0x8000000000000000;
 
-pub const B_NOT_UL_EDGE: u64 = 0x007f7f7f7f7f7f7f;
-pub const B_NOT_UR_EDGE: u64 = 0x00fefefefefefefe;
-pub const B_NOT_DL_EDGE: u64 = 0x7f7f7f7f7f7f7f00;
-pub const B_NOT_DR_EDGE: u64 = 0xfefefefefefefe00;
-
-pub const B_NOT_TOP_EDGE: u64 = 0x00ffffffffffffff;
-pub const B_NOT_RIGHT_EDGE: u64 = 0xfefefefefefefefe;
-pub const B_NOT_LEFT_EDGE: u64 = 0x7f7f7f7f7f7f7f7f;
-pub const B_NOT_BOTTOM_EDGE: u64 = 0xffffffffffffff00;
-
 pub const B_NOT_NW_EDGE: u64 = 0x007f7f7f7f7f7f7f;
 pub const B_NOT_NE_EDGE: u64 = 0x00fefefefefefefe;
 pub const B_NOT_SW_EDGE: u64 = 0x7f7f7f7f7f7f7f00;

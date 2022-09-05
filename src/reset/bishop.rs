@@ -10,10 +10,10 @@ impl Reset {
     /// ```
     /// ```
     pub fn generate_next_bishop_move(&mut self, child: &mut Reset) -> bool {
-        use crate::reset::r#const::B_NOT_UR_EDGE;
-        use crate::reset::r#const::B_NOT_DR_EDGE;
-        use crate::reset::r#const::B_NOT_DL_EDGE;
-        use crate::reset::r#const::B_NOT_UL_EDGE;
+        use crate::reset::r#const::B_NOT_NE_EDGE;
+        use crate::reset::r#const::B_NOT_SE_EDGE;
+        use crate::reset::r#const::B_NOT_SW_EDGE;
+        use crate::reset::r#const::B_NOT_NW_EDGE;
 
         let b_available_moves: u64 = if self.white_to_move() {
             !self.b_white
@@ -21,13 +21,13 @@ impl Reset {
             self.b_white | !self.b_all
         };
 
-        // Up Right
+        // Northeast
         let next_line = 20;
         if self.move_id < next_line {
             let mut b_target = self.b_current_piece << ((self.move_id % 10) * 7);
             loop {
                 // If we can't move any farther, give up on this line
-                if b_target & B_NOT_UR_EDGE == 0 {
+                if b_target & B_NOT_NE_EDGE == 0 {
                     self.move_id = next_line;
                     break;
                 }
@@ -48,13 +48,13 @@ impl Reset {
             }
         }
 
-        // Down Right
+        // Southeast
         let next_line = 30;
         if self.move_id < next_line {
             let mut b_target = self.b_current_piece >> ((self.move_id % 10) * 9);
             loop {
                 // If we can't move any farther, give up on this line
-                if b_target & B_NOT_DR_EDGE == 0 {
+                if b_target & B_NOT_SE_EDGE == 0 {
                     self.move_id = next_line;
                     break;
                 }
@@ -75,13 +75,13 @@ impl Reset {
             }
         }
 
-        // Down Left
+        // Southwest
         let next_line = 40;
         if self.move_id < next_line {
             let mut b_target = self.b_current_piece >> ((self.move_id % 10) * 7);
             loop {
                 // If we can't move any farther, give up on this line
-                if b_target & B_NOT_DL_EDGE == 0 {
+                if b_target & B_NOT_SW_EDGE == 0 {
                     self.move_id = next_line;
                     break;
                 }
@@ -102,11 +102,11 @@ impl Reset {
             }
         }
 
-        // Up Left
+        // Northwest
         let mut b_target = self.b_current_piece << ((self.move_id % 10) * 9);
         loop {
             // If we can't move any farther, give up on this line
-            if b_target & B_NOT_UL_EDGE == 0 {
+            if b_target & B_NOT_NW_EDGE == 0 {
                 break;
             }
             b_target <<= 9;

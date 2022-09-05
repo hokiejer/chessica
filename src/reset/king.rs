@@ -1,12 +1,12 @@
 use crate::reset::Reset;
-use crate::reset::r#const::B_NOT_TOP_EDGE;
-use crate::reset::r#const::B_NOT_UR_EDGE;
-use crate::reset::r#const::B_NOT_RIGHT_EDGE;
-use crate::reset::r#const::B_NOT_DR_EDGE;
-use crate::reset::r#const::B_NOT_BOTTOM_EDGE;
-use crate::reset::r#const::B_NOT_DL_EDGE;
-use crate::reset::r#const::B_NOT_LEFT_EDGE;
-use crate::reset::r#const::B_NOT_UL_EDGE;
+use crate::reset::r#const::B_NOT_N_EDGE;
+use crate::reset::r#const::B_NOT_NE_EDGE;
+use crate::reset::r#const::B_NOT_E_EDGE;
+use crate::reset::r#const::B_NOT_SE_EDGE;
+use crate::reset::r#const::B_NOT_S_EDGE;
+use crate::reset::r#const::B_NOT_SW_EDGE;
+use crate::reset::r#const::B_NOT_W_EDGE;
+use crate::reset::r#const::B_NOT_NW_EDGE;
 use crate::reset::r#const::B_WHITE_CASTLEK_SAFETY;
 use crate::reset::r#const::B_WHITE_CASTLEQ_SAFETY;
 use crate::reset::r#const::B_BLACK_CASTLEK_SAFETY;
@@ -29,8 +29,8 @@ impl Reset {
             self.b_white | !self.b_all
         };
 
-        // Up
-        if self.move_id < 20 && (self.b_current_piece & B_NOT_TOP_EDGE != 0) {
+        // North
+        if self.move_id < 20 && (self.b_current_piece & B_NOT_N_EDGE != 0) {
             let b_destination = self.b_current_piece << 8;
             if (b_available_moves & b_destination != 0) 
                 && (self.add_move_if_valid(child, b_destination)) 
@@ -40,8 +40,8 @@ impl Reset {
             }
         }
 
-        // Up Right
-        if self.move_id < 30 && (self.b_current_piece & B_NOT_UR_EDGE != 0) {
+        // Northeast
+        if self.move_id < 30 && (self.b_current_piece & B_NOT_NW_EDGE != 0) {
             let b_destination = self.b_current_piece << 7;
             if (b_available_moves & b_destination != 0) 
                 && (self.add_move_if_valid(child, b_destination)) 
@@ -51,8 +51,8 @@ impl Reset {
             }
         }
 
-        // Right
-        if self.move_id < 40 && (self.b_current_piece & B_NOT_RIGHT_EDGE != 0) {
+        // East
+        if self.move_id < 40 && (self.b_current_piece & B_NOT_E_EDGE != 0) {
             let b_destination = self.b_current_piece >> 1;
             if (b_available_moves & b_destination != 0) 
                 && (self.add_move_if_valid(child, b_destination)) 
@@ -62,8 +62,8 @@ impl Reset {
             }
         }
 
-        // Down Right
-        if self.move_id < 50 && (self.b_current_piece & B_NOT_DR_EDGE != 0) {
+        // Southeast
+        if self.move_id < 50 && (self.b_current_piece & B_NOT_SE_EDGE != 0) {
             let b_destination = self.b_current_piece >> 9;
             if (b_available_moves & b_destination != 0) 
                 && (self.add_move_if_valid(child, b_destination)) 
@@ -73,8 +73,8 @@ impl Reset {
             }
         }
 
-        // Down
-        if self.move_id < 60 && (self.b_current_piece & B_NOT_BOTTOM_EDGE != 0) {
+        // South
+        if self.move_id < 60 && (self.b_current_piece & B_NOT_S_EDGE != 0) {
             let b_destination = self.b_current_piece >> 8;
             if (b_available_moves & b_destination != 0) 
                 && (self.add_move_if_valid(child, b_destination)) 
@@ -84,8 +84,8 @@ impl Reset {
             }
         }
 
-        // Down Left
-        if self.move_id < 70 && (self.b_current_piece & B_NOT_DL_EDGE != 0) {
+        // Southwest
+        if self.move_id < 70 && (self.b_current_piece & B_NOT_SW_EDGE != 0) {
             let b_destination = self.b_current_piece >> 7;
             if (b_available_moves & b_destination != 0) 
                 && (self.add_move_if_valid(child, b_destination)) 
@@ -95,8 +95,8 @@ impl Reset {
             }
         }
 
-        // Left
-        if self.move_id < 80 && (self.b_current_piece & B_NOT_LEFT_EDGE != 0) {
+        // West
+        if self.move_id < 80 && (self.b_current_piece & B_NOT_W_EDGE != 0) {
             let b_destination = self.b_current_piece << 1;
             if (b_available_moves & b_destination != 0) 
                 && (self.add_move_if_valid(child, b_destination)) 
@@ -106,8 +106,8 @@ impl Reset {
             }
         }
 
-        // Up Left
-        if self.move_id < 90 && (self.b_current_piece & B_NOT_UL_EDGE != 0) {
+        // Northwest
+        if self.move_id < 90 && (self.b_current_piece & B_NOT_NW_EDGE != 0) {
             let b_destination = self.b_current_piece << 9;
             if (b_available_moves & b_destination != 0) 
                 && (self.add_move_if_valid(child, b_destination)) 

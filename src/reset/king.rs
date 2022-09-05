@@ -141,7 +141,7 @@ impl Reset {
 
             // White Castle Queenside
             if self.move_id < 110 && 
-                self.white_castle_k != 0 &&
+                self.white_castle_q != 0 &&
                 (self.b_all & B_WHITE_CASTLEQ_EMPTY == 0) &&
                 self.white_is_safe(B_WHITE_CASTLEQ_SAFETY) &&
                 self.add_move_if_valid(child, B_WHITE_CASTLEQ_DESTINATION)
@@ -181,7 +181,7 @@ impl Reset {
 
             // Black Castle Queenside
             if self.move_id < 110 && 
-                self.black_castle_k != 0 &&
+                self.black_castle_q != 0 &&
                 (self.b_all & B_BLACK_CASTLEQ_EMPTY == 0) &&
                 self.black_is_safe(B_BLACK_CASTLEQ_SAFETY) &&
                 self.add_move_if_valid(child, B_BLACK_CASTLEQ_DESTINATION)

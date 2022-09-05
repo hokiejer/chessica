@@ -493,7 +493,7 @@ mod tests {
 
     #[test]
     fn black_king_castle_kingside_invalid() {
-        let mut r = prep_board("4k2r/8/8/8/B7/8/8/R3K3 w Qk - 0 1");
+        let mut r = prep_board("4k2r/8/8/8/B7/8/8/R3K3 b Qk - 0 1");
         let mut child = reset::new();
         r.b_current_piece = utils::convert_square_to_bitstring("e8".to_string());
         r.move_id = 90;

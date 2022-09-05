@@ -137,11 +137,11 @@ impl Reset {
             child.b_rooks &= !child.b_from;
             child.b_rooks |= child.b_to;
             if child.b_from & B_FOUR_CORNERS != 0 {
-                if child.b_to & B_SE_CORNER != 0 {
+                if child.b_from & B_SE_CORNER != 0 {
                     child.white_castle_k = 0;
-                } else if child.b_to & B_SW_CORNER != 0 {
+                } else if child.b_from & B_SW_CORNER != 0 {
                     child.white_castle_q = 0;
-                } else if child.b_to & B_NE_CORNER != 0 {
+                } else if child.b_from & B_NE_CORNER != 0 {
                     child.black_castle_k = 0;
                 } else { // B_NW_CORNER
                     child.black_castle_q = 0;

@@ -191,7 +191,7 @@ lazy_static! {
 impl Reset {
 
     pub fn is_safe_from_revealed_check_from_n(&mut self, king_square: u8, b_opponents: u64) -> bool {
-        let mut b_temp: u64 = 0x0000000000000001 << (king_square - 1);
+        let mut b_temp: u64 = 1 << (king_square - 1);
         while b_temp & B_NOT_N_EDGE != 0 {
             b_temp <<= 8;
             if b_temp & b_opponents != 0 {
@@ -205,7 +205,7 @@ impl Reset {
     }
 
     pub fn is_safe_from_revealed_check_from_ne(&mut self, king_square: u8, b_opponents: u64) -> bool {
-        let mut b_temp: u64 = 0x0000000000000001 << (king_square - 1);
+        let mut b_temp: u64 = 1 << (king_square - 1);
         while b_temp & B_NOT_NE_EDGE != 0 {
             b_temp <<= 7;
             if b_temp & b_opponents != 0 {
@@ -219,7 +219,7 @@ impl Reset {
     }
 
     pub fn is_safe_from_revealed_check_from_e(&mut self, king_square: u8, b_opponents: u64) -> bool {
-        let mut b_temp: u64 = 0x0000000000000001 << (king_square - 1);
+        let mut b_temp: u64 = 1 << (king_square - 1);
         while b_temp & B_NOT_E_EDGE != 0 {
             b_temp >>= 1;
             if b_temp & b_opponents != 0 {
@@ -233,7 +233,7 @@ impl Reset {
     }
 
     pub fn is_safe_from_revealed_check_from_se(&mut self, king_square: u8, b_opponents: u64) -> bool {
-        let mut b_temp: u64 = 0x0000000000000001 << (king_square - 1);
+        let mut b_temp: u64 = 1 << (king_square - 1);
         while b_temp & B_NOT_SE_EDGE != 0 {
             b_temp >>= 9;
             if b_temp & b_opponents != 0 {
@@ -247,7 +247,7 @@ impl Reset {
     }
 
     pub fn is_safe_from_revealed_check_from_s(&mut self, king_square: u8, b_opponents: u64) -> bool {
-        let mut b_temp: u64 = 0x0000000000000001 << (king_square - 1);
+        let mut b_temp: u64 = 1 << (king_square - 1);
         while b_temp & B_NOT_S_EDGE != 0 {
             b_temp >>= 8;
             if b_temp & b_opponents != 0 {
@@ -261,7 +261,7 @@ impl Reset {
     }
 
     pub fn is_safe_from_revealed_check_from_sw(&mut self, king_square: u8, b_opponents: u64) -> bool {
-        let mut b_temp: u64 = 0x0000000000000001 << (king_square - 1);
+        let mut b_temp: u64 = 1 << (king_square - 1);
         while b_temp & B_NOT_SW_EDGE != 0 {
             b_temp >>= 7;
             if b_temp & b_opponents != 0 {
@@ -275,7 +275,7 @@ impl Reset {
     }
 
     pub fn is_safe_from_revealed_check_from_w(&mut self, king_square: u8, b_opponents: u64) -> bool {
-        let mut b_temp: u64 = 0x0000000000000001 << (king_square - 1);
+        let mut b_temp: u64 = 1 << (king_square - 1);
         while b_temp & B_NOT_W_EDGE != 0 {
             b_temp <<= 1;
             if b_temp & b_opponents != 0 {
@@ -289,7 +289,7 @@ impl Reset {
     }
 
     pub fn is_safe_from_revealed_check_from_nw(&mut self, king_square: u8, b_opponents: u64) -> bool {
-        let mut b_temp: u64 = 0x0000000000000001 << (king_square - 1);
+        let mut b_temp: u64 = 1 << (king_square - 1);
         while b_temp & B_NOT_NW_EDGE != 0 {
             b_temp <<= 9;
             if b_temp & b_opponents != 0 {
@@ -321,8 +321,6 @@ impl Reset {
         } else {
             self.b_white
         };
-        let mut b_border: u64 = 0x0000000000000000;
-        let mut b_increment: u64 = 0x0000000000000000;
         let b_others: u64 = self.b_pawns | self.b_knights | self.b_kings;
         match search_type {
             RevealedCheckSearchType::FromN => {

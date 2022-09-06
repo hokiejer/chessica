@@ -36,7 +36,7 @@ impl Reset {
         use crate::reset::r#const::B_KNIGHT_CAN_MOVE_1100;
 
         // Pawns
-        let b_opponent: u64 = if opponent == 0 {
+        let b_opponent: u64 = if opponent == 0 { // Black is safe
             // Pawns - Southwest
             if ((b_squares & B_NOT_SW_EDGE) >> 7) & (self.b_pawns & self.b_white) != 0 {
                 return false;
@@ -46,7 +46,7 @@ impl Reset {
                 return false;
             }
             self.b_white
-        } else {
+        } else { // White is safe
             // Pawns - Northwest
             if ((b_squares & B_NOT_NW_EDGE) << 9) & (self.b_pawns & self.b_black()) != 0 {
                 return false;
@@ -503,4 +503,23 @@ mod tests {
         assert!(r.white_is_safe(0xfdfcffffffffffff)); // all safe squares
     }
 
+    #[test]
+    fn is_safe_against_white_king_castle_attack() {
+        let mut r = prep_board("2k5/6pp/8/b7/8/P7/2P3PP/R3K3 w Q - 0 1");
+        assert!(!r.white_is_safe(0x0000000000000038));
+        let mut r = prep_board("2k5/6pp/7q/b7/8/PPPP4/6PP/R3K3 b Q - 0 1");
+        assert!(!r.white_is_safe(0x0000000000000038));
+        let mut r = prep_board("2rk4/6pp/7q/b7/8/PP2P3/3P2PP/R3K3 b Q - 0 1");
+        assert!(!r.white_is_safe(0x0000000000000038));
+        let mut r = prep_board("2rk4/6pp/7q/b7/8/PPP1P3/3Pp1PP/R3K3 w Q - 0 1");
+        assert!(!r.white_is_safe(0x0000000000000038));
+        let mut r = prep_board("2rk4/6pp/7q/b7/8/PPP1P3/1p1P2PP/R3K3 w Q - 0 1");
+        assert!(!r.white_is_safe(0x0000000000000038));
+        let mut r = prep_board("2rk4/5ppp/7q/b7/8/PPP1n3/3P2PP/R3K3 w Q - 0 1");
+        assert!(!r.white_is_safe(0x0000000000000038));
+        let mut r = prep_board("2r2n2/5ppp/7q/b7/8/PPP5/1k1P2PP/R3K3 w Q - 0 1");
+        assert!(!r.white_is_safe(0x0000000000000038));
+        let mut r = prep_board("1kr5/5ppp/7q/b7/8/P1P5/n2P2PP/R3K3 w Q - 0 1");
+        assert!(!r.white_is_safe(0x0000000000000038));
+    }
 }

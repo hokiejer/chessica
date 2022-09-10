@@ -41,7 +41,7 @@ impl Reset {
         }
 
         // Northeast
-        if self.move_id < 30 && (self.b_current_piece & B_NOT_NW_EDGE != 0) {
+        if self.move_id < 30 && (self.b_current_piece & B_NOT_NE_EDGE != 0) {
             let b_destination = self.b_current_piece << 7;
             if (b_available_moves & b_destination != 0) 
                 && (self.add_move_if_valid(child, b_destination)) 

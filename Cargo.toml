@@ -4,14 +4,16 @@ version = "0.0.0"
 edition = "2021"
 rust-version = "1.63"
 
-#[lib]
-#name = "chessica"
-#path = "src/main.rs"
+[lib]
+name = "chessica"
+path = "src/main.rs"
 
 [dependencies]
 lazy_static = "1.4.0"
 enum-map = "2.4.1"
 
 [profile.dev]
-opt-level = 3   # Full throttle optimization
+opt-level = 3
 
+[profile.release]
+opt-level = 3

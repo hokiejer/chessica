@@ -44,6 +44,12 @@ impl Reset {
                         self.move_id = next_line;
                     }
                     return true;
+                } else {
+                    // If this is a capture, we're done with this line
+                    if b_target & self.b_all != 0 {
+                        self.move_id = next_line;
+                        break;
+                    }
                 }
             }
         }
@@ -71,6 +77,12 @@ impl Reset {
                         self.move_id = next_line;
                     }
                     return true;
+                } else {
+                    // If this is a capture, we're done with this line
+                    if b_target & self.b_all != 0 {
+                        self.move_id = next_line;
+                        break;
+                    }
                 }
             }
         }
@@ -98,6 +110,12 @@ impl Reset {
                         self.move_id = next_line;
                     }
                     return true;
+                } else {
+                    // If this is a capture, we're done with this line
+                    if b_target & self.b_all != 0 {
+                        self.move_id = next_line;
+                        break;
+                    }
                 }
             }
         }
@@ -121,6 +139,11 @@ impl Reset {
                     self.consider_next_moveable_piece();
                 }
                 return true;
+            } else {
+                // If this is a capture, we're done with this line
+                if b_target & self.b_all != 0 {
+                    break;
+                }
             }
         }
 
@@ -342,7 +365,21 @@ mod tests {
         assert!(!retval);
         assert_eq!(r.b_current_piece,0x0000000000000000);
         assert_eq!(r.move_id,10);
-
     }
+
+    #[test]
+    fn white_rook_moves_invisible_piece() {
+        let mut r = prep_board("3kr1nR/8/8/8/8/8/8/4K3 w - - 1 2");
+        let mut child = reset::new();
+        r.b_current_piece = utils::convert_square_to_bitstring("h8".to_string());
+        r.in_check = 1;
+
+        // No rook moves possible
+        let retval = r.generate_next_rook_move(&mut child);
+        assert!(!retval);
+        assert_eq!(r.b_current_piece,0);
+        assert_eq!(r.move_id,10);
+    }
+
 }
 

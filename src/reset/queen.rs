@@ -47,6 +47,12 @@ impl Reset {
                         self.move_id = next_line;
                     }
                     return true;
+                } else {
+                    // If this is a capture, we're done with this line
+                    if b_target & self.b_all != 0 {
+                        self.move_id = next_line;
+                        break;
+                    }
                 }
             }
         }
@@ -74,6 +80,12 @@ impl Reset {
                         self.move_id = next_line;
                     }
                     return true;
+                } else {
+                    // If this is a capture, we're done with this line
+                    if b_target & self.b_all != 0 {
+                        self.move_id = next_line;
+                        break;
+                    }
                 }
             }
         }
@@ -101,6 +113,12 @@ impl Reset {
                         self.move_id = next_line;
                     }
                     return true;
+                } else {
+                    // If this is a capture, we're done with this line
+                    if b_target & self.b_all != 0 {
+                        self.move_id = next_line;
+                        break;
+                    }
                 }
             }
         }
@@ -128,6 +146,12 @@ impl Reset {
                         self.move_id = next_line;
                     }
                     return true;
+                } else {
+                    // If this is a capture, we're done with this line
+                    if b_target & self.b_all != 0 {
+                        self.move_id = next_line;
+                        break;
+                    }
                 }
             }
         }
@@ -155,6 +179,12 @@ impl Reset {
                         self.move_id = next_line;
                     }
                     return true;
+                } else {
+                    // If this is a capture, we're done with this line
+                    if b_target & self.b_all != 0 {
+                        self.move_id = next_line;
+                        break;
+                    }
                 }
             }
         }
@@ -182,6 +212,12 @@ impl Reset {
                         self.move_id = next_line;
                     }
                     return true;
+                } else {
+                    // If this is a capture, we're done with this line
+                    if b_target & self.b_all != 0 {
+                        self.move_id = next_line;
+                        break;
+                    }
                 }
             }
         }
@@ -209,6 +245,12 @@ impl Reset {
                         self.move_id = next_line;
                     }
                     return true;
+                } else {
+                    // If this is a capture, we're done with this line
+                    if b_target & self.b_all != 0 {
+                        self.move_id = next_line;
+                        break;
+                    }
                 }
             }
         }
@@ -232,6 +274,11 @@ impl Reset {
                     self.consider_next_moveable_piece();
                 }
                 return true;
+            } else {
+                // If this is a capture, we're done with this line
+                if b_target & self.b_all != 0 {
+                    break;
+                }
             }
         }
 
@@ -585,6 +632,34 @@ mod tests {
         assert_eq!(r.move_id,62);
         assert_eq!(child.capture,0);
         assert_eq!(child.in_check,0);
+    }
+
+    #[test]
+    fn black_queen_moves_invisible_piece() {
+        let mut r = prep_board("3k4/8/8/4N3/4Pq2/4p3/8/3RK3 b - - 1 2");
+        let mut child = reset::new();
+        r.b_current_piece = utils::convert_square_to_bitstring("f4".to_string());
+        r.in_check = 1;
+
+        // No queen moves possible
+        let retval = r.generate_next_queen_move(&mut child);
+        assert!(!retval);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d8".to_string()));
+        assert_eq!(r.move_id,10);
+    }
+
+    #[test]
+    fn white_queen_moves_invisible_piece() {
+        let mut r = prep_board("3kr1nQ/6p1/8/8/8/8/8/4K3 w - - 1 2");
+        let mut child = reset::new();
+        r.b_current_piece = utils::convert_square_to_bitstring("h8".to_string());
+        r.in_check = 1;
+
+        // No queen moves possible
+        let retval = r.generate_next_queen_move(&mut child);
+        assert!(!retval);
+        assert_eq!(r.b_current_piece,0);
+        assert_eq!(r.move_id,10);
     }
 
 }

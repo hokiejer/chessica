@@ -44,6 +44,12 @@ impl Reset {
                         self.move_id = next_line;
                     }
                     return true;
+                } else {
+                    // If this is a capture, we're done with this line
+                    if b_target & self.b_all != 0 {
+                        self.move_id = next_line;
+                        break;
+                    }
                 }
             }
         }
@@ -71,6 +77,12 @@ impl Reset {
                         self.move_id = next_line;
                     }
                     return true;
+                } else {
+                    // If this is a capture, we're done with this line
+                    if b_target & self.b_all != 0 {
+                        self.move_id = next_line;
+                        break;
+                    }
                 }
             }
         }
@@ -98,6 +110,12 @@ impl Reset {
                         self.move_id = next_line;
                     }
                     return true;
+                } else {
+                    // If this is a capture, we're done with this line
+                    if b_target & self.b_all != 0 {
+                        self.move_id = next_line;
+                        break;
+                    }
                 }
             }
         }
@@ -121,6 +139,11 @@ impl Reset {
                     self.consider_next_moveable_piece();
                 }
                 return true;
+            } else {
+                // If this is a capture, we're done with this line
+                if b_target & self.b_all != 0 {
+                    break;
+                }
             }
         }
 
@@ -306,6 +329,53 @@ mod tests {
         assert_eq!(r.move_id,10);
         assert_eq!(child.capture,1);
     }
+
+    #[test]
+    fn white_bishop_block_check() {
+        let mut r = prep_board("2rk4/8/8/8/4B3/8/8/2K5 w - - 0 1");
+        let mut child = reset::new();
+        r.b_current_piece = utils::convert_square_to_bitstring("e4".to_string());
+        r.in_check = 1;
+
+        // Down Left 2
+        let fen = String::from("2rk4/8/8/8/8/8/2B5/2K5 b - - 1 1");
+        let retval = r.generate_next_bishop_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e4".to_string()));
+        assert_eq!(r.move_id,32);
+        assert_eq!(child.capture,0);
+
+        // Up Left 2
+        let fen = String::from("2rk4/8/2B5/8/8/8/8/2K5 b - - 1 1");
+        let retval = r.generate_next_bishop_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e4".to_string()));
+        assert_eq!(r.move_id,42);
+        assert_eq!(child.capture,0);
+
+        // Next piece
+        let retval = r.generate_next_bishop_move(&mut child);
+        assert!(!retval);
+        assert_eq!(r.b_current_piece,0);
+        assert_eq!(r.move_id,10);
+    }
+
+    #[test]
+    fn black_bishop_moves_invisible_piece() {
+        let mut r = prep_board("3k4/8/8/4N3/5b2/4p3/8/3RK3 b - - 1 2");
+        let mut child = reset::new();
+        r.b_current_piece = utils::convert_square_to_bitstring("f4".to_string());
+        r.in_check = 1;
+
+        // No bishop moves possible
+        let retval = r.generate_next_bishop_move(&mut child);
+        assert!(!retval);
+        assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d8".to_string()));
+        assert_eq!(r.move_id,10);
+    }
+
 }
 
 

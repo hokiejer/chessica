@@ -134,6 +134,7 @@ pub fn revealed_check_bitmapper(king: u8, search: RevealedCheckSearchType) -> u6
 }
 
 lazy_static! {
+    // Consider EnumMap here!
     static ref SEARCH_TYPE_INDEX: HashMap<RevealedCheckSearchType,u8> = {
         let mut map = HashMap::new();
         map.insert(RevealedCheckSearchType::DoNotSearch,0);

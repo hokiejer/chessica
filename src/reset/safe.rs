@@ -63,17 +63,7 @@ impl Reset {
         let b_attackers: u64 = b_opponent & !(b_other_stuff | self.b_rooks);
 
         if b_attackers != 0 {
-            // Bishop or Queen: Northwest
-            let mut b_temp: u64 = b_squares;
-            while b_temp & B_NOT_NW_EDGE != 0 {
-                b_temp = (b_temp & B_NOT_NW_EDGE) << 9;
-                if b_temp & b_attackers != 0 {
-                    return false;
-                }
-                b_temp &= !(self.b_all);
-            }
-
-            // Bishop or Queen: Northeast
+            // Bishop or Queen: Attack from Northeast
             let mut b_temp: u64 = b_squares;
             while b_temp & B_NOT_NE_EDGE != 0 {
                 b_temp = (b_temp & B_NOT_NE_EDGE) << 7;
@@ -83,7 +73,17 @@ impl Reset {
                 b_temp &= !(self.b_all);
             }
 
-            // Bishop or Queen: Southwest
+            // Bishop or Queen: Attack from Southeast
+            let mut b_temp: u64 = b_squares;
+            while b_temp & B_NOT_SE_EDGE != 0 {
+                b_temp = (b_temp & B_NOT_SE_EDGE) >> 9;
+                if b_temp & b_attackers != 0 {
+                    return false;
+                }
+                b_temp &= !(self.b_all);
+            }
+
+            // Bishop or Queen: Attack from Southwest
             let mut b_temp: u64 = b_squares;
             while b_temp & B_NOT_SW_EDGE != 0 {
                 b_temp = (b_temp & B_NOT_SW_EDGE) >> 7;
@@ -93,10 +93,10 @@ impl Reset {
                 b_temp &= !(self.b_all);
             }
 
-            // Bishop or Queen: Southeast
+            // Bishop or Queen: Attack from Northwest
             let mut b_temp: u64 = b_squares;
-            while b_temp & B_NOT_SE_EDGE != 0 {
-                b_temp = (b_temp & B_NOT_SE_EDGE) >> 9;
+            while b_temp & B_NOT_NW_EDGE != 0 {
+                b_temp = (b_temp & B_NOT_NW_EDGE) << 9;
                 if b_temp & b_attackers != 0 {
                     return false;
                 }
@@ -108,7 +108,7 @@ impl Reset {
         let b_attackers: u64 = b_opponent & !(b_other_stuff | self.b_bishops);
 
         if b_attackers != 0 {
-            // Rook or Queen: North
+            // Rook or Queen: Attack from North
             let mut b_temp: u64 = b_squares;
             while b_temp & B_NOT_N_EDGE != 0 {
                 b_temp = (b_temp & B_NOT_N_EDGE) << 8;
@@ -118,7 +118,7 @@ impl Reset {
                 b_temp &= !(self.b_all);
             }
 
-            // Rook or Queen: East
+            // Rook or Queen: Attack from East
             let mut b_temp: u64 = b_squares;
             while b_temp & B_NOT_E_EDGE != 0 {
                 b_temp = (b_temp & B_NOT_E_EDGE) >> 1;
@@ -128,7 +128,7 @@ impl Reset {
                 b_temp &= !(self.b_all);
             }
 
-            // Rook or Queen: South
+            // Rook or Queen: Attack from South
             let mut b_temp: u64 = b_squares;
             while b_temp & B_NOT_S_EDGE != 0 {
                 b_temp = (b_temp & B_NOT_S_EDGE) >> 8;
@@ -138,7 +138,7 @@ impl Reset {
                 b_temp &= !(self.b_all);
             }
 
-            // Rook or Queen: West
+            // Rook or Queen: Attack from West
             let mut b_temp: u64 = b_squares;
             while b_temp & B_NOT_W_EDGE != 0 {
                 b_temp = (b_temp & B_NOT_W_EDGE) << 1;
@@ -180,6 +180,9 @@ impl Reset {
 
         // King
         let b_attackers: u64 = b_opponent & self.b_kings;
+        if ((b_squares & B_NOT_N_EDGE) << 8) & b_attackers != 0 {
+            return false;
+        }
         if ((b_squares & B_NOT_NE_EDGE) << 7) & b_attackers != 0 {
             return false;
         }
@@ -199,9 +202,6 @@ impl Reset {
             return false;
         }
         if ((b_squares & B_NOT_NW_EDGE) << 9) & b_attackers != 0 {
-            return false;
-        }
-        if ((b_squares & B_NOT_N_EDGE) << 8) & b_attackers != 0 {
             return false;
         }
 

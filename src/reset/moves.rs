@@ -1,3 +1,4 @@
+use std::process;
 use crate::reset::Reset;
 use crate::bitops;
 use crate::reset::r#const::B_FOUR_CORNERS;
@@ -115,6 +116,15 @@ impl Reset {
         child.bi_to = bitops::get_bit_number(child.b_to);
 
         if child.b_to & child.b_all != 0 { // Capture
+            #[cfg(debug_assertions)]
+            if child.b_to & self.b_kings != 0 {
+                println!("King was captured!?!?!");
+                println!("Self:");
+                self.print();
+                println!("Child:");
+                child.print();
+                process::abort();
+            }
             child.capture_processing();
         }
         child.b_all &= !child.b_from;
@@ -123,6 +133,7 @@ impl Reset {
             child.b_white &= !child.b_from;
             child.b_white |= child.b_to;
         }
+
         if child.b_from & child.b_pawns != 0 {
             child.b_pawns &= !child.b_from;
             child.b_pawns |= child.b_to;
@@ -161,6 +172,7 @@ impl Reset {
         } else {
             // Queen moved
         }
+
         // Move is invalid if I'm moving into check
         if self.white_to_move() {
             if self.in_check != 0 || king_move {

@@ -1,5 +1,5 @@
-pub const WHITE: u8 = 0;
-pub const BLACK: u8 = 1;
+pub const BLACK: u8 = 0;
+pub const WHITE: u8 = 1;
 
 pub const B_FOUR_CORNERS: u64 = 0x8100000000000081;
 pub const B_SE_CORNER: u64 = 0x0000000000000001;

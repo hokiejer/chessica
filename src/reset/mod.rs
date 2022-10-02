@@ -14,6 +14,7 @@ pub mod king;
 pub mod moves;
 pub mod safe;
 pub mod safe_revealed;
+pub mod safe_direct;
 pub mod profiling;
 
 /// The complete status of a chess game at a given time

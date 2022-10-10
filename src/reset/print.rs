@@ -1,5 +1,7 @@
 use crate::reset::Reset;
 use crate::utils::convert_bitstring_to_square;
+use crate::reset::r#const::BLACK;
+use crate::reset::r#const::WHITE;
 
 /// Prints a Reset
 /// 
@@ -94,13 +96,109 @@ impl Reset {
             }
             b_index >>= 1;
             increment += 1;
-            if increment >= 8 {
+            if increment % 8 == 0 {
                 println!("{}",print_string);
-                increment = 0;
                 print_string = "".to_string();
             }
         }
     }
+
+    pub fn print_board_big(&mut self) {
+        use ansi_term::Colour;
+        let mut b_index: u64 = 0x8000000000000000;
+        let mut increment: u8 = 0;
+        let mut row: u8 = 8;
+        let mut col: u8 = 1;
+        let mut level: u8 = 1;
+        self.print();
+        while row > 0 {
+            let mut style = Colour::White.normal();
+            if col == 1 {
+            }
+            if (row + col) % 2 == 0 { // Black Square
+                style = Colour::RGB(0,0,0).on(Colour::RGB(110,110,110));
+                print!("{}", style.paint(" "));
+            } else { // White Square
+                style = Colour::RGB(0,0,0).on(Colour::RGB(60,60,60));
+                print!("{}", style.paint(" "));
+            }
+            if level == 2 {
+                if b_index & self.b_all == 0 {
+                    if b_index & self.b_from != 0 {
+                        if (row + col) % 2 == 0 { // Black Square
+                            style = Colour::RGB(0,0,0).on(Colour::RGB(120,120,100));
+                        } else { // White Square
+                            style = Colour::RGB(0,0,0).on(Colour::RGB(70,70,50));
+                        }
+                    }
+                    print!("{}", style.paint("   "));
+                } else {
+                    if b_index & self.b_white != 0 {
+                        if b_index & self.b_to != 0 {
+                            style = Colour::RGB(0,0,0).on(Colour::RGB(255,255,255)).blink();
+                        } else {
+                            style = Colour::RGB(0,0,0).on(Colour::RGB(255,255,255));
+                        }
+                        if b_index & self.b_pawns != 0 {
+                            print!("{}", style.paint(" P "));
+                        } else if b_index & self.b_knights != 0 {
+                            print!("{}", style.paint(" N "));
+                        } else if b_index & self.b_bishops != 0 {
+                            print!("{}", style.paint(" B "));
+                        } else if b_index & self.b_rooks != 0 {
+                            print!("{}", style.paint(" R "));
+                        } else if b_index & self.b_kings != 0 {
+                            print!("{}", style.paint(" K "));
+                        } else {
+                            print!("{}", style.paint(" Q "));
+                        }
+                    } else {
+                        style = Colour::RGB(255,255,255).on(Colour::RGB(0,0,0));
+                        if b_index & self.b_to != 0 {
+                            style = Colour::RGB(255,255,255).on(Colour::RGB(0,0,0)).blink();
+                        } else {
+                            style = Colour::RGB(255,255,255).on(Colour::RGB(0,0,0));
+                        }
+                        if b_index & self.b_pawns != 0 {
+                            print!("{}", style.paint(" P "));
+                        } else if b_index & self.b_knights != 0 {
+                            print!("{}", style.paint(" N "));
+                        } else if b_index & self.b_bishops != 0 {
+                            print!("{}", style.paint(" B "));
+                        } else if b_index & self.b_rooks != 0 {
+                            print!("{}", style.paint(" R "));
+                        } else if b_index & self.b_kings != 0 {
+                            print!("{}", style.paint(" K "));
+                        } else {
+                            print!("{}", style.paint(" Q "));
+                        }
+                    }
+                }
+                b_index >>= 1;
+            } else {
+                print!("{}", style.paint("   "));
+            }
+            if (row + col) % 2 == 0 { // Black Square
+                style = Colour::RGB(0,0,0).on(Colour::RGB(110,110,110));
+                print!("{}", style.paint(" "));
+            } else { // White Square
+                style = Colour::RGB(0,0,0).on(Colour::RGB(60,60,60));
+                print!("{}", style.paint(" "));
+            }
+            increment += 1;
+            col += 1;
+            if increment % 8 == 0 {
+                println!("");
+                level += 1;
+                if level > 3 {
+                    level = 1;
+                    row -= 1;
+                }
+                col = 1;
+            }
+        }
+    }
+
 }
 
 #[cfg(test)]

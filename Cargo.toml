@@ -11,6 +11,7 @@ path = "src/main.rs"
 [dependencies]
 lazy_static = "1.4.0"
 enum-map = "2.4.1"
+ansi_term = "0.12.1"
 
 [profile.dev]
 opt-level = 3

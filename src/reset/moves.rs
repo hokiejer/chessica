@@ -103,10 +103,10 @@ impl Reset {
         }
     }
 
-
-    /// Adds a move to the specified child reset if valid
+    /// Adds a move to the specified child - MAY BE INVALID
+    /// Does not set `in_check` - expects the caller to look for safety later
     ///
-    pub fn add_move_if_valid(&mut self, child: &mut Reset, b_destination: u64) -> bool {
+    pub fn add_move_unconditional(&mut self, child: &mut Reset, b_destination: u64) {
 
         let mut king_move: bool = false;
         self.init_child(child);
@@ -172,10 +172,18 @@ impl Reset {
         } else {
             // Queen moved
         }
+    }
+
+    /// Adds a move to the specified child reset if valid
+    /// Uses a minimal safety check (if possible)
+    ///
+    pub fn add_move_if_valid(&mut self, child: &mut Reset, b_destination: u64) -> bool {
+
+        self.add_move_unconditional(child, b_destination);
 
         // Move is invalid if I'm moving into check
         if self.white_to_move() {
-            if self.in_check != 0 || king_move {
+            if self.in_check != 0 {
                 if !child.white_is_safe(child.b_kings & child.b_white) {
                     return false;
                 }
@@ -197,7 +205,7 @@ impl Reset {
             }
             */
         } else {
-            if self.in_check != 0 || king_move {
+            if self.in_check != 0 {
                 if !child.black_is_safe(child.b_kings & child.b_black()) {
                     return false;
                 }
@@ -206,6 +214,48 @@ impl Reset {
                 if !child.is_safe_from_revealed_check(black_king_square,child.bi_from,BLACK) {
                     return false;
                 }
+            }
+            let white_king_square: u8 = bitops::get_bit_number(child.b_kings & child.b_white);
+            if !child.is_safe_from_revealed_check(white_king_square,child.bi_from,WHITE) ||
+                !child.is_safe_from_direct_check(white_king_square,child.bi_to,WHITE) 
+            {
+                child.in_check = 1;
+            }
+            /*
+            if !child.white_is_safe(child.b_kings & child.b_white) {
+                child.in_check = 1;
+            }
+            */
+        }
+        true
+    }
+
+    /// Adds a move to the specified child reset if valid
+    /// Forces a full king safety check
+    ///
+    pub fn add_move_full_safety_check(&mut self, child: &mut Reset, b_destination: u64) -> bool {
+
+        self.add_move_unconditional(child, b_destination);
+
+        // Move is invalid if I'm moving into check
+        if self.white_to_move() {
+            if !child.white_is_safe(child.b_kings & child.b_white) {
+                return false;
+            }
+            let black_king_square: u8 = bitops::get_bit_number(child.b_kings & child.b_black());
+            if !child.is_safe_from_revealed_check(black_king_square,child.bi_from,BLACK) ||
+                !child.is_safe_from_direct_check(black_king_square,child.bi_to,BLACK) 
+            {
+                child.in_check = 1;
+            }
+            /*
+            if !child.black_is_safe(child.b_kings & child.b_black()) {
+                child.in_check = 1;
+            }
+            */
+        } else {
+            if !child.black_is_safe(child.b_kings & child.b_black()) {
+                return false;
             }
             let white_king_square: u8 = bitops::get_bit_number(child.b_kings & child.b_white);
             if !child.is_safe_from_revealed_check(white_king_square,child.bi_from,WHITE) ||

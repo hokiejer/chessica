@@ -12,6 +12,17 @@ pub fn count_possible_games(fen: &str, depth: u8) -> u64 {
 //#[ignore]
 //#[test]
 pub fn burn() {
+    // Numpty 2 - https://sites.google.com/site/numptychess/perft/position-2
+    let fen = String::from("8/p7/8/1P6/K1k3p1/6P1/7P/8 w - - 0 1");
+    assert_eq!(count_possible_games(&fen,1),5,"Numpty 2, ply=1");
+    assert_eq!(count_possible_games(&fen,2),39,"Numpty 2, ply=2");
+    assert_eq!(count_possible_games(&fen,3),237,"Numpty 2, ply=3");
+    assert_eq!(count_possible_games(&fen,4),2002,"Numpty 2, ply=4");
+    assert_eq!(count_possible_games(&fen,5),14062,"Numpty 2, ply=5");
+    assert_eq!(count_possible_games(&fen,6),120995,"Numpty 2, ply=6");
+    assert_eq!(count_possible_games(&fen,7),966152,"Numpty 2, ply=7");
+    assert_eq!(count_possible_games(&fen,8),8103790,"Numpty 2, ply=8");
+
     // Rook-King rotational check - takes about 16.75 minutes to do 1-8
     // Rook-King rotational check - takes about 42 seconds to do 1-7
     let fen1 = String::from("8/kr6/r7/8/8/8/6RK/7R w - - 0 1");
@@ -35,17 +46,17 @@ pub fn burn() {
     assert_eq!(count_possible_games(&fen,2),191,"Position 3, ply=2");
     assert_eq!(count_possible_games(&fen,3),2812,"Position 3, ply=3");
     assert_eq!(count_possible_games(&fen,4),43238,"Position 3, ply=4");
-    //assert_eq!(count_possible_games(&fen,5),674624,"Position 3, ply=5"); //wrong - 674543
-    //assert_eq!(count_possible_games(&fen,6),11030083,"Position 3, ply=6");
-    //assert_eq!(count_possible_games(&fen,7),178633661,"Position 3, ply=7");
-    //assert_eq!(count_possible_games(&fen,8),3009794393,"Position 3, ply=8");
-return;
+    assert_eq!(count_possible_games(&fen,5),674624,"Position 3, ply=5");
+    assert_eq!(count_possible_games(&fen,6),11030083,"Position 3, ply=6");
+    assert_eq!(count_possible_games(&fen,7),178633661,"Position 3, ply=7");
+    assert_eq!(count_possible_games(&fen,8),3009794393,"Position 3, ply=8");
+
     // No pawns (A285877), takes about 8 minutes to do 3-6
     let fen = String::from("rnbqkbnr/8/8/8/8/8/8/RNBQKBNR w KQkq - 0 1");
     assert_eq!(count_possible_games(&fen,3),96062,"no pawns, ply=3");
     assert_eq!(count_possible_games(&fen,4),4200525,"no pawns, ply=4");
     assert_eq!(count_possible_games(&fen,5),191462298,"no pawns, ply=5");
-    //assert_eq!(count_possible_games(&fen,6),8509434855,"no pawns, ply=6"); //wrong - short on moves
+    assert_eq!(count_possible_games(&fen,6),8509434855,"no pawns, ply=6"); //wrong - short on moves
     // Old Safety: 8509434052
     // New Safety: 8509434052
 
@@ -152,15 +163,27 @@ impl Reset {
 
 
     pub fn in_place_move_tree(&mut self, depth: u8, move_count: &mut u64) {
+        use std::io::{self, BufRead};
         if depth == 0 {
             *move_count += 1;
-            //self.print_board_small();
+            //println!("LEAF {}",*move_count);
+            //self.print_board_big();
             //println!("");
+            //let stdin = io::stdin();
+            //let line = stdin.lock().lines().next().unwrap().unwrap();
             return
         }
         let mut child = crate::reset::new();
 
+        if depth == 1 {
+            //println!("****************************PARENT****************************");
+            //self.print_board_big();
+            //println!("");
+            //let stdin = io::stdin();
+            //let line = stdin.lock().lines().next().unwrap().unwrap();
+        }
         while self.generate_next_move(&mut child) {
+            let old: u64 = *move_count;
             child.in_place_move_tree(depth - 1, move_count);
         }
     }

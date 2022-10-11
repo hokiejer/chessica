@@ -135,9 +135,9 @@ impl Reset {
             // Capture Left (Northwest) En Passant
             b_destination = self.b_current_piece << 9;
             if b_destination == self.b_en_passant &&
-                (self.b_current_piece & B_NOT_NW_EDGE != 0) && 
-                self.add_move_if_valid(child, b_destination) 
+                (self.b_current_piece & B_NOT_NW_EDGE != 0)
             {
+                self.add_move_unconditional(child, b_destination);
                 self.consider_next_moveable_piece();
                 return self.white_en_passant_cleanup(child);
             }
@@ -145,9 +145,9 @@ impl Reset {
             // Capture Right (Northeast) En Passant
             b_destination = self.b_current_piece << 7;
             if b_destination == self.b_en_passant &&
-                (self.b_current_piece & B_NOT_NE_EDGE != 0) && 
-                self.add_move_if_valid(child, b_destination) 
+                (self.b_current_piece & B_NOT_NE_EDGE != 0)
             {
+                self.add_move_unconditional(child, b_destination);
                 self.consider_next_moveable_piece();
                 return self.white_en_passant_cleanup(child);
             }
@@ -244,9 +244,9 @@ impl Reset {
             // Capture Left (Southeast) En Passant
             b_destination = self.b_current_piece >> 9;
             if b_destination == self.b_en_passant &&
-                (self.b_current_piece & B_NOT_SE_EDGE != 0) && 
-                self.add_move_if_valid(child, b_destination) 
+                (self.b_current_piece & B_NOT_SE_EDGE != 0)
             {
+                self.add_move_unconditional(child, b_destination);
                 self.consider_next_moveable_piece();
                 return self.black_en_passant_cleanup(child);
             }
@@ -254,9 +254,9 @@ impl Reset {
             // Capture Right (Southwest) En Passant
             b_destination = self.b_current_piece >> 7;
             if b_destination == self.b_en_passant &&
-                (self.b_current_piece & B_NOT_SW_EDGE != 0) && 
-                self.add_move_if_valid(child, b_destination) 
+                (self.b_current_piece & B_NOT_SW_EDGE != 0)
             {
+                self.add_move_unconditional(child, b_destination);
                 self.consider_next_moveable_piece();
                 return self.black_en_passant_cleanup(child);
             }
@@ -1399,6 +1399,22 @@ mod tests {
         assert_eq!(r.move_id,10);
         assert_eq!(child.capture,1);
         assert_eq!(child.material,1);
+    }
+
+    #[test]
+    fn pawn_moves_white_ep_capture_to_escape_check() {
+        let mut r = prep_board("8/8/8/pP6/1K1k2p1/6P1/7P/8 w - a6 0 3");
+        let mut child = reset::new();
+        r.b_current_piece = utils::convert_square_to_bitstring("b5".to_string());
+
+        // g5 to g6
+        let fen = String::from("8/8/P7/8/1K1k2p1/6P1/7P/8 b - - 0 3");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,0);
+        assert_eq!(r.move_id,10);
+        assert_eq!(child.capture,1);
     }
 
     #[test]

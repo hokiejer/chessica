@@ -39,3 +39,8 @@ real	2m53.113s
 user	2m53.108s
 sys	0m0.000s
 ```
+
+## Processor
+
+8th Generation Intel Core i7-8 700 6-Core Processor (12MB Cache, up to 4.6 GHz)
+

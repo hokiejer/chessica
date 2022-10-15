@@ -75,6 +75,21 @@ pub fn convert_bitstring_to_square(bitstring: u64) -> String {
     convert_number_to_square(number)
 }
 
+/// Hit Enter to continue
+/// 
+/// # Examples
+///
+/// ```
+/// # use chessica::utils;
+/// let square = utils::convert_bitstring_to_square(0x0000400000000000);
+/// assert_eq!(square,"b6");
+/// ```
+pub fn hit_enter_to_continue() {
+    use std::io::{self, BufRead};
+    let stdin = io::stdin();
+    let line = stdin.lock().lines().next().unwrap().unwrap();
+}
+
 #[cfg(test)]
 mod tests {
     use crate::utils;

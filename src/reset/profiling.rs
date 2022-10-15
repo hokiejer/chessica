@@ -163,14 +163,13 @@ impl Reset {
 
 
     pub fn in_place_move_tree(&mut self, depth: u8, move_count: &mut u64) {
-        use std::io::{self, BufRead};
+        use crate::utils::hit_enter_to_continue;
         if depth == 0 {
             *move_count += 1;
             //println!("LEAF {}",*move_count);
             //self.print_board_big();
             //println!("");
-            //let stdin = io::stdin();
-            //let line = stdin.lock().lines().next().unwrap().unwrap();
+            //utils::hit_enter_to_continue();
             return
         }
         let mut child = crate::reset::new();
@@ -179,8 +178,7 @@ impl Reset {
             //println!("****************************PARENT****************************");
             //self.print_board_big();
             //println!("");
-            //let stdin = io::stdin();
-            //let line = stdin.lock().lines().next().unwrap().unwrap();
+            //utils::hit_enter_to_continue();
         }
         while self.generate_next_move(&mut child) {
             let old: u64 = *move_count;

@@ -13,7 +13,7 @@ fn main() {
     use crate::tree::Tree;
 
     let starting_fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-    println!("Size of Reset: {}",mem::size_of::<Reset>());
+    //println!("Size of Reset: {}",mem::size_of::<Reset>());
     let mut move_count: u64 = 0;
     let mut t: Tree = tree::from_fen(starting_fen);
 
@@ -22,5 +22,6 @@ fn main() {
 
     use crate::reset::profiling;
     crate::reset::profiling::burn();
+    //crate::reset::profiling::perft("rnbqkbnr/8/8/8/8/8/8/RNBQKBNR w KQkq - 0 1",6);
 
 }

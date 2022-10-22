@@ -1,4 +1,25 @@
 use crate::reset::Reset;
+use std::collections::HashMap;
+
+pub fn perft(fen: &str, depth: u8) {
+    use crate::utils::convert_bitstring_to_square;
+    let mut total_move_count: u64 = 0;
+    let mut r: Reset = crate::reset::new();
+    let mut child: Reset = crate::reset::new();
+    let fen = String::from(fen);
+    r.init_from_fen(fen);
+
+    while r.generate_next_move(&mut child) {
+        let mut move_count: u64 = 0;
+        child.in_place_move_tree(depth - 1, &mut move_count);
+        total_move_count += move_count;
+        let from_square = convert_bitstring_to_square(child.b_from);
+        let to_square = convert_bitstring_to_square(child.b_to);
+        println!("{}{} {}",from_square,to_square,move_count);
+    }
+    println!("");
+    println!("{}",total_move_count);
+}
 
 pub fn count_possible_games(fen: &str, depth: u8) -> u64 {
     let mut move_count: u64 = 0;
@@ -59,6 +80,7 @@ pub fn burn() {
     assert_eq!(count_possible_games(&fen,6),8509434855,"no pawns, ply=6"); //wrong - short on moves
     // Old Safety: 8509434052
     // New Safety: 8509434052
+    // Stockfish: 8509434052
 
     // No queens (A285873), takes about 3 minutes to do 4-7
     let fen = String::from("rnb1kbnr/pppppppp/8/8/8/8/PPPPPPPP/RNB1KBNR w KQkq - 0 1");
@@ -164,12 +186,13 @@ impl Reset {
 
     pub fn in_place_move_tree(&mut self, depth: u8, move_count: &mut u64) {
         use crate::utils::hit_enter_to_continue;
+        let mut search_flag: bool = true;
         if depth == 0 {
             *move_count += 1;
             //println!("LEAF {}",*move_count);
             //self.print_board_big();
             //println!("");
-            //utils::hit_enter_to_continue();
+            //hit_enter_to_continue();
             return
         }
         let mut child = crate::reset::new();
@@ -178,11 +201,13 @@ impl Reset {
             //println!("****************************PARENT****************************");
             //self.print_board_big();
             //println!("");
-            //utils::hit_enter_to_continue();
+            //hit_enter_to_continue();
         }
-        while self.generate_next_move(&mut child) {
-            let old: u64 = *move_count;
-            child.in_place_move_tree(depth - 1, move_count);
+        if search_flag {
+            while self.generate_next_move(&mut child) {
+                //let old: u64 = *move_count;
+                child.in_place_move_tree(depth - 1, move_count);
+            }
         }
     }
 

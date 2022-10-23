@@ -44,3 +44,9 @@ sys	0m0.000s
 
 8th Generation Intel Core i7-8 700 6-Core Processor (12MB Cache, up to 4.6 GHz)
 
+## Integration Tests
+
+To run the full integration test suite, run:
+```
+cargo test -- --ignored
+```

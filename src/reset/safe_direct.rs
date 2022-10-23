@@ -32,7 +32,8 @@ use crate::reset::r#const::B_NOT_NW_EDGE;
 #[derive(PartialEq,Eq,Hash,Debug)]
 pub enum DirectCheckSearchType {
     DoNotSearch,
-    Local,
+    LocalStraight,
+    LocalDiagonal,
     Knight,
     LongDistanceFromN,
     LongDistanceFromNE,
@@ -66,16 +67,16 @@ pub fn direct_check_router(king: u8, attacker: u8) -> DirectCheckSearchType {
         }
 
         if difference == 9 && ((king - 1) % 8) < 7 {
-            return DirectCheckSearchType::Local; //Local NW
+            return DirectCheckSearchType::LocalDiagonal; //Local NW
         }
         if difference == 8 {
-            return DirectCheckSearchType::Local; //Local N
+            return DirectCheckSearchType::LocalStraight; //Local N
         }
         if difference == 7 && ((king - 1) % 8) > 0 {
-            return DirectCheckSearchType::Local; //Local NE
+            return DirectCheckSearchType::LocalDiagonal; //Local NE
         }
         if difference == 1 && ((king - 1) % 8) < 7 {
-            return DirectCheckSearchType::Local; //Local W
+            return DirectCheckSearchType::LocalStraight; //Local W
         }
         if difference % 8 == 0 {
             return DirectCheckSearchType::LongDistanceFromN;
@@ -106,16 +107,16 @@ pub fn direct_check_router(king: u8, attacker: u8) -> DirectCheckSearchType {
             return DirectCheckSearchType::Knight; //Knight 0500
         }
         if difference == 1 && ((king - 1) % 8) > 0 {
-            return DirectCheckSearchType::Local; //Local E
+            return DirectCheckSearchType::LocalStraight; //Local E
         }
         if difference == 7 && ((king - 1) % 8) < 7 {
-            return DirectCheckSearchType::Local; //Local SW
+            return DirectCheckSearchType::LocalDiagonal; //Local SW
         }
         if difference == 8 {
-            return DirectCheckSearchType::Local; //Local S
+            return DirectCheckSearchType::LocalStraight; //Local S
         }
         if difference == 9 && ((king - 1) % 8) > 0 {
-            return DirectCheckSearchType::Local; //Local SE
+            return DirectCheckSearchType::LocalDiagonal; //Local SE
         }
         if difference % 8 == 0 {
             return DirectCheckSearchType::LongDistanceFromS;
@@ -292,11 +293,37 @@ impl Reset {
                     return false;
                 }
             },
-            DirectCheckSearchType::Local => {
-                if self.white_to_move() {
-                    return self.white_is_safe(self.b_kings & self.b_white);
+            DirectCheckSearchType::LocalStraight => {
+                let b_attackers: u64 = self.b_all & !(self.b_pawns & self.b_knights & self.b_bishops);
+                if self.b_to & b_opponents & b_attackers != 0 {
+                    return false;
+                }
+            },
+            DirectCheckSearchType::LocalDiagonal => {
+                if king_color == WHITE {
+                    if attack_square > king_square {
+                        let b_attackers: u64 = self.b_all & !(self.b_knights & self.b_rooks);
+                        if self.b_to & b_opponents & b_attackers != 0 {
+                            return false;
+                        }
+                    } else {
+                        let b_attackers: u64 = self.b_all & !(self.b_pawns & self.b_knights & self.b_rooks);
+                        if self.b_to & b_opponents & b_attackers != 0 {
+                            return false;
+                        }
+                    }
                 } else {
-                    return self.black_is_safe(self.b_kings & self.b_black());
+                    if attack_square < king_square {
+                        let b_attackers: u64 = self.b_all & !(self.b_knights & self.b_rooks);
+                        if self.b_to & b_opponents & b_attackers != 0 {
+                            return false;
+                        }
+                    } else {
+                        let b_attackers: u64 = self.b_all & !(self.b_pawns & self.b_knights & self.b_rooks);
+                        if self.b_to & b_opponents & b_attackers != 0 {
+                            return false;
+                        }
+                    }
                 }
             },
             DirectCheckSearchType::LongDistanceFromN | 
@@ -363,25 +390,25 @@ mod tests {
         assert_eq!(direct_check_router(20, 8),DirectCheckSearchType::DoNotSearch);
         assert_eq!(direct_check_router(20, 9),DirectCheckSearchType::DoNotSearch);
         assert_eq!(direct_check_router(20,10),DirectCheckSearchType::Knight);
-        assert_eq!(direct_check_router(20,11),DirectCheckSearchType::Local);
-        assert_eq!(direct_check_router(20,12),DirectCheckSearchType::Local);
-        assert_eq!(direct_check_router(20,13),DirectCheckSearchType::Local);
+        assert_eq!(direct_check_router(20,11),DirectCheckSearchType::LocalDiagonal);
+        assert_eq!(direct_check_router(20,12),DirectCheckSearchType::LocalStraight);
+        assert_eq!(direct_check_router(20,13),DirectCheckSearchType::LocalDiagonal);
         assert_eq!(direct_check_router(20,14),DirectCheckSearchType::Knight);
         assert_eq!(direct_check_router(20,15),DirectCheckSearchType::DoNotSearch);
         assert_eq!(direct_check_router(20,16),DirectCheckSearchType::DoNotSearch);
         assert_eq!(direct_check_router(20,17),DirectCheckSearchType::LongDistanceFromE);
         assert_eq!(direct_check_router(20,18),DirectCheckSearchType::LongDistanceFromE);
-        assert_eq!(direct_check_router(20,19),DirectCheckSearchType::Local);
+        assert_eq!(direct_check_router(20,19),DirectCheckSearchType::LocalStraight);
         assert_eq!(direct_check_router(20,20),DirectCheckSearchType::DoNotSearch);
-        assert_eq!(direct_check_router(20,21),DirectCheckSearchType::Local);
+        assert_eq!(direct_check_router(20,21),DirectCheckSearchType::LocalStraight);
         assert_eq!(direct_check_router(20,22),DirectCheckSearchType::LongDistanceFromW);
         assert_eq!(direct_check_router(20,23),DirectCheckSearchType::LongDistanceFromW);
         assert_eq!(direct_check_router(20,24),DirectCheckSearchType::LongDistanceFromW);
         assert_eq!(direct_check_router(20,25),DirectCheckSearchType::DoNotSearch);
         assert_eq!(direct_check_router(20,26),DirectCheckSearchType::Knight);
-        assert_eq!(direct_check_router(20,27),DirectCheckSearchType::Local);
-        assert_eq!(direct_check_router(20,28),DirectCheckSearchType::Local);
-        assert_eq!(direct_check_router(20,29),DirectCheckSearchType::Local);
+        assert_eq!(direct_check_router(20,27),DirectCheckSearchType::LocalDiagonal);
+        assert_eq!(direct_check_router(20,28),DirectCheckSearchType::LocalStraight);
+        assert_eq!(direct_check_router(20,29),DirectCheckSearchType::LocalDiagonal);
         assert_eq!(direct_check_router(20,30),DirectCheckSearchType::Knight);
         assert_eq!(direct_check_router(20,31),DirectCheckSearchType::DoNotSearch);
         assert_eq!(direct_check_router(20,32),DirectCheckSearchType::DoNotSearch);
@@ -442,25 +469,25 @@ mod tests {
         assert_eq!(direct_check_router(31,19),DirectCheckSearchType::DoNotSearch);
         assert_eq!(direct_check_router(31,20),DirectCheckSearchType::DoNotSearch);
         assert_eq!(direct_check_router(31,21),DirectCheckSearchType::Knight);
-        assert_eq!(direct_check_router(31,22),DirectCheckSearchType::Local);
-        assert_eq!(direct_check_router(31,23),DirectCheckSearchType::Local);
-        assert_eq!(direct_check_router(31,24),DirectCheckSearchType::Local);
+        assert_eq!(direct_check_router(31,22),DirectCheckSearchType::LocalDiagonal);
+        assert_eq!(direct_check_router(31,23),DirectCheckSearchType::LocalStraight);
+        assert_eq!(direct_check_router(31,24),DirectCheckSearchType::LocalDiagonal);
         assert_eq!(direct_check_router(31,25),DirectCheckSearchType::LongDistanceFromE);
         assert_eq!(direct_check_router(31,26),DirectCheckSearchType::LongDistanceFromE);
         assert_eq!(direct_check_router(31,27),DirectCheckSearchType::LongDistanceFromE);
         assert_eq!(direct_check_router(31,28),DirectCheckSearchType::LongDistanceFromE);
         assert_eq!(direct_check_router(31,29),DirectCheckSearchType::LongDistanceFromE);
-        assert_eq!(direct_check_router(31,30),DirectCheckSearchType::Local);
+        assert_eq!(direct_check_router(31,30),DirectCheckSearchType::LocalStraight);
         assert_eq!(direct_check_router(31,31),DirectCheckSearchType::DoNotSearch);
-        assert_eq!(direct_check_router(31,32),DirectCheckSearchType::Local);
+        assert_eq!(direct_check_router(31,32),DirectCheckSearchType::LocalStraight);
         assert_eq!(direct_check_router(31,33),DirectCheckSearchType::DoNotSearch);
         assert_eq!(direct_check_router(31,34),DirectCheckSearchType::DoNotSearch);
         assert_eq!(direct_check_router(31,35),DirectCheckSearchType::DoNotSearch);
         assert_eq!(direct_check_router(31,36),DirectCheckSearchType::DoNotSearch);
         assert_eq!(direct_check_router(31,37),DirectCheckSearchType::Knight);
-        assert_eq!(direct_check_router(31,38),DirectCheckSearchType::Local);
-        assert_eq!(direct_check_router(31,39),DirectCheckSearchType::Local);
-        assert_eq!(direct_check_router(31,40),DirectCheckSearchType::Local);
+        assert_eq!(direct_check_router(31,38),DirectCheckSearchType::LocalDiagonal);
+        assert_eq!(direct_check_router(31,39),DirectCheckSearchType::LocalStraight);
+        assert_eq!(direct_check_router(31,40),DirectCheckSearchType::LocalDiagonal);
         assert_eq!(direct_check_router(31,41),DirectCheckSearchType::DoNotSearch);
         assert_eq!(direct_check_router(31,42),DirectCheckSearchType::DoNotSearch);
         assert_eq!(direct_check_router(31,43),DirectCheckSearchType::DoNotSearch);

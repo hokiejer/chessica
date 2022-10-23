@@ -32,7 +32,11 @@ pub fn count_possible_games(fen: &str, depth: u8) -> u64 {
 
 pub fn burn() {
 
-    //Last: 9m0.868s
+    //After Local Direct Check Updates 1: 8m56.675s
+    //After Local Direct Check Updates 2: 8m59.084s
+
+    //Before Local Direct Check Updates 1: 9m4.060s
+    //Before Local Direct Check Updates 2: 9m0.868s
 
     let fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     assert_eq!(count_possible_games(&fen,7),3195901860,"starting position, ply=7");

@@ -39,13 +39,17 @@ impl Reset {
             self.material += material_multiplier * 5;
             if self.b_to & B_FOUR_CORNERS != 0 {
                 if self.b_to & B_SE_CORNER != 0 {
-                    self.white_castle_k = 0;
+                    //white_castle_k = 0;
+                    self.castle_bits &= 0xfe;
                 } else if self.b_to & B_SW_CORNER != 0 {
-                    self.white_castle_q = 0;
+                    //white_castle_q = 0;
+                    self.castle_bits &= 0xfd;
                 } else if self.b_to & B_NE_CORNER != 0 {
-                    self.black_castle_k = 0;
+                    //black_castle_k = 0;
+                    self.castle_bits &= 0xfb;
                 } else { // B_NW_CORNER
-                    self.black_castle_q = 0;
+                    //black_castle_q = 0;
+                    self.castle_bits &= 0xf7;
                 }
             }
         } else {

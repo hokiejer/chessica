@@ -10,6 +10,7 @@ sudo sh -c 'echo -1 >/proc/sys/kernel/perf_event_paranoid'
 Then run:
 ```
 perf record --call-graph=dwarf ./target/release/chessica
+perf report --hierarchy -M intel
 ```
 
 ## View Assembly

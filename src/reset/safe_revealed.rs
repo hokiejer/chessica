@@ -310,7 +310,6 @@ impl Reset {
     /// Someday, king_square won't be needed by this method, but for now it's there for performance
     /// reasons.
     pub fn is_safe_from_revealed_check(&mut self, king_square: u8, from_square: u8, king_color: u8) -> bool {
-        use crate::reset::safe_revealed::revealed_check_router;
         use crate::reset::safe_revealed::RevealedCheckSearchType;
 
         let search_type = &REVEALED_CHECK_ROUTES[king_square as usize][from_square as usize];

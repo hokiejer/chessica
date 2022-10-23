@@ -1,5 +1,6 @@
 use crate::reset::Reset;
 use crate::utils;
+use crate::bitops;
 
 impl Reset {
     /// Initialize a Reset from FEN notation
@@ -109,6 +110,10 @@ impl Reset {
 
         // PROCESS MOVE NUMBER (Chunk 5)
         self.fullmove_number = chunks[5].parse().unwrap();
+
+        // Set king squares appropriately
+        self.white_king_square = bitops::get_bit_number(self.b_white & self.b_kings);
+        self.black_king_square = bitops::get_bit_number(self.b_black() & self.b_kings);
 
         // Set check indicator appropriately
         if self.white_to_move() {

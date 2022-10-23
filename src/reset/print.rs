@@ -112,7 +112,7 @@ impl Reset {
         let mut level: u8 = 1;
         self.print();
         while row > 0 {
-            let mut style = Colour::White.normal();
+            let mut style;
             if col == 1 {
             }
             if (row + col) % 2 == 0 { // Black Square
@@ -153,7 +153,6 @@ impl Reset {
                             print!("{}", style.paint(" Q "));
                         }
                     } else {
-                        style = Colour::RGB(255,255,255).on(Colour::RGB(0,0,0));
                         if b_index & self.b_to != 0 {
                             style = Colour::RGB(255,255,255).on(Colour::RGB(0,0,0)).blink();
                         } else {

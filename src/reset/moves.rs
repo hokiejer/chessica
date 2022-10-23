@@ -108,7 +108,6 @@ impl Reset {
     ///
     pub fn add_move_unconditional(&mut self, child: &mut Reset, b_destination: u64) {
 
-        let mut king_move: bool = false;
         self.init_child(child);
         child.b_from = self.b_current_piece;
         child.b_to = b_destination;
@@ -161,11 +160,12 @@ impl Reset {
         } else if child.b_from & child.b_kings != 0 {
             child.b_kings &= !child.b_from;
             child.b_kings |= child.b_to;
-            king_move = true;
             if self.white_to_move() {
+                child.white_king_square = bitops::get_bit_number(child.b_to);
                 child.white_castle_k = 0;
                 child.white_castle_q = 0;
             } else {
+                child.black_king_square = bitops::get_bit_number(child.b_to);
                 child.black_castle_k = 0;
                 child.black_castle_q = 0;
             }
@@ -188,44 +188,30 @@ impl Reset {
                     return false;
                 }
             } else {
-                let white_king_square: u8 = bitops::get_bit_number(child.b_kings & child.b_white);
-                if !child.is_safe_from_revealed_check(white_king_square,child.bi_from,WHITE) {
+                if !child.is_safe_from_revealed_check(child.white_king_square,child.bi_from,WHITE) {
                     return false;
                 }
             }
-            let black_king_square: u8 = bitops::get_bit_number(child.b_kings & child.b_black());
-            if !child.is_safe_from_revealed_check(black_king_square,child.bi_from,BLACK) ||
-                !child.is_safe_from_direct_check(black_king_square,child.bi_to,BLACK) 
+            if !child.is_safe_from_revealed_check(child.black_king_square,child.bi_from,BLACK) ||
+                !child.is_safe_from_direct_check(child.black_king_square,child.bi_to,BLACK) 
             {
                 child.in_check = 1;
             }
-            /*
-            if !child.black_is_safe(child.b_kings & child.b_black()) {
-                child.in_check = 1;
-            }
-            */
         } else {
             if self.in_check != 0 {
                 if !child.black_is_safe(child.b_kings & child.b_black()) {
                     return false;
                 }
             } else {
-                let black_king_square: u8 = bitops::get_bit_number(child.b_kings & child.b_black());
-                if !child.is_safe_from_revealed_check(black_king_square,child.bi_from,BLACK) {
+                if !child.is_safe_from_revealed_check(child.black_king_square,child.bi_from,BLACK) {
                     return false;
                 }
             }
-            let white_king_square: u8 = bitops::get_bit_number(child.b_kings & child.b_white);
-            if !child.is_safe_from_revealed_check(white_king_square,child.bi_from,WHITE) ||
-                !child.is_safe_from_direct_check(white_king_square,child.bi_to,WHITE) 
+            if !child.is_safe_from_revealed_check(child.white_king_square,child.bi_from,WHITE) ||
+                !child.is_safe_from_direct_check(child.white_king_square,child.bi_to,WHITE) 
             {
                 child.in_check = 1;
             }
-            /*
-            if !child.white_is_safe(child.b_kings & child.b_white) {
-                child.in_check = 1;
-            }
-            */
         }
         true
     }
@@ -242,32 +228,20 @@ impl Reset {
             if !child.white_is_safe(child.b_kings & child.b_white) {
                 return false;
             }
-            let black_king_square: u8 = bitops::get_bit_number(child.b_kings & child.b_black());
-            if !child.is_safe_from_revealed_check(black_king_square,child.bi_from,BLACK) ||
-                !child.is_safe_from_direct_check(black_king_square,child.bi_to,BLACK) 
+            if !child.is_safe_from_revealed_check(child.black_king_square,child.bi_from,BLACK) ||
+                !child.is_safe_from_direct_check(child.black_king_square,child.bi_to,BLACK) 
             {
                 child.in_check = 1;
             }
-            /*
-            if !child.black_is_safe(child.b_kings & child.b_black()) {
-                child.in_check = 1;
-            }
-            */
         } else {
             if !child.black_is_safe(child.b_kings & child.b_black()) {
                 return false;
             }
-            let white_king_square: u8 = bitops::get_bit_number(child.b_kings & child.b_white);
-            if !child.is_safe_from_revealed_check(white_king_square,child.bi_from,WHITE) ||
-                !child.is_safe_from_direct_check(white_king_square,child.bi_to,WHITE) 
+            if !child.is_safe_from_revealed_check(child.white_king_square,child.bi_from,WHITE) ||
+                !child.is_safe_from_direct_check(child.white_king_square,child.bi_to,WHITE) 
             {
                 child.in_check = 1;
             }
-            /*
-            if !child.white_is_safe(child.b_kings & child.b_white) {
-                child.in_check = 1;
-            }
-            */
         }
         true
     }

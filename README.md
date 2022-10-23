@@ -48,5 +48,5 @@ sys	0m0.000s
 
 To run the full integration test suite, run:
 ```
-cargo test -- --ignored
+cargo test -- --include-ignored
 ```

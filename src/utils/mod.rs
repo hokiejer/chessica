@@ -87,7 +87,7 @@ pub fn convert_bitstring_to_square(bitstring: u64) -> String {
 pub fn hit_enter_to_continue() {
     use std::io::{self, BufRead};
     let stdin = io::stdin();
-    let line = stdin.lock().lines().next().unwrap().unwrap();
+    let _line = stdin.lock().lines().next().unwrap().unwrap();
 }
 
 #[cfg(test)]

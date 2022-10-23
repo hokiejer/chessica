@@ -32,6 +32,9 @@ pub fn count_possible_games(fen: &str, depth: u8) -> u64 {
 
 pub fn burn() {
 
+    //After King square tracking improvements 1: 7m58.442s
+    //After King square tracking improvements 2: 7m58.142s
+
     //After Local Direct Check Updates 1: 8m56.675s
     //After Local Direct Check Updates 2: 8m59.084s
 

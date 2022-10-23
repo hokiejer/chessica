@@ -18,14 +18,14 @@ impl Reset {
     /// WARNING: This method does not work for the safety of pawns in an En Passant situation
     ///
     pub fn is_safe(&mut self, b_squares: u64, opponent: u8) -> bool {
-        use crate::reset::r#const::B_NOT_UL_EDGE;
-        use crate::reset::r#const::B_NOT_UR_EDGE;
-        use crate::reset::r#const::B_NOT_DL_EDGE;
-        use crate::reset::r#const::B_NOT_DR_EDGE;
-        use crate::reset::r#const::B_NOT_TOP_EDGE;
-        use crate::reset::r#const::B_NOT_RIGHT_EDGE;
-        use crate::reset::r#const::B_NOT_LEFT_EDGE;
-        use crate::reset::r#const::B_NOT_BOTTOM_EDGE;
+        use crate::reset::r#const::B_NOT_NW_EDGE;
+        use crate::reset::r#const::B_NOT_NE_EDGE;
+        use crate::reset::r#const::B_NOT_SW_EDGE;
+        use crate::reset::r#const::B_NOT_SE_EDGE;
+        use crate::reset::r#const::B_NOT_N_EDGE;
+        use crate::reset::r#const::B_NOT_E_EDGE;
+        use crate::reset::r#const::B_NOT_W_EDGE;
+        use crate::reset::r#const::B_NOT_S_EDGE;
         use crate::reset::r#const::B_KNIGHT_CAN_MOVE_0100;
         use crate::reset::r#const::B_KNIGHT_CAN_MOVE_0200;
         use crate::reset::r#const::B_KNIGHT_CAN_MOVE_0400;
@@ -35,23 +35,24 @@ impl Reset {
         use crate::reset::r#const::B_KNIGHT_CAN_MOVE_1000;
         use crate::reset::r#const::B_KNIGHT_CAN_MOVE_1100;
 
-        let b_opponent: u64 = if opponent == 0 {
-            // Pawns - Down Left
-            if ((b_squares & B_NOT_DL_EDGE) >> 7) & (self.b_pawns & self.b_white) != 0 {
+        // Pawns
+        let b_opponent: u64 = if opponent == 0 { // Black is safe
+            // Pawns - Southwest
+            if ((b_squares & B_NOT_SW_EDGE) >> 7) & (self.b_pawns & self.b_white) != 0 {
                 return false;
             }
-            // Pawns - Down Right
-            if ((b_squares & B_NOT_DR_EDGE) >> 9) & (self.b_pawns & self.b_white) != 0 {
+            // Pawns - Southeast
+            if ((b_squares & B_NOT_SE_EDGE) >> 9) & (self.b_pawns & self.b_white) != 0 {
                 return false;
             }
             self.b_white
-        } else {
-            // Pawns - Up Left
-            if ((b_squares & B_NOT_UL_EDGE) << 9) & (self.b_pawns & self.b_black()) != 0 {
+        } else { // White is safe
+            // Pawns - Northwest
+            if ((b_squares & B_NOT_NW_EDGE) << 9) & (self.b_pawns & self.b_black()) != 0 {
                 return false;
             }
-            // Pawns - Up Right
-            if ((b_squares & B_NOT_UR_EDGE) << 7) & (self.b_pawns & self.b_black()) != 0 {
+            // Pawns - Northeast
+            if ((b_squares & B_NOT_NE_EDGE) << 7) & (self.b_pawns & self.b_black()) != 0 {
                 return false;
             }
             self.b_black()
@@ -62,40 +63,40 @@ impl Reset {
         let b_attackers: u64 = b_opponent & !(b_other_stuff | self.b_rooks);
 
         if b_attackers != 0 {
-            // Bishop or Queen: Up Left
+            // Bishop or Queen: Attack from Northeast
             let mut b_temp: u64 = b_squares;
-            while b_temp & B_NOT_UL_EDGE != 0 {
-                b_temp = (b_temp & B_NOT_UL_EDGE) << 9;
+            while b_temp & B_NOT_NE_EDGE != 0 {
+                b_temp = (b_temp & B_NOT_NE_EDGE) << 7;
                 if b_temp & b_attackers != 0 {
                     return false;
                 }
                 b_temp &= !(self.b_all);
             }
 
-            // Bishop or Queen: Up Right
+            // Bishop or Queen: Attack from Southeast
             let mut b_temp: u64 = b_squares;
-            while b_temp & B_NOT_UR_EDGE != 0 {
-                b_temp = (b_temp & B_NOT_UR_EDGE) << 7;
+            while b_temp & B_NOT_SE_EDGE != 0 {
+                b_temp = (b_temp & B_NOT_SE_EDGE) >> 9;
                 if b_temp & b_attackers != 0 {
                     return false;
                 }
                 b_temp &= !(self.b_all);
             }
 
-            // Bishop or Queen: Down Left
+            // Bishop or Queen: Attack from Southwest
             let mut b_temp: u64 = b_squares;
-            while b_temp & B_NOT_DL_EDGE != 0 {
-                b_temp = (b_temp & B_NOT_DL_EDGE) >> 7;
+            while b_temp & B_NOT_SW_EDGE != 0 {
+                b_temp = (b_temp & B_NOT_SW_EDGE) >> 7;
                 if b_temp & b_attackers != 0 {
                     return false;
                 }
                 b_temp &= !(self.b_all);
             }
 
-            // Bishop or Queen: Down Right
+            // Bishop or Queen: Attack from Northwest
             let mut b_temp: u64 = b_squares;
-            while b_temp & B_NOT_DR_EDGE != 0 {
-                b_temp = (b_temp & B_NOT_DR_EDGE) >> 9;
+            while b_temp & B_NOT_NW_EDGE != 0 {
+                b_temp = (b_temp & B_NOT_NW_EDGE) << 9;
                 if b_temp & b_attackers != 0 {
                     return false;
                 }
@@ -107,40 +108,40 @@ impl Reset {
         let b_attackers: u64 = b_opponent & !(b_other_stuff | self.b_bishops);
 
         if b_attackers != 0 {
-            // Rook or Queen: Up
+            // Rook or Queen: Attack from North
             let mut b_temp: u64 = b_squares;
-            while b_temp & B_NOT_TOP_EDGE != 0 {
-                b_temp = (b_temp & B_NOT_TOP_EDGE) << 8;
+            while b_temp & B_NOT_N_EDGE != 0 {
+                b_temp = (b_temp & B_NOT_N_EDGE) << 8;
                 if b_temp & b_attackers != 0 {
                     return false;
                 }
                 b_temp &= !(self.b_all);
             }
 
-            // Rook or Queen: Right
+            // Rook or Queen: Attack from East
             let mut b_temp: u64 = b_squares;
-            while b_temp & B_NOT_RIGHT_EDGE != 0 {
-                b_temp = (b_temp & B_NOT_RIGHT_EDGE) >> 1;
+            while b_temp & B_NOT_E_EDGE != 0 {
+                b_temp = (b_temp & B_NOT_E_EDGE) >> 1;
                 if b_temp & b_attackers != 0 {
                     return false;
                 }
                 b_temp &= !(self.b_all);
             }
 
-            // Rook or Queen: Down
+            // Rook or Queen: Attack from South
             let mut b_temp: u64 = b_squares;
-            while b_temp & B_NOT_BOTTOM_EDGE != 0 {
-                b_temp = (b_temp & B_NOT_DL_EDGE) >> 8;
+            while b_temp & B_NOT_S_EDGE != 0 {
+                b_temp = (b_temp & B_NOT_S_EDGE) >> 8;
                 if b_temp & b_attackers != 0 {
                     return false;
                 }
                 b_temp &= !(self.b_all);
             }
 
-            // Rook or Queen: Left
+            // Rook or Queen: Attack from West
             let mut b_temp: u64 = b_squares;
-            while b_temp & B_NOT_LEFT_EDGE != 0 {
-                b_temp = (b_temp & B_NOT_LEFT_EDGE) << 1;
+            while b_temp & B_NOT_W_EDGE != 0 {
+                b_temp = (b_temp & B_NOT_W_EDGE) << 1;
                 if b_temp & b_attackers != 0 {
                     return false;
                 }
@@ -179,28 +180,28 @@ impl Reset {
 
         // King
         let b_attackers: u64 = b_opponent & self.b_kings;
-        if ((b_squares & B_NOT_UR_EDGE) << 7) & b_attackers != 0 {
+        if ((b_squares & B_NOT_N_EDGE) << 8) & b_attackers != 0 {
             return false;
         }
-        if ((b_squares & B_NOT_RIGHT_EDGE) >> 1) & b_attackers != 0 {
+        if ((b_squares & B_NOT_NE_EDGE) << 7) & b_attackers != 0 {
             return false;
         }
-        if ((b_squares & B_NOT_DR_EDGE) >> 9) & b_attackers != 0 {
+        if ((b_squares & B_NOT_E_EDGE) >> 1) & b_attackers != 0 {
             return false;
         }
-        if ((b_squares & B_NOT_BOTTOM_EDGE) >> 8) & b_attackers != 0 {
+        if ((b_squares & B_NOT_SE_EDGE) >> 9) & b_attackers != 0 {
             return false;
         }
-        if ((b_squares & B_NOT_DL_EDGE) >> 7) & b_attackers != 0 {
+        if ((b_squares & B_NOT_S_EDGE) >> 8) & b_attackers != 0 {
             return false;
         }
-        if ((b_squares & B_NOT_LEFT_EDGE) << 1) & b_attackers != 0 {
+        if ((b_squares & B_NOT_SW_EDGE) >> 7) & b_attackers != 0 {
             return false;
         }
-        if ((b_squares & B_NOT_UL_EDGE) << 9) & b_attackers != 0 {
+        if ((b_squares & B_NOT_W_EDGE) << 1) & b_attackers != 0 {
             return false;
         }
-        if ((b_squares & B_NOT_TOP_EDGE) << 8) & b_attackers != 0 {
+        if ((b_squares & B_NOT_NW_EDGE) << 9) & b_attackers != 0 {
             return false;
         }
 
@@ -502,4 +503,23 @@ mod tests {
         assert!(r.white_is_safe(0xfdfcffffffffffff)); // all safe squares
     }
 
+    #[test]
+    fn is_safe_against_white_king_castle_attack() {
+        let mut r = prep_board("2k5/6pp/8/b7/8/P7/2P3PP/R3K3 w Q - 0 1");
+        assert!(!r.white_is_safe(0x0000000000000038));
+        let mut r = prep_board("2k5/6pp/7q/b7/8/PPPP4/6PP/R3K3 b Q - 0 1");
+        assert!(!r.white_is_safe(0x0000000000000038));
+        let mut r = prep_board("2rk4/6pp/7q/b7/8/PP2P3/3P2PP/R3K3 b Q - 0 1");
+        assert!(!r.white_is_safe(0x0000000000000038));
+        let mut r = prep_board("2rk4/6pp/7q/b7/8/PPP1P3/3Pp1PP/R3K3 w Q - 0 1");
+        assert!(!r.white_is_safe(0x0000000000000038));
+        let mut r = prep_board("2rk4/6pp/7q/b7/8/PPP1P3/1p1P2PP/R3K3 w Q - 0 1");
+        assert!(!r.white_is_safe(0x0000000000000038));
+        let mut r = prep_board("2rk4/5ppp/7q/b7/8/PPP1n3/3P2PP/R3K3 w Q - 0 1");
+        assert!(!r.white_is_safe(0x0000000000000038));
+        let mut r = prep_board("2r2n2/5ppp/7q/b7/8/PPP5/1k1P2PP/R3K3 w Q - 0 1");
+        assert!(!r.white_is_safe(0x0000000000000038));
+        let mut r = prep_board("1kr5/5ppp/7q/b7/8/P1P5/n2P2PP/R3K3 w Q - 0 1");
+        assert!(!r.white_is_safe(0x0000000000000038));
+    }
 }

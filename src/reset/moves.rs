@@ -1,9 +1,13 @@
+use std::process;
 use crate::reset::Reset;
 use crate::bitops;
 use crate::reset::r#const::B_FOUR_CORNERS;
-use crate::reset::r#const::B_LOWER_RIGHT_CORNER;
-use crate::reset::r#const::B_LOWER_LEFT_CORNER;
-use crate::reset::r#const::B_UPPER_RIGHT_CORNER;
+use crate::reset::r#const::B_SE_CORNER;
+use crate::reset::r#const::B_SW_CORNER;
+use crate::reset::r#const::B_NE_CORNER;
+
+use crate::reset::r#const::BLACK;
+use crate::reset::r#const::WHITE;
 
 impl Reset {
 
@@ -99,16 +103,27 @@ impl Reset {
         }
     }
 
-
-    /// Adds a move to the specified child reset if valid
+    /// Adds a move to the specified child - MAY BE INVALID
+    /// Does not set `in_check` - expects the caller to look for safety later
     ///
-    pub fn add_move_if_valid(&mut self, child: &mut Reset, b_destination: u64) -> bool {
+    pub fn add_move_unconditional(&mut self, child: &mut Reset, b_destination: u64) {
 
         self.init_child(child);
         child.b_from = self.b_current_piece;
         child.b_to = b_destination;
+        child.bi_from = bitops::get_bit_number(child.b_from);
+        child.bi_to = bitops::get_bit_number(child.b_to);
 
         if child.b_to & child.b_all != 0 { // Capture
+            #[cfg(debug_assertions)]
+            if child.b_to & self.b_kings != 0 {
+                println!("King was captured!?!?!");
+                println!("Self:");
+                self.print();
+                println!("Child:");
+                child.print();
+                process::abort();
+            }
             child.capture_processing();
         }
         child.b_all &= !child.b_from;
@@ -117,6 +132,7 @@ impl Reset {
             child.b_white &= !child.b_from;
             child.b_white |= child.b_to;
         }
+
         if child.b_from & child.b_pawns != 0 {
             child.b_pawns &= !child.b_from;
             child.b_pawns |= child.b_to;
@@ -131,13 +147,13 @@ impl Reset {
             child.b_rooks &= !child.b_from;
             child.b_rooks |= child.b_to;
             if child.b_from & B_FOUR_CORNERS != 0 {
-                if child.b_to & B_LOWER_RIGHT_CORNER != 0 {
+                if child.b_from & B_SE_CORNER != 0 {
                     child.white_castle_k = 0;
-                } else if child.b_to & B_LOWER_LEFT_CORNER != 0 {
+                } else if child.b_from & B_SW_CORNER != 0 {
                     child.white_castle_q = 0;
-                } else if child.b_to & B_UPPER_RIGHT_CORNER != 0 {
+                } else if child.b_from & B_NE_CORNER != 0 {
                     child.black_castle_k = 0;
-                } else { // B_UPPER_RIGHT_CORNER
+                } else { // B_NW_CORNER
                     child.black_castle_q = 0;
                 }
             }
@@ -145,32 +161,88 @@ impl Reset {
             child.b_kings &= !child.b_from;
             child.b_kings |= child.b_to;
             if self.white_to_move() {
+                child.white_king_square = bitops::get_bit_number(child.b_to);
                 child.white_castle_k = 0;
                 child.white_castle_q = 0;
             } else {
+                child.black_king_square = bitops::get_bit_number(child.b_to);
                 child.black_castle_k = 0;
                 child.black_castle_q = 0;
             }
         } else {
             // Queen moved
         }
+    }
+
+    /// Adds a move to the specified child reset if valid
+    /// Uses a minimal safety check (if possible)
+    ///
+    pub fn add_move_if_valid(&mut self, child: &mut Reset, b_destination: u64) -> bool {
+
+        self.add_move_unconditional(child, b_destination);
+
+        // Move is invalid if I'm moving into check
+        if self.white_to_move() {
+            if self.in_check != 0 {
+                if !child.white_is_safe(child.b_kings & child.b_white) {
+                    return false;
+                }
+            } else {
+                if !child.is_safe_from_revealed_check(child.white_king_square,child.bi_from,WHITE) {
+                    return false;
+                }
+            }
+            if !child.is_safe_from_revealed_check(child.black_king_square,child.bi_from,BLACK) ||
+                !child.is_safe_from_direct_check(child.black_king_square,child.bi_to,BLACK) 
+            {
+                child.in_check = 1;
+            }
+        } else {
+            if self.in_check != 0 {
+                if !child.black_is_safe(child.b_kings & child.b_black()) {
+                    return false;
+                }
+            } else {
+                if !child.is_safe_from_revealed_check(child.black_king_square,child.bi_from,BLACK) {
+                    return false;
+                }
+            }
+            if !child.is_safe_from_revealed_check(child.white_king_square,child.bi_from,WHITE) ||
+                !child.is_safe_from_direct_check(child.white_king_square,child.bi_to,WHITE) 
+            {
+                child.in_check = 1;
+            }
+        }
+        true
+    }
+
+    /// Adds a move to the specified child reset if valid
+    /// Forces a full king safety check
+    ///
+    pub fn add_move_full_safety_check(&mut self, child: &mut Reset, b_destination: u64) -> bool {
+
+        self.add_move_unconditional(child, b_destination);
+
         // Move is invalid if I'm moving into check
         if self.white_to_move() {
             if !child.white_is_safe(child.b_kings & child.b_white) {
                 return false;
             }
-            if !child.black_is_safe(child.b_kings & child.b_black()) {
+            if !child.is_safe_from_revealed_check(child.black_king_square,child.bi_from,BLACK) ||
+                !child.is_safe_from_direct_check(child.black_king_square,child.bi_to,BLACK) 
+            {
                 child.in_check = 1;
             }
         } else {
             if !child.black_is_safe(child.b_kings & child.b_black()) {
                 return false;
             }
-            if !child.white_is_safe(child.b_kings & child.b_white) {
+            if !child.is_safe_from_revealed_check(child.white_king_square,child.bi_from,WHITE) ||
+                !child.is_safe_from_direct_check(child.white_king_square,child.bi_to,WHITE) 
+            {
                 child.in_check = 1;
             }
         }
-
         true
     }
 

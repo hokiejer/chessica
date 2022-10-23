@@ -13,6 +13,8 @@ pub mod queen;
 pub mod king;
 pub mod moves;
 pub mod safe;
+pub mod safe_revealed;
+pub mod safe_direct;
 pub mod profiling;
 
 /// The complete status of a chess game at a given time
@@ -84,6 +86,8 @@ pub mod profiling;
 /// | hash_value        | u32  | 4    |   20  | Hash value for this reset |
 /// | min               | i32  | 8    |   24  | Min value used for move searching |
 /// | max               | i32  | 8    |   28  | Max value used for move searching |
+/// | bi_from           | u8   | 1    |   29  | Bit index of the move's originating square |
+/// | bi_to             | u8   | 1    |   29  | Bit index of the move's destination square |
 /// | score_depth       | u8   | 1    |   29  | Search depth from which score was obtained |
 /// | hash_count        | u8   | 1    |   30  | Number of times this reset was saved to the hash table |
 /// | times_seen        | u8   | 1    |   31  | Number of times this reset has been seen in the current game |
@@ -125,10 +129,12 @@ pub struct Reset {
     hash_value: u32,            // 4 bytes ( 20)
     min: i32,                   // 4 bytes ( 24)
     max: i32,                   // 4 bytes ( 28)
-    score_depth: u8,            // 1 bytes ( 29)
-    hash_count: u8,             // 1 bytes ( 30)
-    times_seen: u8,             // 1 bytes ( 31)
-    must_check_safety: u8,      // 1 bytes ( 32) bit
+    bi_from: u8,                // 1 bytes ( 29)
+    bi_to: u8,                  // 1 bytes ( 30)
+    score_depth: u8,            // 1 bytes ( 31)
+    hash_count: u8,             // 1 bytes ( 32)
+    times_seen: u8,             // 1 bytes ( 33)
+    must_check_safety: u8,      // 1 bytes ( 34) bit
 }
 
 /// Constructs a new Reset
@@ -174,6 +180,8 @@ pub fn new() -> Reset {
         hash_value: 0,
         min: 0,
         max: 0,
+        bi_from: 0,
+        bi_to: 0,
         score_depth: 0,
         hash_count: 0,
         times_seen: 0,

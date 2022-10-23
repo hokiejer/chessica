@@ -1,12 +1,12 @@
 use crate::reset::Reset;
-use crate::reset::r#const::B_NOT_TOP_EDGE;
-use crate::reset::r#const::B_NOT_UR_EDGE;
-use crate::reset::r#const::B_NOT_RIGHT_EDGE;
-use crate::reset::r#const::B_NOT_DR_EDGE;
-use crate::reset::r#const::B_NOT_BOTTOM_EDGE;
-use crate::reset::r#const::B_NOT_DL_EDGE;
-use crate::reset::r#const::B_NOT_LEFT_EDGE;
-use crate::reset::r#const::B_NOT_UL_EDGE;
+use crate::reset::r#const::B_NOT_N_EDGE;
+use crate::reset::r#const::B_NOT_NE_EDGE;
+use crate::reset::r#const::B_NOT_E_EDGE;
+use crate::reset::r#const::B_NOT_SE_EDGE;
+use crate::reset::r#const::B_NOT_S_EDGE;
+use crate::reset::r#const::B_NOT_SW_EDGE;
+use crate::reset::r#const::B_NOT_W_EDGE;
+use crate::reset::r#const::B_NOT_NW_EDGE;
 use crate::reset::r#const::B_WHITE_CASTLEK_SAFETY;
 use crate::reset::r#const::B_WHITE_CASTLEQ_SAFETY;
 use crate::reset::r#const::B_BLACK_CASTLEK_SAFETY;
@@ -29,88 +29,88 @@ impl Reset {
             self.b_white | !self.b_all
         };
 
-        // Up
-        if self.move_id < 20 && (self.b_current_piece & B_NOT_TOP_EDGE != 0) {
+        // North
+        if self.move_id < 20 && (self.b_current_piece & B_NOT_N_EDGE != 0) {
             let b_destination = self.b_current_piece << 8;
             if (b_available_moves & b_destination != 0) 
-                && (self.add_move_if_valid(child, b_destination)) 
+                && (self.add_move_full_safety_check(child, b_destination)) 
             {
                 self.move_id = 20;
                 return true;
             }
         }
 
-        // Up Right
-        if self.move_id < 30 && (self.b_current_piece & B_NOT_UR_EDGE != 0) {
+        // Northeast
+        if self.move_id < 30 && (self.b_current_piece & B_NOT_NE_EDGE != 0) {
             let b_destination = self.b_current_piece << 7;
             if (b_available_moves & b_destination != 0) 
-                && (self.add_move_if_valid(child, b_destination)) 
+                && (self.add_move_full_safety_check(child, b_destination)) 
             {
                 self.move_id = 30;
                 return true;
             }
         }
 
-        // Right
-        if self.move_id < 40 && (self.b_current_piece & B_NOT_RIGHT_EDGE != 0) {
+        // East
+        if self.move_id < 40 && (self.b_current_piece & B_NOT_E_EDGE != 0) {
             let b_destination = self.b_current_piece >> 1;
             if (b_available_moves & b_destination != 0) 
-                && (self.add_move_if_valid(child, b_destination)) 
+                && (self.add_move_full_safety_check(child, b_destination)) 
             {
                 self.move_id = 40;
                 return true;
             }
         }
 
-        // Down Right
-        if self.move_id < 50 && (self.b_current_piece & B_NOT_DR_EDGE != 0) {
+        // Southeast
+        if self.move_id < 50 && (self.b_current_piece & B_NOT_SE_EDGE != 0) {
             let b_destination = self.b_current_piece >> 9;
             if (b_available_moves & b_destination != 0) 
-                && (self.add_move_if_valid(child, b_destination)) 
+                && (self.add_move_full_safety_check(child, b_destination)) 
             {
                 self.move_id = 50;
                 return true;
             }
         }
 
-        // Down
-        if self.move_id < 60 && (self.b_current_piece & B_NOT_BOTTOM_EDGE != 0) {
+        // South
+        if self.move_id < 60 && (self.b_current_piece & B_NOT_S_EDGE != 0) {
             let b_destination = self.b_current_piece >> 8;
             if (b_available_moves & b_destination != 0) 
-                && (self.add_move_if_valid(child, b_destination)) 
+                && (self.add_move_full_safety_check(child, b_destination)) 
             {
                 self.move_id = 60;
                 return true;
             }
         }
 
-        // Down Left
-        if self.move_id < 70 && (self.b_current_piece & B_NOT_DL_EDGE != 0) {
+        // Southwest
+        if self.move_id < 70 && (self.b_current_piece & B_NOT_SW_EDGE != 0) {
             let b_destination = self.b_current_piece >> 7;
             if (b_available_moves & b_destination != 0) 
-                && (self.add_move_if_valid(child, b_destination)) 
+                && (self.add_move_full_safety_check(child, b_destination)) 
             {
                 self.move_id = 70;
                 return true;
             }
         }
 
-        // Left
-        if self.move_id < 80 && (self.b_current_piece & B_NOT_LEFT_EDGE != 0) {
+        // West
+        if self.move_id < 80 && (self.b_current_piece & B_NOT_W_EDGE != 0) {
             let b_destination = self.b_current_piece << 1;
             if (b_available_moves & b_destination != 0) 
-                && (self.add_move_if_valid(child, b_destination)) 
+                && (self.add_move_full_safety_check(child, b_destination)) 
             {
                 self.move_id = 80;
                 return true;
             }
         }
 
-        // Up Left
-        if self.move_id < 90 && (self.b_current_piece & B_NOT_UL_EDGE != 0) {
+        // Northwest
+        if self.move_id < 90 && (self.b_current_piece & B_NOT_NW_EDGE != 0) {
             let b_destination = self.b_current_piece << 9;
             if (b_available_moves & b_destination != 0) 
-                && (self.add_move_if_valid(child, b_destination)) 
+                && (self.add_move_full_safety_check(child, b_destination)) 
             {
                 self.move_id = 90;
                 return true;
@@ -123,9 +123,9 @@ impl Reset {
             if self.move_id < 100 && 
                 self.white_castle_k != 0 &&
                 (self.b_all & B_WHITE_CASTLEK_EMPTY == 0) &&
-                self.white_is_safe(B_WHITE_CASTLEK_SAFETY) &&
-                self.add_move_if_valid(child, B_WHITE_CASTLEK_DESTINATION)
+                self.white_is_safe(B_WHITE_CASTLEK_SAFETY)
             {
+                self.add_move_unconditional(child, B_WHITE_CASTLEK_DESTINATION);
                 child.b_all &= 0xfffffffffffffffe;
                 child.b_white &= 0xfffffffffffffffe;
                 child.b_rooks &= 0xfffffffffffffffe;
@@ -141,11 +141,11 @@ impl Reset {
 
             // White Castle Queenside
             if self.move_id < 110 && 
-                self.white_castle_k != 0 &&
+                self.white_castle_q != 0 &&
                 (self.b_all & B_WHITE_CASTLEQ_EMPTY == 0) &&
-                self.white_is_safe(B_WHITE_CASTLEQ_SAFETY) &&
-                self.add_move_if_valid(child, B_WHITE_CASTLEQ_DESTINATION)
+                self.white_is_safe(B_WHITE_CASTLEQ_SAFETY)
             {
+                self.add_move_unconditional(child, B_WHITE_CASTLEQ_DESTINATION);
                 child.b_all &= 0xffffffffffffff7f;
                 child.b_white &= 0xffffffffffffff7f;
                 child.b_rooks &= 0xffffffffffffff7f;
@@ -165,9 +165,9 @@ impl Reset {
             if self.move_id < 100 && 
                 self.black_castle_k != 0 &&
                 (self.b_all & B_BLACK_CASTLEK_EMPTY == 0) &&
-                self.black_is_safe(B_BLACK_CASTLEK_SAFETY) &&
-                self.add_move_if_valid(child, B_BLACK_CASTLEK_DESTINATION)
+                self.black_is_safe(B_BLACK_CASTLEK_SAFETY)
             {
+                self.add_move_unconditional(child, B_BLACK_CASTLEK_DESTINATION);
                 child.b_all &= 0xfeffffffffffffff;
                 child.b_rooks &= 0xfeffffffffffffff;
                 child.b_all |= 0x0400000000000000;
@@ -181,11 +181,11 @@ impl Reset {
 
             // Black Castle Queenside
             if self.move_id < 110 && 
-                self.black_castle_k != 0 &&
+                self.black_castle_q != 0 &&
                 (self.b_all & B_BLACK_CASTLEQ_EMPTY == 0) &&
-                self.black_is_safe(B_BLACK_CASTLEQ_SAFETY) &&
-                self.add_move_if_valid(child, B_BLACK_CASTLEQ_DESTINATION)
+                self.black_is_safe(B_BLACK_CASTLEQ_SAFETY)
             {
+                self.add_move_unconditional(child, B_BLACK_CASTLEQ_DESTINATION);
                 child.b_all &= 0x7fffffffffffffff;
                 child.b_rooks &= 0x7fffffffffffffff;
                 child.b_all |= 0x1000000000000000;
@@ -493,7 +493,7 @@ mod tests {
 
     #[test]
     fn black_king_castle_kingside_invalid() {
-        let mut r = prep_board("4k2r/8/8/8/B7/8/8/R3K3 w Qk - 0 1");
+        let mut r = prep_board("4k2r/8/8/8/B7/8/8/R3K3 b Qk - 0 1");
         let mut child = reset::new();
         r.b_current_piece = utils::convert_square_to_bitstring("e8".to_string());
         r.move_id = 90;

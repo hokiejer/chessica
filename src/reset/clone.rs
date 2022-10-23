@@ -50,6 +50,8 @@ impl Reset {
         clone.hash_value = self.hash_value;
         clone.min = self.min;
         clone.max = self.max;
+        clone.bi_from = self.bi_from;
+        clone.bi_to = self.bi_to;
         clone.score_depth = self.score_depth;
         clone.hash_count = self.hash_count;
         clone.times_seen = self.times_seen;

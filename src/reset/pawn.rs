@@ -1,10 +1,10 @@
 use crate::reset::Reset;
-use crate::reset::r#const::B_NOT_TOP_EDGE;
-use crate::reset::r#const::B_NOT_BOTTOM_EDGE;
-use crate::reset::r#const::B_NOT_UL_EDGE;
-use crate::reset::r#const::B_NOT_UR_EDGE;
-use crate::reset::r#const::B_NOT_DL_EDGE;
-use crate::reset::r#const::B_NOT_DR_EDGE;
+use crate::reset::r#const::B_NOT_N_EDGE;
+use crate::reset::r#const::B_NOT_S_EDGE;
+use crate::reset::r#const::B_NOT_NW_EDGE;
+use crate::reset::r#const::B_NOT_NE_EDGE;
+use crate::reset::r#const::B_NOT_SW_EDGE;
+use crate::reset::r#const::B_NOT_SE_EDGE;
 use crate::reset::r#const::B_RANK_2;
 use crate::reset::r#const::B_RANK_7;
 
@@ -67,14 +67,14 @@ impl Reset {
     pub fn generate_next_white_pawn_move(&mut self, child: &mut Reset) -> bool {
         let mut b_destination: u64;
 
-        // Forward one
+        // Forward one (North)
         if self.move_id < 20 {
             b_destination = self.b_current_piece << 8;
-            if self.b_current_piece & B_NOT_TOP_EDGE != 0 &&
+            if self.b_current_piece & B_NOT_N_EDGE != 0 &&
                 (b_destination & self.b_all == 0) && 
                 self.add_move_if_valid(child, b_destination) 
             {
-                if b_destination & B_NOT_TOP_EDGE != 0 {
+                if b_destination & B_NOT_N_EDGE != 0 {
                     self.move_id = 20;
                 } else {
                     self.generate_promotion_moves(child, 10);
@@ -83,7 +83,7 @@ impl Reset {
             }
         }
                 
-        // Forward two
+        // Forward two (North)
         if self.move_id < 30 {
             self.move_id = 30;
             let b_forward_one: u64 = self.b_current_piece << 8;
@@ -99,14 +99,14 @@ impl Reset {
             }
         }
 
-        // Capture Left
+        // Capture Left (Northwest)
         if self.move_id < 40 {
             b_destination = self.b_current_piece << 9;
-            if (self.b_current_piece & B_NOT_UL_EDGE != 0) && 
+            if (self.b_current_piece & B_NOT_NW_EDGE != 0) && 
                 (b_destination & self.b_black() != 0) && 
                 self.add_move_if_valid(child, b_destination) 
             {
-                if b_destination & B_NOT_TOP_EDGE != 0 {
+                if b_destination & B_NOT_N_EDGE != 0 {
                     self.move_id = 40;
                 } else {
                     self.generate_promotion_moves(child, 30);
@@ -115,14 +115,14 @@ impl Reset {
             }
         }
 
-        // Capture Right
+        // Capture Right (Northeast)
         if self.move_id < 50 {
             b_destination = self.b_current_piece << 7;
-            if (self.b_current_piece & B_NOT_UR_EDGE != 0) && 
+            if (self.b_current_piece & B_NOT_NE_EDGE != 0) && 
                 (b_destination & self.b_black() != 0) && 
                 self.add_move_if_valid(child, b_destination) 
             {
-                if b_destination & B_NOT_TOP_EDGE != 0 {
+                if b_destination & B_NOT_N_EDGE != 0 {
                     self.move_id = 50;
                 } else {
                     self.generate_promotion_moves(child, 40);
@@ -132,22 +132,22 @@ impl Reset {
         }
 
         if self.b_en_passant != 0 {
-            // Capture Left En Passant
+            // Capture Left (Northwest) En Passant
             b_destination = self.b_current_piece << 9;
             if b_destination == self.b_en_passant &&
-                (self.b_current_piece & B_NOT_UL_EDGE != 0) && 
-                self.add_move_if_valid(child, b_destination) 
+                (self.b_current_piece & B_NOT_NW_EDGE != 0)
             {
+                self.add_move_unconditional(child, b_destination);
                 self.consider_next_moveable_piece();
                 return self.white_en_passant_cleanup(child);
             }
 
-            // Capture Right En Passant
+            // Capture Right (Northeast) En Passant
             b_destination = self.b_current_piece << 7;
             if b_destination == self.b_en_passant &&
-                (self.b_current_piece & B_NOT_UR_EDGE != 0) && 
-                self.add_move_if_valid(child, b_destination) 
+                (self.b_current_piece & B_NOT_NE_EDGE != 0)
             {
+                self.add_move_unconditional(child, b_destination);
                 self.consider_next_moveable_piece();
                 return self.white_en_passant_cleanup(child);
             }
@@ -176,14 +176,14 @@ impl Reset {
     pub fn generate_next_black_pawn_move(&mut self, child: &mut Reset) -> bool {
         let mut b_destination: u64;
 
-        // Forward one
+        // Forward one (South)
         if self.move_id < 20 {
             b_destination = self.b_current_piece >> 8;
-            if self.b_current_piece & B_NOT_BOTTOM_EDGE != 0 &&
+            if self.b_current_piece & B_NOT_S_EDGE != 0 &&
                 (b_destination & self.b_all == 0) && 
                 self.add_move_if_valid(child, b_destination) 
             {
-                if b_destination & B_NOT_BOTTOM_EDGE != 0 {
+                if b_destination & B_NOT_S_EDGE != 0 {
                     self.move_id = 20;
                 } else {
                     self.generate_promotion_moves(child, 10);
@@ -192,7 +192,7 @@ impl Reset {
             }
         }
                 
-        // Forward two
+        // Forward two (South)
         if self.move_id < 30 {
             self.move_id = 30;
             let b_forward_one: u64 = self.b_current_piece >> 8;
@@ -208,14 +208,14 @@ impl Reset {
             }
         }
 
-        // Capture Left
+        // Capture Left (Southeast)
         if self.move_id < 40 {
             b_destination = self.b_current_piece >> 9;
-            if (self.b_current_piece & B_NOT_DR_EDGE != 0) && 
+            if (self.b_current_piece & B_NOT_SE_EDGE != 0) && 
                 (b_destination & self.b_white != 0) && 
                 self.add_move_if_valid(child, b_destination) 
             {
-                if b_destination & B_NOT_BOTTOM_EDGE != 0 {
+                if b_destination & B_NOT_S_EDGE != 0 {
                     self.move_id = 40;
                 } else {
                     self.generate_promotion_moves(child, 30);
@@ -224,14 +224,14 @@ impl Reset {
             }
         }
 
-        // Capture Right
+        // Capture Right (Southwest)
         if self.move_id < 50 {
             b_destination = self.b_current_piece >> 7;
-            if (self.b_current_piece & B_NOT_DL_EDGE != 0) && 
+            if (self.b_current_piece & B_NOT_SW_EDGE != 0) && 
                 (b_destination & self.b_white != 0) && 
                 self.add_move_if_valid(child, b_destination) 
             {
-                if b_destination & B_NOT_BOTTOM_EDGE != 0 {
+                if b_destination & B_NOT_S_EDGE != 0 {
                     self.move_id = 50;
                 } else {
                     self.generate_promotion_moves(child, 40);
@@ -241,22 +241,22 @@ impl Reset {
         }
 
         if self.b_en_passant != 0 {
-            // Capture Left En Passant
+            // Capture Left (Southeast) En Passant
             b_destination = self.b_current_piece >> 9;
             if b_destination == self.b_en_passant &&
-                (self.b_current_piece & B_NOT_DR_EDGE != 0) && 
-                self.add_move_if_valid(child, b_destination) 
+                (self.b_current_piece & B_NOT_SE_EDGE != 0)
             {
+                self.add_move_unconditional(child, b_destination);
                 self.consider_next_moveable_piece();
                 return self.black_en_passant_cleanup(child);
             }
 
-            // Capture Right En Passant
+            // Capture Right (Southwest) En Passant
             b_destination = self.b_current_piece >> 7;
             if b_destination == self.b_en_passant &&
-                (self.b_current_piece & B_NOT_DL_EDGE != 0) && 
-                self.add_move_if_valid(child, b_destination) 
+                (self.b_current_piece & B_NOT_SW_EDGE != 0)
             {
+                self.add_move_unconditional(child, b_destination);
                 self.consider_next_moveable_piece();
                 return self.black_en_passant_cleanup(child);
             }
@@ -1399,6 +1399,22 @@ mod tests {
         assert_eq!(r.move_id,10);
         assert_eq!(child.capture,1);
         assert_eq!(child.material,1);
+    }
+
+    #[test]
+    fn pawn_moves_white_ep_capture_to_escape_check() {
+        let mut r = prep_board("8/8/8/pP6/1K1k2p1/6P1/7P/8 w - a6 0 3");
+        let mut child = reset::new();
+        r.b_current_piece = utils::convert_square_to_bitstring("b5".to_string());
+
+        // g5 to g6
+        let fen = String::from("8/8/P7/8/1K1k2p1/6P1/7P/8 b - - 0 3");
+        let retval = r.generate_next_pawn_move(&mut child);
+        assert!(retval);
+        assert_eq!(child.to_fen(),fen);
+        assert_eq!(r.b_current_piece,0);
+        assert_eq!(r.move_id,10);
+        assert_eq!(child.capture,1);
     }
 
     #[test]

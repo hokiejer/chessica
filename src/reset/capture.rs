@@ -4,6 +4,11 @@ use crate::reset::r#const::B_SE_CORNER;
 use crate::reset::r#const::B_SW_CORNER;
 use crate::reset::r#const::B_NE_CORNER;
 
+use crate::bitops::r#const::U8_NOT_BIT1;
+use crate::bitops::r#const::U8_NOT_BIT2;
+use crate::bitops::r#const::U8_NOT_BIT3;
+use crate::bitops::r#const::U8_NOT_BIT4;
+
 impl Reset {
 
     pub fn capture_processing(&mut self) {
@@ -40,16 +45,16 @@ impl Reset {
             if self.b_to & B_FOUR_CORNERS != 0 {
                 if self.b_to & B_SE_CORNER != 0 {
                     //white_castle_k = 0;
-                    self.castle_bits &= 0xfe;
+                    self.castle_bits &= U8_NOT_BIT1;
                 } else if self.b_to & B_SW_CORNER != 0 {
                     //white_castle_q = 0;
-                    self.castle_bits &= 0xfd;
+                    self.castle_bits &= U8_NOT_BIT2;
                 } else if self.b_to & B_NE_CORNER != 0 {
                     //black_castle_k = 0;
-                    self.castle_bits &= 0xfb;
+                    self.castle_bits &= U8_NOT_BIT3;
                 } else { // B_NW_CORNER
                     //black_castle_q = 0;
-                    self.castle_bits &= 0xf7;
+                    self.castle_bits &= U8_NOT_BIT4;
                 }
             }
         } else {

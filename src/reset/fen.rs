@@ -2,6 +2,11 @@ use crate::reset::Reset;
 use crate::utils;
 use crate::bitops;
 
+use crate::bitops::r#const::U8_BIT1;
+use crate::bitops::r#const::U8_BIT2;
+use crate::bitops::r#const::U8_BIT3;
+use crate::bitops::r#const::U8_BIT4;
+
 impl Reset {
     /// Initialize a Reset from FEN notation
     /// 
@@ -86,19 +91,19 @@ impl Reset {
                 '-' => {},
                 'K' => {
                     //white_castle_k = 1;
-                    self.castle_bits |= 0x01;
+                    self.castle_bits |= U8_BIT1;
                 },
                 'Q' => {
                     //white_castle_q = 1;
-                    self.castle_bits |= 0x02;
+                    self.castle_bits |= U8_BIT2;
                 },
                 'k' => {
                     //black_castle_k = 1;
-                    self.castle_bits |= 0x04;
+                    self.castle_bits |= U8_BIT3;
                 },
                 'q' => {
                     //black_castle_q = 1;
-                    self.castle_bits |= 0x08;
+                    self.castle_bits |= U8_BIT4;
                 },
                 _ => println!("I don't know what to do with {}",c),
             }

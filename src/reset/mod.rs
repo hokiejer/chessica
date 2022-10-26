@@ -93,6 +93,7 @@ pub mod profiling;
 /// | hash_count        | u8   | 1    |   30  | Number of times this reset was saved to the hash table |
 /// | times_seen        | u8   | 1    |   31  | Number of times this reset has been seen in the current game |
 /// | must_check_safety | u8   | 1    |   32  | 1 if we must check king safety after this move, 0 otherwise.  I believe this is used for odd moves, like EP captures, castling, and promotions. |
+#[repr(C)]
 pub struct Reset {
     //Fields passed from parent to child
     b_all: u64,                 // 8 bytes (  8)
@@ -207,7 +208,8 @@ impl Reset {
 /// This dynamically replaces `b_queens` that used to be a Reset field
 impl Reset {
     pub fn white_castle_k(&self) -> bool {
-        self.castle_bits & 0x01 != 0
+        use crate::bitops::r#const::U8_BIT1;
+        self.castle_bits & U8_BIT1 != 0
     }
 }
 
@@ -216,7 +218,8 @@ impl Reset {
 /// This dynamically replaces `b_queens` that used to be a Reset field
 impl Reset {
     pub fn white_castle_q(&self) -> bool {
-        self.castle_bits & 0x02 != 0
+        use crate::bitops::r#const::U8_BIT2;
+        self.castle_bits & U8_BIT2 != 0
     }
 }
 
@@ -225,7 +228,8 @@ impl Reset {
 /// This dynamically replaces `b_queens` that used to be a Reset field
 impl Reset {
     pub fn black_castle_k(&self) -> bool {
-        self.castle_bits & 0x04 != 0
+        use crate::bitops::r#const::U8_BIT3;
+        self.castle_bits & U8_BIT3 != 0
     }
 }
 
@@ -234,7 +238,8 @@ impl Reset {
 /// This dynamically replaces `b_queens` that used to be a Reset field
 impl Reset {
     pub fn black_castle_q(&self) -> bool {
-        self.castle_bits & 0x08 != 0
+        use crate::bitops::r#const::U8_BIT4;
+        self.castle_bits & U8_BIT4 != 0
     }
 }
 

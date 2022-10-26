@@ -9,6 +9,13 @@ use crate::reset::r#const::B_NE_CORNER;
 use crate::reset::r#const::BLACK;
 use crate::reset::r#const::WHITE;
 
+use crate::bitops::r#const::U8_NOT_BIT1;
+use crate::bitops::r#const::U8_NOT_BIT2;
+use crate::bitops::r#const::U8_NOT_BIT3;
+use crate::bitops::r#const::U8_NOT_BIT4;
+use crate::bitops::r#const::U8_NOT_BIT1_OR_BIT2;
+use crate::bitops::r#const::U8_NOT_BIT3_OR_BIT4;
+
 impl Reset {
 
     /// Prepare a Reset to generate moves.  This is called from both `init_from_fen` and after a
@@ -149,16 +156,16 @@ impl Reset {
             if child.b_from & B_FOUR_CORNERS != 0 {
                 if child.b_from & B_SE_CORNER != 0 {
                     //white_castle_k = 0;
-                    child.castle_bits &= 0xfe;
+                    child.castle_bits &= U8_NOT_BIT1;
                 } else if child.b_from & B_SW_CORNER != 0 {
                     //white_castle_q = 0;
-                    child.castle_bits &= 0xfd;
+                    child.castle_bits &= U8_NOT_BIT2;
                 } else if child.b_from & B_NE_CORNER != 0 {
                     //black_castle_k = 0;
-                    child.castle_bits &= 0xfb;
+                    child.castle_bits &= U8_NOT_BIT3;
                 } else { // B_NW_CORNER
                     //black_castle_q = 0;
-                    child.castle_bits &= 0xf7;
+                    child.castle_bits &= U8_NOT_BIT4;
                 }
             }
         } else if child.b_from & child.b_kings != 0 {
@@ -166,10 +173,10 @@ impl Reset {
             child.b_kings |= child.b_to;
             if self.white_to_move() {
                 child.white_king_square = bitops::get_bit_number(child.b_to);
-                child.castle_bits &= 0xfc;
+                child.castle_bits &= U8_NOT_BIT1_OR_BIT2;
             } else {
                 child.black_king_square = bitops::get_bit_number(child.b_to);
-                child.castle_bits &= 0xf3;
+                child.castle_bits &= U8_NOT_BIT3_OR_BIT4;
             }
         } else {
             // Queen moved

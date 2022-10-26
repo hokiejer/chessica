@@ -2,6 +2,11 @@ use crate::reset::Reset;
 use crate::utils;
 use crate::bitops;
 
+use crate::bitops::r#const::U8_BIT1;
+use crate::bitops::r#const::U8_BIT2;
+use crate::bitops::r#const::U8_BIT3;
+use crate::bitops::r#const::U8_BIT4;
+
 impl Reset {
     /// Initialize a Reset from FEN notation
     /// 
@@ -85,16 +90,20 @@ impl Reset {
             match c {
                 '-' => {},
                 'K' => {
-                    self.white_castle_k = 1;
+                    //white_castle_k = 1;
+                    self.castle_bits |= U8_BIT1;
                 },
                 'Q' => {
-                    self.white_castle_q = 1;
+                    //white_castle_q = 1;
+                    self.castle_bits |= U8_BIT2;
                 },
                 'k' => {
-                    self.black_castle_k = 1;
+                    //black_castle_k = 1;
+                    self.castle_bits |= U8_BIT3;
                 },
                 'q' => {
-                    self.black_castle_q = 1;
+                    //black_castle_q = 1;
+                    self.castle_bits |= U8_BIT4;
                 },
                 _ => println!("I don't know what to do with {}",c),
             }
@@ -215,19 +224,19 @@ impl Reset {
         // PROCESS CASTLE ELIGIBILITY (Chunk 2)
         fen.push(' ');
         let mut any_castle = 0;
-        if self.white_castle_k != 0 {
+        if self.white_castle_k() {
             fen.push('K');
             any_castle = 1;
         }
-        if self.white_castle_q != 0 {
+        if self.white_castle_q() {
             fen.push('Q');
             any_castle = 1;
         }
-        if self.black_castle_k != 0 {
+        if self.black_castle_k() {
             fen.push('k');
             any_castle = 1;
         }
-        if self.black_castle_q != 0 {
+        if self.black_castle_q() {
             fen.push('q');
             any_castle = 1;
         }
@@ -275,10 +284,10 @@ mod tests {
         assert_eq!(r.b_kings,0x0800000000000008,"b_kings");
         assert_eq!(r.material,0,"material");
         assert_eq!(r.to_move,0,"to_move");
-        assert_eq!(r.white_castle_k,1,"white_castle_k");
-        assert_eq!(r.white_castle_q,1,"white_castle_q");
-        assert_eq!(r.black_castle_k,1,"black_castle_k");
-        assert_eq!(r.black_castle_q,1,"black_castle_q");
+        assert!(r.white_castle_k(),"white_castle_k");
+        assert!(r.white_castle_q(),"white_castle_q");
+        assert!(r.black_castle_k(),"black_castle_k");
+        assert!(r.black_castle_q(),"black_castle_q");
         assert_eq!(r.b_en_passant,0,"b_en_passant");
         assert_eq!(r.halfmove_clock,0,"halfmove_clock");
         assert_eq!(r.fullmove_number,1,"fullmove_number");
@@ -304,10 +313,10 @@ mod tests {
         assert_eq!(r.b_kings,0x0200000000000002,"b_kings");
         assert_eq!(r.material,0,"material");
         assert_eq!(r.to_move,0,"to_move");
-        assert_eq!(r.white_castle_k,0,"white_castle_k");
-        assert_eq!(r.white_castle_q,0,"white_castle_q");
-        assert_eq!(r.black_castle_k,0,"black_castle_k");
-        assert_eq!(r.black_castle_q,0,"black_castle_q");
+        assert!(!r.white_castle_k(),"white_castle_k");
+        assert!(!r.white_castle_q(),"white_castle_q");
+        assert!(!r.black_castle_k(),"black_castle_k");
+        assert!(!r.black_castle_q(),"black_castle_q");
         assert_eq!(r.b_en_passant,0,"b_en_passant");
         assert_eq!(r.halfmove_clock,4,"halfmove_clock");
         assert_eq!(r.fullmove_number,17,"fullmove_number");
@@ -333,10 +342,10 @@ mod tests {
         assert_eq!(r.b_kings,0x4000000000000002,"b_kings");
         assert_eq!(r.material,-16,"material");
         assert_eq!(r.to_move,1,"to_move");
-        assert_eq!(r.white_castle_k,0,"white_castle_k");
-        assert_eq!(r.white_castle_q,0,"white_castle_q");
-        assert_eq!(r.black_castle_k,0,"black_castle_k");
-        assert_eq!(r.black_castle_q,0,"black_castle_q");
+        assert!(!r.white_castle_k(),"white_castle_k");
+        assert!(!r.white_castle_q(),"white_castle_q");
+        assert!(!r.black_castle_k(),"black_castle_k");
+        assert!(!r.black_castle_q(),"black_castle_q");
         assert_eq!(r.b_en_passant,0,"b_en_passant");
         assert_eq!(r.halfmove_clock,4,"halfmove_clock");
         assert_eq!(r.fullmove_number,17,"fullmove_number");
@@ -362,10 +371,10 @@ mod tests {
         assert_eq!(r.b_kings,0x0800000000000008,"b_kings");
         assert_eq!(r.material,0,"material");
         assert_eq!(r.to_move,1,"to_move");
-        assert_eq!(r.white_castle_k,1,"white_castle_k");
-        assert_eq!(r.white_castle_q,1,"white_castle_q");
-        assert_eq!(r.black_castle_k,1,"black_castle_k");
-        assert_eq!(r.black_castle_q,1,"black_castle_q");
+        assert!(r.white_castle_k(),"white_castle_k");
+        assert!(r.white_castle_q(),"white_castle_q");
+        assert!(r.black_castle_k(),"black_castle_k");
+        assert!(r.black_castle_q(),"black_castle_q");
         assert_eq!(r.b_en_passant,0x0000000000020000,"b_en_passant");
         assert_eq!(r.halfmove_clock,0,"halfmove_clock");
         assert_eq!(r.fullmove_number,1,"fullmove_number");

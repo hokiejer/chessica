@@ -29,10 +29,7 @@ impl Reset {
         clone.fullmove_number = self.fullmove_number;
         clone.white_king_square = self.white_king_square;
         clone.black_king_square = self.black_king_square;
-        clone.white_castle_q = self.white_castle_q;
-        clone.white_castle_k = self.white_castle_k;
-        clone.black_castle_q = self.black_castle_q;
-        clone.black_castle_k = self.black_castle_k;
+        clone.castle_bits = self.castle_bits;
 
         clone.b_current_piece = self.b_current_piece;
         clone.b_en_passant = self.b_en_passant;
@@ -90,10 +87,7 @@ mod tests {
         r.fullmove_number = 15;
         r.white_king_square = 2;
         r.black_king_square = 62;
-        r.white_castle_q = 1;
-        r.white_castle_k = 1;
-        r.black_castle_q = 1;
-        r.black_castle_k = 1;
+        r.castle_bits = 99;
         r.to_move = 0;
         r.move_id = 30;
         r.b_current_piece = 111;
@@ -117,10 +111,7 @@ mod tests {
         assert_eq!(child.fullmove_number,15);
         assert_eq!(child.white_king_square,2);
         assert_eq!(child.black_king_square,62);
-        assert_eq!(child.white_castle_q,1);
-        assert_eq!(child.white_castle_k,1);
-        assert_eq!(child.black_castle_q,1);
-        assert_eq!(child.black_castle_k,1);
+        assert_eq!(child.castle_bits,99);
         assert_eq!(child.to_move,0);
         assert_eq!(child.move_id,30);
         assert_eq!(child.b_current_piece,111);

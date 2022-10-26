@@ -1,3 +1,5 @@
+pub mod r#const;
+
 // This builds on Kernighan's algorithm for counting ones in a bitstring
 pub fn lowest_bit(bitstring: u64) -> u64 {
     if bitstring == 0 {

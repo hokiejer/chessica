@@ -29,10 +29,7 @@ impl Reset {
         child.fullmove_number = self.fullmove_number;
         child.white_king_square = self.white_king_square;
         child.black_king_square = self.black_king_square;
-        child.white_castle_q = self.white_castle_q;
-        child.white_castle_k = self.white_castle_k;
-        child.black_castle_q = self.black_castle_q;
-        child.black_castle_k = self.black_castle_k;
+        child.castle_bits = self.castle_bits;
 
         child.b_current_piece = 0;
         child.b_en_passant = 0;
@@ -89,10 +86,7 @@ mod tests {
         r.fullmove_number = 15;
         r.white_king_square = 2;
         r.black_king_square = 62;
-        r.white_castle_q = 1;
-        r.white_castle_k = 1;
-        r.black_castle_q = 1;
-        r.black_castle_k = 1;
+        r.castle_bits = 134;
         r.to_move = 0;
         r.move_id = 30;
         r.b_current_piece = 111;
@@ -116,10 +110,7 @@ mod tests {
         assert_eq!(child.fullmove_number,15); //No change
         assert_eq!(child.white_king_square,2);
         assert_eq!(child.black_king_square,62);
-        assert_eq!(child.white_castle_q,1);
-        assert_eq!(child.white_castle_k,1);
-        assert_eq!(child.black_castle_q,1);
-        assert_eq!(child.black_castle_k,1);
+        assert_eq!(child.castle_bits,134);
         assert_eq!(child.to_move,1); //Note the change
         assert_eq!(child.move_id,0); // Cleared
         assert_eq!(child.b_current_piece,0); // Cleared

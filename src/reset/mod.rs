@@ -56,10 +56,11 @@ pub mod profiling;
 /// | fullmove_number   | u8   | 1    |   59  | Full moves elapsed since beginning of the game |
 /// | white_king_square | u8   | 1    |   60  | Square number of the white king |
 /// | black_king_square | u8   | 1    |   61  | Square number of the black king |
-/// | white_castle_q    | u8   | 1    |   62  | `1` if white is eligible to castle queenside, `0` if not |
-/// | white_castle_k    | u8   | 1    |   63  | `1` if white is eligible to castle kingside, `0` if not |
-/// | black_castle_q    | u8   | 1    |   64  | `1` if black is eligible to castle queenside, `0` if not |
-/// | black_castle_k    | u8   | 1    |   65  | `1` if black is eligible to castle kingside, `0` if not |
+/// | castle_bits       | u8   | 1    |   62  | `1` if white is eligible to castle queenside, `0` if not |
+/// | white_castle_k    |      |      |       | 0x01: `1` if white is eligible to castle kingside, `0` if not |
+/// | white_castle_q    |      |      |       | 0x02: `1` if white is eligible to castle queenside, `0` if not |
+/// | black_castle_k    |      |      |       | 0x04: `1` if black is eligible to castle kingside, `0` if not |
+/// | black_castle_q    |      |      |       | 0x08: `1` if black is eligible to castle queenside, `0` if not |
 ///
 /// ## Fields cleared in a new child
 ///
@@ -92,6 +93,7 @@ pub mod profiling;
 /// | hash_count        | u8   | 1    |   30  | Number of times this reset was saved to the hash table |
 /// | times_seen        | u8   | 1    |   31  | Number of times this reset has been seen in the current game |
 /// | must_check_safety | u8   | 1    |   32  | 1 if we must check king safety after this move, 0 otherwise.  I believe this is used for odd moves, like EP captures, castling, and promotions. |
+#[repr(C)]
 pub struct Reset {
     //Fields passed from parent to child
     b_all: u64,                 // 8 bytes (  8)
@@ -100,16 +102,13 @@ pub struct Reset {
     b_knights: u64,             // 8 bytes ( 32)
     b_bishops: u64,             // 8 bytes ( 40)
     b_rooks: u64,               // 8 bytes ( 48)
-    b_kings: u64,               // 8 bytes ( 64)
-    material: i8,               // 1 byte  ( 65)
-    halfmove_clock: u8,         // 1 byte  ( 66)
-    fullmove_number: u8,        // 1 byte  ( 67)
-    white_king_square: u8,      // 1 byte  ( 68)
-    black_king_square: u8,      // 1 byte  ( 69)
-    white_castle_q: u8,         // 1 byte  ( 70) bit
-    white_castle_k: u8,         // 1 byte  ( 71) bit
-    black_castle_q: u8,         // 1 byte  ( 72) bit
-    black_castle_k: u8,         // 1 byte  ( 73) bit
+    b_kings: u64,               // 8 bytes ( 56)
+    material: i8,               // 1 byte  ( 57)
+    halfmove_clock: u8,         // 1 byte  ( 58)
+    fullmove_number: u8,        // 1 byte  ( 59)
+    white_king_square: u8,      // 1 byte  ( 60)
+    black_king_square: u8,      // 1 byte  ( 61)
+    castle_bits: u8,            // 1 byte  ( 62) bit
 
     //Fields cleared in a new child
     b_current_piece: u64,       // 8 bytes (  8)
@@ -159,10 +158,7 @@ pub fn new() -> Reset {
         fullmove_number: 0,
         white_king_square: 0,
         black_king_square: 0,
-        white_castle_q: 0,
-        white_castle_k: 0,
-        black_castle_q: 0,
-        black_castle_k: 0,
+        castle_bits: 0,
 
         b_current_piece: 0,
         b_en_passant: 0,
@@ -204,6 +200,46 @@ impl Reset {
 impl Reset {
     pub fn b_queens(&self) -> u64 {
         self.b_all & !(self.b_pawns | self.b_knights | self.b_bishops | self.b_rooks | self.b_kings)
+    }
+}
+
+/// White Castle Kingside is available?
+///
+/// This dynamically replaces `b_queens` that used to be a Reset field
+impl Reset {
+    pub fn white_castle_k(&self) -> bool {
+        use crate::bitops::r#const::U8_BIT1;
+        self.castle_bits & U8_BIT1 != 0
+    }
+}
+
+/// White Castle Queenside is available?
+///
+/// This dynamically replaces `b_queens` that used to be a Reset field
+impl Reset {
+    pub fn white_castle_q(&self) -> bool {
+        use crate::bitops::r#const::U8_BIT2;
+        self.castle_bits & U8_BIT2 != 0
+    }
+}
+
+/// Black Castle Kingside is available?
+///
+/// This dynamically replaces `b_queens` that used to be a Reset field
+impl Reset {
+    pub fn black_castle_k(&self) -> bool {
+        use crate::bitops::r#const::U8_BIT3;
+        self.castle_bits & U8_BIT3 != 0
+    }
+}
+
+/// Black Castle Queenside is available?
+///
+/// This dynamically replaces `b_queens` that used to be a Reset field
+impl Reset {
+    pub fn black_castle_q(&self) -> bool {
+        use crate::bitops::r#const::U8_BIT4;
+        self.castle_bits & U8_BIT4 != 0
     }
 }
 

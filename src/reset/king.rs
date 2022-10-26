@@ -121,7 +121,7 @@ impl Reset {
 
             // White Castle Kingside
             if self.move_id < 100 && 
-                self.white_castle_k != 0 &&
+                self.white_castle_k() &&
                 (self.b_all & B_WHITE_CASTLEK_EMPTY == 0) &&
                 self.white_is_safe(B_WHITE_CASTLEK_SAFETY)
             {
@@ -141,7 +141,7 @@ impl Reset {
 
             // White Castle Queenside
             if self.move_id < 110 && 
-                self.white_castle_q != 0 &&
+                self.white_castle_q() &&
                 (self.b_all & B_WHITE_CASTLEQ_EMPTY == 0) &&
                 self.white_is_safe(B_WHITE_CASTLEQ_SAFETY)
             {
@@ -163,7 +163,7 @@ impl Reset {
 
             // Black Castle Kingside
             if self.move_id < 100 && 
-                self.black_castle_k != 0 &&
+                self.black_castle_k() &&
                 (self.b_all & B_BLACK_CASTLEK_EMPTY == 0) &&
                 self.black_is_safe(B_BLACK_CASTLEK_SAFETY)
             {
@@ -181,7 +181,7 @@ impl Reset {
 
             // Black Castle Queenside
             if self.move_id < 110 && 
-                self.black_castle_q != 0 &&
+                self.black_castle_q() &&
                 (self.b_all & B_BLACK_CASTLEQ_EMPTY == 0) &&
                 self.black_is_safe(B_BLACK_CASTLEQ_SAFETY)
             {

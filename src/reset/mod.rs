@@ -93,7 +93,7 @@ pub mod profiling;
 /// | hash_count        | u8   | 1    |   30  | Number of times this reset was saved to the hash table |
 /// | times_seen        | u8   | 1    |   31  | Number of times this reset has been seen in the current game |
 /// | must_check_safety | u8   | 1    |   32  | 1 if we must check king safety after this move, 0 otherwise.  I believe this is used for odd moves, like EP captures, castling, and promotions. |
-#[repr(C)]
+///#[repr(C)]
 pub struct Reset {
     //Fields passed from parent to child
     b_all: u64,                 // 8 bytes (  8)
@@ -103,12 +103,23 @@ pub struct Reset {
     b_bishops: u64,             // 8 bytes ( 40)
     b_rooks: u64,               // 8 bytes ( 48)
     b_kings: u64,               // 8 bytes ( 56)
+    reserved_01: u64,               // 8 bytes ( 56)
     material: i8,               // 1 byte  ( 57)
     halfmove_clock: u8,         // 1 byte  ( 58)
     fullmove_number: u8,        // 1 byte  ( 59)
     white_king_square: u8,      // 1 byte  ( 60)
     black_king_square: u8,      // 1 byte  ( 61)
     castle_bits: u8,            // 1 byte  ( 62) bit
+    reserved_02: u8,            // 1 byte  ( 62) bit
+    reserved_03: u8,            // 1 byte  ( 62) bit
+    reserved_04: u8,            // 1 byte  ( 62) bit
+    reserved_05: u8,            // 1 byte  ( 62) bit
+    reserved_06: u8,            // 1 byte  ( 62) bit
+    reserved_07: u8,            // 1 byte  ( 62) bit
+    reserved_08: u8,            // 1 byte  ( 62) bit
+    reserved_09: u8,            // 1 byte  ( 62) bit
+    reserved_10: u8,            // 1 byte  ( 62) bit
+    reserved_11: u8,            // 1 byte  ( 62) bit
 
     //Fields cleared in a new child
     b_current_piece: u64,       // 8 bytes (  8)
@@ -153,12 +164,23 @@ pub fn new() -> Reset {
         b_bishops: 0,
         b_rooks: 0,
         b_kings: 0,
+        reserved_01: 0,
         material: 0,
         halfmove_clock: 0,
         fullmove_number: 0,
         white_king_square: 0,
         black_king_square: 0,
         castle_bits: 0,
+        reserved_02: 0,
+        reserved_03: 0,
+        reserved_04: 0,
+        reserved_05: 0,
+        reserved_06: 0,
+        reserved_07: 0,
+        reserved_08: 0,
+        reserved_09: 0,
+        reserved_10: 0,
+        reserved_11: 0,
 
         b_current_piece: 0,
         b_en_passant: 0,

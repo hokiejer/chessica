@@ -46,6 +46,7 @@ impl Reset {
                     if b_target & self.b_all != 0 {
                         self.move_id = next_line;
                     }
+                    self.valid_child_post_processing(child);
                     return true;
                 } else {
                     // If this is a capture, we're done with this line
@@ -79,6 +80,7 @@ impl Reset {
                     if b_target & self.b_all != 0 {
                         self.move_id = next_line;
                     }
+                    self.valid_child_post_processing(child);
                     return true;
                 } else {
                     // If this is a capture, we're done with this line
@@ -112,6 +114,7 @@ impl Reset {
                     if b_target & self.b_all != 0 {
                         self.move_id = next_line;
                     }
+                    self.valid_child_post_processing(child);
                     return true;
                 } else {
                     // If this is a capture, we're done with this line
@@ -145,6 +148,7 @@ impl Reset {
                     if b_target & self.b_all != 0 {
                         self.move_id = next_line;
                     }
+                    self.valid_child_post_processing(child);
                     return true;
                 } else {
                     // If this is a capture, we're done with this line
@@ -178,6 +182,7 @@ impl Reset {
                     if b_target & self.b_all != 0 {
                         self.move_id = next_line;
                     }
+                    self.valid_child_post_processing(child);
                     return true;
                 } else {
                     // If this is a capture, we're done with this line
@@ -211,6 +216,7 @@ impl Reset {
                     if b_target & self.b_all != 0 {
                         self.move_id = next_line;
                     }
+                    self.valid_child_post_processing(child);
                     return true;
                 } else {
                     // If this is a capture, we're done with this line
@@ -244,6 +250,7 @@ impl Reset {
                     if b_target & self.b_all != 0 {
                         self.move_id = next_line;
                     }
+                    self.valid_child_post_processing(child);
                     return true;
                 } else {
                     // If this is a capture, we're done with this line
@@ -273,6 +280,7 @@ impl Reset {
                 if b_target & self.b_all != 0 {
                     self.consider_next_moveable_piece();
                 }
+                self.valid_child_post_processing(child);
                 return true;
             } else {
                 // If this is a capture, we're done with this line

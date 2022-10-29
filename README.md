@@ -51,3 +51,13 @@ To run the full integration test suite, run:
 ```
 cargo test -- --include-ignored
 ```
+
+## Notes for performance testing Reset Initialization
+
+```
+cargo asm 'chessica::reset::child::<impl chessica::reset::Reset>::init_child'
+cargo asm 'chessica::reset::child::<impl chessica::reset::Reset>::init_child' | wc -l
+cargo asm chessica::reset::new
+cargo asm chessica::reset::new | wc -l
+```
+

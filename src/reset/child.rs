@@ -24,12 +24,23 @@ impl Reset {
         child.b_bishops = self.b_bishops;
         child.b_rooks = self.b_rooks;
         child.b_kings = self.b_kings;
+        child.reserved_01 = self.reserved_01;
         child.material = self.material;
         child.halfmove_clock = self.halfmove_clock;
         child.fullmove_number = self.fullmove_number;
         child.white_king_square = self.white_king_square;
         child.black_king_square = self.black_king_square;
         child.castle_bits = self.castle_bits;
+        child.reserved_02 = self.reserved_02;
+        child.reserved_03 = self.reserved_03;
+        child.reserved_04 = self.reserved_04;
+        child.reserved_05 = self.reserved_05;
+        child.reserved_06 = self.reserved_06;
+        child.reserved_07 = self.reserved_07;
+        child.reserved_08 = self.reserved_08;
+        child.reserved_09 = self.reserved_09;
+        child.reserved_10 = self.reserved_10;
+        child.reserved_11 = self.reserved_11;
 
         child.b_current_piece = 0;
         child.b_en_passant = 0;
@@ -41,6 +52,19 @@ impl Reset {
         child.promotion = 0;
         child.king_castled = 0;
         child.game_over = 0;
+
+        child.hash_value = 0;
+        child.min = 0;
+        child.max = 0;
+        child.bi_from = 0;
+        child.bi_to = 0;
+        child.score_depth = 0;
+        child.hash_count = 0;
+        child.times_seen = 0;
+        child.must_check_safety = 0;
+        child.reserved_12 = 0;
+        child.reserved_13 = 0;
+        child.reserved_14 = 0;
     }
 }
 
@@ -50,6 +74,7 @@ mod tests {
     #[test]
     fn reset_init_child_fen() {
         let mut r = reset::new();
+        // Note that the halfmove_clock, fullmove_number, and to_move change elsewhere
         let fen1 = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         let fen2 = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         let fen3 = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";

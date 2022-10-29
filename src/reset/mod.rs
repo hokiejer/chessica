@@ -37,133 +37,122 @@ pub mod profiling;
 /// # Reset Fields
 ///
 /// Note that 128-bit blocks need to be homogeneous in order to optimize Reset child
-/// initialization.
+/// initialization.  This table indicates (via "offset") where the compiler puts each 
+/// field in the structure.
 /// 
 /// Resets contain the following fields:
 ///
-/// ## Fields passed from parent to child
-///
 /// | field             | type | child? | offset | description |
-/// | ----------------- | ---- | ------ | ----- | ----------- |
-/// | b_all             | u64  | copy   |    8  | Bitstring representing the presence of any piece |
-/// | b_white           | u64  | copy   |   16  | Bitstring representing the presence of white pieces. |
-/// |                   |      |        |       | Note that there is no `b_black` - a user must call `b_black()` to derive this value. |
-/// | b_pawns           | u64  | copy   |   24  | Bitstring representing the presence of pawns |
-/// | b_knights         | u64  | copy   |   32  | Bitstring representing the presence of knights |
-/// | b_bishops         | u64  | copy   |   40  | Bitstring representing the presence of bishops |
-/// | b_rooks           | u64  | copy   |   48  | Bitstring representing the presence of rooks |
-/// |                   |      |        |       | Note that there is no `b_queens` - a user must call `b_queens()` to derive this value. |
-/// | b_kings           | u64  | copy   |   56  | Bitstring representing the presence of kings |
-/// | reserved_01       | u64  | copy   |   64  | Reserved |
-/// | material          | i8   | copy   |   65  | Material score of this board |
-/// | halfmove_clock    | u8   | copy   |   66  | Halfmoves elapsed since last pawn move or capture |
-/// | fullmove_number   | u8   | copy   |   67  | Full moves elapsed since beginning of the game |
-/// | white_king_square | u8   | copy   |   68  | Square number of the white king |
-/// | black_king_square | u8   | copy   |   69  | Square number of the black king |
-/// | castle_bits       | u8   | copy   |   70  | `1` if white is eligible to castle queenside, `0` if not |
-/// | white_castle_k    |      |        |       | 0x01: `1` if white is eligible to castle kingside, `0` if not |
-/// | white_castle_q    |      |        |       | 0x02: `1` if white is eligible to castle queenside, `0` if not |
-/// | black_castle_k    |      |        |       | 0x04: `1` if black is eligible to castle kingside, `0` if not |
-/// | black_castle_q    |      |        |       | 0x08: `1` if black is eligible to castle queenside, `0` if not |
-/// | reserved_02       | u8   | copy   |   71  | Reserved |
-/// | reserved_03       | u8   | copy   |   72  | Reserved |
-/// | reserved_04       | u8   | copy   |   73  | Reserved |
-/// | reserved_05       | u8   | copy   |   74  | Reserved |
-/// | reserved_06       | u8   | copy   |   75  | Reserved |
-/// | reserved_07       | u8   | copy   |   76  | Reserved |
-/// | reserved_08       | u8   | copy   |   77  | Reserved |
-/// | reserved_09       | u8   | copy   |   78  | Reserved |
-/// | reserved_10       | u8   | copy   |   79  | Reserved |
-/// | reserved_11       | u8   | copy   |   80  | Reserved |
-///
-/// ## Fields cleared in a new child
-///
-/// | field             | type | child? | total | description |
-/// | ----------------- | ---- | ------ | ----- | ----------- |
-/// | b_current_piece   | u64  | clear  |    8  | Bitstring representing the piece currently under consideration for move generation |
-/// | b_en_passant      | u64  | clear  |   16  | Bitstring representing a piece that is eligible for en passant capture.  This is an entire bitstring to represent a single bit, which seems wasteful. |
-/// | score             | i32  | clear  |   20  | Score of this reset.  White is positive, Black negative.  If white is up exactly a pawn, the score will be 1,000,000.  Checkmate for Black is -128,000,000. |
-/// | move_id           | u8   | clear  |   21  | ID of tne next move to be considered for a given piece type |
-/// | to_move           | u8   | clear  |   22  | `0` if it is white's move, `1` if it is black's move |
-/// | capture           | u8   | clear  |   23  | `1` if the last move was a capture, `0` otherwise |
-/// | in_check          | u8   | clear  |   24  | `1` if the side moving is currently in check, `0` otherwise |
-/// | promotion         | u8   | clear  |   25  | `1` if the last move was a promotion, `0` otherwise |
-/// | king_castled      | u8   | clear  |   26  | `1` if the last move was a castle, `0` otherwise |
-/// | game_over         | u8   | clear  |   27  | `1` if the game is over |
-///
-///
-/// ## Fields that can be garbage in a new child
-///
-/// | field             | type | child? | total | description |
-/// | ----------------- | ---- | ------ | ----- | ----------- |
-/// | b_from            | u64  | whatev |    8  | Bitstring representing where the last piece was moved from |
-/// | b_to              | u64  | whatev |   16  | Bitstring representing where the last piece was moved to |
-/// | hash_value        | u32  | whatev |   20  | Hash value for this reset |
-/// | min               | i32  | whatev |   24  | Min value used for move searching |
-/// | max               | i32  | whatev |   28  | Max value used for move searching |
-/// | bi_from           | u8   | whatev |   29  | Bit index of the move's originating square |
-/// | bi_to             | u8   | whatev |   29  | Bit index of the move's destination square |
-/// | score_depth       | u8   | whatev |   29  | Search depth from which score was obtained |
-/// | hash_count        | u8   | whatev |   30  | Number of times this reset was saved to the hash table |
-/// | times_seen        | u8   | whatev |   31  | Number of times this reset has been seen in the current game |
-/// | must_check_safety | u8   | whatev |   32  | 1 if we must check king safety after this move, 0 otherwise.  I believe this is used for odd moves, like EP captures, castling, and promotions. |
-/// | reserved_12       | u8   | whatev |   32  | Reserved |
-/// | reserved_13       | u8   | whatev |   32  | Reserved |
-/// | reserved_14       | u8   | whatev |   32  | Reserved |
+/// | ----------------- | ---- | ------ | ------ | ----------- |
+/// | b_all             | u64  | copy   |    0   | Bitstring representing the presence of any piece |
+/// | b_white           | u64  | copy   |    8   | Bitstring representing the presence of white pieces. |
+/// |                   |      |        |        | Note that there is no `b_black` - a user must call `b_black()` to derive this value. |
+/// | b_pawns           | u64  | copy   |   16   | Bitstring representing the presence of pawns |
+/// | b_knights         | u64  | copy   |   24   | Bitstring representing the presence of knights |
+/// | b_bishops         | u64  | copy   |   32   | Bitstring representing the presence of bishops |
+/// | b_rooks           | u64  | copy   |   40   | Bitstring representing the presence of rooks |
+/// |                   |      |        |        | Note that there is no `b_queens` - a user must call `b_queens()` to derive this value. |
+/// | b_kings           | u64  | copy   |   48   | Bitstring representing the presence of kings |
+/// | reserved_01       | u64  | copy   |   56   | Reserved |
+/// | b_current_piece   | u64  | clear  |   64   | Bitstring representing the piece currently under consideration for move generation |
+/// | b_en_passant      | u64  | clear  |   72   | Bitstring representing a piece that is eligible for en passant capture.  This is an entire bitstring to represent a single bit, which seems wasteful. |
+/// | b_from            | u64  | whatev |   80   | Bitstring representing where the last piece was moved from |
+/// | b_to              | u64  | whatev |   88   | Bitstring representing where the last piece was moved to |
+/// | score             | i32  | clear  |   96   | Score of this reset.  White is positive, Black negative.  If white is up exactly a pawn, the score will be 1,000,000.  Checkmate for Black is -128,000,000. |
+/// | hash_value        | u32  | whatev |  100   | Hash value for this reset |
+/// | min               | i32  | whatev |  104   | Min value used for move searching |
+/// | max               | i32  | whatev |  108   | Max value used for move searching |
+/// | material          | i8   | copy   |  112   | Material score of this board |
+/// | halfmove_clock    | u8   | copy   |  113   | Halfmoves elapsed since last pawn move or capture |
+/// | fullmove_number   | u8   | copy   |  114   | Full moves elapsed since beginning of the game |
+/// | white_king_square | u8   | copy   |  115   | Square number of the white king |
+/// | black_king_square | u8   | copy   |  116   | Square number of the black king |
+/// | castle_bits       | u8   | copy   |  117   | `1` if white is eligible to castle queenside, `0` if not |
+/// | white_castle_k    |      |        |        | 0x01: `1` if white is eligible to castle kingside, `0` if not |
+/// | white_castle_q    |      |        |        | 0x02: `1` if white is eligible to castle queenside, `0` if not |
+/// | black_castle_k    |      |        |        | 0x04: `1` if black is eligible to castle kingside, `0` if not |
+/// | black_castle_q    |      |        |        | 0x08: `1` if black is eligible to castle queenside, `0` if not |
+/// | reserved_02       | u8   | copy   |  118   | Reserved |
+/// | reserved_03       | u8   | copy   |  119   | Reserved |
+/// | reserved_04       | u8   | copy   |  120   | Reserved |
+/// | reserved_05       | u8   | copy   |  121   | Reserved |
+/// | reserved_06       | u8   | copy   |  122   | Reserved |
+/// | reserved_07       | u8   | copy   |  123   | Reserved |
+/// | reserved_08       | u8   | copy   |  124   | Reserved |
+/// | reserved_09       | u8   | copy   |  125   | Reserved |
+/// | reserved_10       | u8   | copy   |  126   | Reserved |
+/// | reserved_11       | u8   | copy   |  127   | Reserved |
+/// | field             | type | child? | offset | description |
+/// | move_id           | u8   | clear  |  128   | ID of tne next move to be considered for a given piece type |
+/// | to_move           | u8   | clear  |  129   | `0` if it is white's move, `1` if it is black's move |
+/// | capture           | u8   | clear  |  130   | `1` if the last move was a capture, `0` otherwise |
+/// | in_check          | u8   | clear  |  131   | `1` if the side moving is currently in check, `0` otherwise |
+/// | promotion         | u8   | clear  |  132   | `1` if the last move was a promotion, `0` otherwise |
+/// | king_castled      | u8   | clear  |  133   | `1` if the last move was a castle, `0` otherwise |
+/// | game_over         | u8   | clear  |  134   | `1` if the game is over |
+/// | bi_from           | u8   | whatev |  135   | Bit index of the move's originating square |
+/// | bi_to             | u8   | whatev |  136   | Bit index of the move's destination square |
+/// | score_depth       | u8   | whatev |  137   | Search depth from which score was obtained |
+/// | hash_count        | u8   | whatev |  138   | Number of times this reset was saved to the hash table |
+/// | times_seen        | u8   | whatev |  139   | Number of times this reset has been seen in the current game |
+/// | must_check_safety | u8   | whatev |  140   | 1 if we must check king safety after this move, 0 otherwise.  I believe this is used for odd moves, like EP captures, castling, and promotions. |
+/// | reserved_12       | u8   | whatev |  141   | Reserved |
+/// | reserved_13       | u8   | whatev |  142   | Reserved |
+/// | reserved_14       | u8   | whatev |  143   | Reserved |
 pub struct Reset {
     //Fields passed from parent to child
-    b_all: u64,                 // 8 bytes (  8)
-    b_white: u64,               // 8 bytes ( 16)
-    b_pawns: u64,               // 8 bytes ( 24)
-    b_knights: u64,             // 8 bytes ( 32)
-    b_bishops: u64,             // 8 bytes ( 40)
-    b_rooks: u64,               // 8 bytes ( 48)
-    b_kings: u64,               // 8 bytes ( 56)
-    reserved_01: u64,               // 8 bytes ( 56)
-    material: i8,               // 1 byte  ( 57)
-    halfmove_clock: u8,         // 1 byte  ( 58)
-    fullmove_number: u8,        // 1 byte  ( 59)
-    white_king_square: u8,      // 1 byte  ( 60)
-    black_king_square: u8,      // 1 byte  ( 61)
-    castle_bits: u8,            // 1 byte  ( 62) bit
-    reserved_02: u8,            // 1 byte  ( 62) bit
-    reserved_03: u8,            // 1 byte  ( 62) bit
-    reserved_04: u8,            // 1 byte  ( 62) bit
-    reserved_05: u8,            // 1 byte  ( 62) bit
-    reserved_06: u8,            // 1 byte  ( 62) bit
-    reserved_07: u8,            // 1 byte  ( 62) bit
-    reserved_08: u8,            // 1 byte  ( 62) bit
-    reserved_09: u8,            // 1 byte  ( 62) bit
-    reserved_10: u8,            // 1 byte  ( 62) bit
-    reserved_11: u8,            // 1 byte  ( 62) bit
+    b_all: u64,
+    b_white: u64,
+    b_pawns: u64,
+    b_knights: u64,
+    b_bishops: u64,
+    b_rooks: u64,
+    b_kings: u64,
+    reserved_01: u64,
+    material: i8,
+    halfmove_clock: u8,
+    fullmove_number: u8,
+    white_king_square: u8,
+    black_king_square: u8,
+    castle_bits: u8,
+    reserved_02: u8,
+    reserved_03: u8,
+    reserved_04: u8,
+    reserved_05: u8,
+    reserved_06: u8,
+    reserved_07: u8,
+    reserved_08: u8,
+    reserved_09: u8,
+    reserved_10: u8,
+    reserved_11: u8,
 
     //Fields cleared in a new child
-    b_current_piece: u64,       // 8 bytes (  8)
-    b_en_passant: u64,          // 8 bytes ( 16)
-    score: i32,                 // 4 bytes ( 20)
-    move_id: u8,                // 1 byte  ( 21)
-    to_move: u8,                // 1 byte  ( 22) bit
-    capture: u8,                // 1 byte  ( 23) bit
-    in_check: u8,               // 1 byte  ( 24) bit
-    promotion: u8,              // 1 byte  ( 25) bit
-    king_castled: u8,           // 1 byte  ( 26) bit
-    game_over: u8,              // 1 byte  ( 27) bit
+    b_current_piece: u64,
+    b_en_passant: u64,
+    score: i32,
+    move_id: u8,
+    to_move: u8,
+    capture: u8,
+    in_check: u8,
+    promotion: u8,
+    king_castled: u8,
+    game_over: u8,
 
     //Fields that can be garbage in a new child
-    b_from: u64,                // 8 bytes (  8)
-    b_to: u64,                  // 8 bytes ( 16)
-    hash_value: u32,            // 4 bytes ( 20)
-    min: i32,                   // 4 bytes ( 24)
-    max: i32,                   // 4 bytes ( 28)
-    bi_from: u8,                // 1 bytes ( 29)
-    bi_to: u8,                  // 1 bytes ( 30)
-    score_depth: u8,            // 1 bytes ( 31)
-    hash_count: u8,             // 1 bytes ( 32)
-    times_seen: u8,             // 1 bytes ( 33)
-    must_check_safety: u8,      // 1 bytes ( 34) bit
-    reserved_12: u8,            // 1 byte  ( 62) bit
-    reserved_13: u8,            // 1 byte  ( 62) bit
-    reserved_14: u8,            // 1 byte  ( 62) bit
+    b_from: u64,
+    b_to: u64,
+    hash_value: u32,
+    min: i32,
+    max: i32,
+    bi_from: u8,
+    bi_to: u8,
+    score_depth: u8,
+    hash_count: u8,
+    times_seen: u8,
+    must_check_safety: u8,
+    reserved_12: u8,
+    reserved_13: u8,
+    reserved_14: u8,
 }
 
 /// Constructs a new Reset

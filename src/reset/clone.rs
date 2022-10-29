@@ -64,6 +64,9 @@ impl Reset {
         clone.hash_count = self.hash_count;
         clone.times_seen = self.times_seen;
         clone.must_check_safety = self.must_check_safety;
+        clone.reserved_12 = self.reserved_12;
+        clone.reserved_13 = self.reserved_13;
+        clone.reserved_14 = self.reserved_14;
     }
 }
 

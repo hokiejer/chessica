@@ -52,6 +52,19 @@ impl Reset {
         child.promotion = 0;
         child.king_castled = 0;
         child.game_over = 0;
+
+        child.hash_value = 0;
+        child.min = 0;
+        child.max = 0;
+        child.bi_from = 0;
+        child.bi_to = 0;
+        child.score_depth = 0;
+        child.hash_count = 0;
+        child.times_seen = 0;
+        child.must_check_safety = 0;
+        child.reserved_12 = 0;
+        child.reserved_13 = 0;
+        child.reserved_14 = 0;
     }
 }
 

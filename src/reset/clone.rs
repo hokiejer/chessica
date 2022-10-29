@@ -24,12 +24,23 @@ impl Reset {
         clone.b_bishops = self.b_bishops;
         clone.b_rooks = self.b_rooks;
         clone.b_kings = self.b_kings;
+        clone.reserved_01 = self.reserved_01;
         clone.material = self.material;
         clone.halfmove_clock = self.halfmove_clock;
         clone.fullmove_number = self.fullmove_number;
         clone.white_king_square = self.white_king_square;
         clone.black_king_square = self.black_king_square;
         clone.castle_bits = self.castle_bits;
+        clone.reserved_02 = self.reserved_02;
+        clone.reserved_03 = self.reserved_03;
+        clone.reserved_04 = self.reserved_04;
+        clone.reserved_05 = self.reserved_05;
+        clone.reserved_06 = self.reserved_06;
+        clone.reserved_07 = self.reserved_07;
+        clone.reserved_08 = self.reserved_08;
+        clone.reserved_09 = self.reserved_09;
+        clone.reserved_10 = self.reserved_10;
+        clone.reserved_11 = self.reserved_11;
 
         clone.b_current_piece = self.b_current_piece;
         clone.b_en_passant = self.b_en_passant;

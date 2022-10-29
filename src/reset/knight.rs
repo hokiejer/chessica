@@ -31,6 +31,7 @@ impl Reset {
             if (b_available_moves & b_destination != 0) 
                 && (self.add_move_if_valid(child, b_destination)) 
             {
+                self.valid_child_post_processing(child);
                 return true;
             }
         }
@@ -40,6 +41,7 @@ impl Reset {
             if (b_available_moves & b_destination != 0) 
                 && (self.add_move_if_valid(child, b_destination)) 
             {
+                self.valid_child_post_processing(child);
                 return true;
             }
         }
@@ -49,6 +51,7 @@ impl Reset {
             if (b_available_moves & b_destination != 0) 
                 && (self.add_move_if_valid(child, b_destination)) 
             {
+                self.valid_child_post_processing(child);
                 return true;
             }
         }
@@ -58,6 +61,7 @@ impl Reset {
             if (b_available_moves & b_destination != 0) 
                 && (self.add_move_if_valid(child, b_destination)) 
             {
+                self.valid_child_post_processing(child);
                 return true;
             }
         }
@@ -67,6 +71,7 @@ impl Reset {
             if (b_available_moves & b_destination != 0) 
                 && (self.add_move_if_valid(child, b_destination)) 
             {
+                self.valid_child_post_processing(child);
                 return true;
             }
         }
@@ -76,6 +81,7 @@ impl Reset {
             if (b_available_moves & b_destination != 0) 
                 && (self.add_move_if_valid(child, b_destination)) 
             {
+                self.valid_child_post_processing(child);
                 return true;
             }
         }
@@ -85,6 +91,7 @@ impl Reset {
             if (b_available_moves & b_destination != 0) 
                 && (self.add_move_if_valid(child, b_destination)) 
             {
+                self.valid_child_post_processing(child);
                 return true;
             }
         }
@@ -94,6 +101,7 @@ impl Reset {
                 && (self.add_move_if_valid(child, b_destination)) 
             {
                 self.consider_next_moveable_piece();
+                self.valid_child_post_processing(child);
                 return true;
             }
         }

@@ -32,6 +32,10 @@ pub fn count_possible_games(fen: &str, depth: u8) -> u64 {
 
 pub fn burn() {
 
+    //After castle_bits and forced reset ordering 1: 7m49.908s
+    //After castle_bits and forced reset ordering 2: 7m45.630s
+    //After castle_bits and forced reset ordering 3: 7m46.438s
+    
     //After King square tracking improvements 1: 7m58.442s
     //After King square tracking improvements 2: 7m58.142s
 

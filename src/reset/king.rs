@@ -36,6 +36,7 @@ impl Reset {
                 && (self.add_move_full_safety_check(child, b_destination)) 
             {
                 self.move_id = 20;
+                self.valid_child_post_processing(child);
                 return true;
             }
         }
@@ -47,6 +48,7 @@ impl Reset {
                 && (self.add_move_full_safety_check(child, b_destination)) 
             {
                 self.move_id = 30;
+                self.valid_child_post_processing(child);
                 return true;
             }
         }
@@ -58,6 +60,7 @@ impl Reset {
                 && (self.add_move_full_safety_check(child, b_destination)) 
             {
                 self.move_id = 40;
+                self.valid_child_post_processing(child);
                 return true;
             }
         }
@@ -69,6 +72,7 @@ impl Reset {
                 && (self.add_move_full_safety_check(child, b_destination)) 
             {
                 self.move_id = 50;
+                self.valid_child_post_processing(child);
                 return true;
             }
         }
@@ -80,6 +84,7 @@ impl Reset {
                 && (self.add_move_full_safety_check(child, b_destination)) 
             {
                 self.move_id = 60;
+                self.valid_child_post_processing(child);
                 return true;
             }
         }
@@ -91,6 +96,7 @@ impl Reset {
                 && (self.add_move_full_safety_check(child, b_destination)) 
             {
                 self.move_id = 70;
+                self.valid_child_post_processing(child);
                 return true;
             }
         }
@@ -102,6 +108,7 @@ impl Reset {
                 && (self.add_move_full_safety_check(child, b_destination)) 
             {
                 self.move_id = 80;
+                self.valid_child_post_processing(child);
                 return true;
             }
         }
@@ -113,6 +120,7 @@ impl Reset {
                 && (self.add_move_full_safety_check(child, b_destination)) 
             {
                 self.move_id = 90;
+                self.valid_child_post_processing(child);
                 return true;
             }
         }
@@ -136,6 +144,7 @@ impl Reset {
                     child.in_check = 1;
                 }
                 self.move_id = 100;
+                self.valid_child_post_processing(child);
                 return true;
             }
 
@@ -156,6 +165,7 @@ impl Reset {
                     child.in_check = 1;
                 }
                 self.consider_next_moveable_piece();
+                self.valid_child_post_processing(child);
                 return true;
             }
 
@@ -176,6 +186,7 @@ impl Reset {
                     child.in_check = 1;
                 }
                 self.move_id = 100;
+                self.valid_child_post_processing(child);
                 return true;
             }
 
@@ -194,6 +205,7 @@ impl Reset {
                     child.in_check = 1;
                 }
                 self.consider_next_moveable_piece();
+                self.valid_child_post_processing(child);
                 return true;
             }
         }

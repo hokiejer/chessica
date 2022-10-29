@@ -9,7 +9,7 @@ impl Reset {
     /// # use chessica::reset::Reset;
     /// let mut r = chessica::reset::new();
     /// let fen1 = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    /// let fen2 = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 1 1";
+    /// let fen2 = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     /// r.init_from_fen(fen1.to_string());
     /// let mut child = chessica::reset::new();
     /// r.init_child(&mut child);
@@ -25,7 +25,7 @@ impl Reset {
         child.b_rooks = self.b_rooks;
         child.b_kings = self.b_kings;
         child.material = self.material;
-        child.halfmove_clock = self.halfmove_clock + 1;
+        child.halfmove_clock = self.halfmove_clock;
         child.fullmove_number = self.fullmove_number;
         child.white_king_square = self.white_king_square;
         child.black_king_square = self.black_king_square;
@@ -35,12 +35,7 @@ impl Reset {
         child.b_en_passant = 0;
         child.score = 0;
         child.move_id = 0;
-        if self.white_to_move() {          // White to black
-            child.to_move = 1;
-        } else {                        // Black to white
-            child.fullmove_number += 1;
-            child.to_move = 0;
-        }
+        child.to_move = 0;
         child.capture = 0;
         child.in_check = 0;
         child.promotion = 0;
@@ -56,8 +51,8 @@ mod tests {
     fn reset_init_child_fen() {
         let mut r = reset::new();
         let fen1 = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-        let fen2 = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 1 1";
-        let fen3 = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 2 2";
+        let fen2 = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        let fen3 = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         r.init_from_fen(fen1.to_string());
         let mut child = reset::new();
         r.init_child(&mut child);
@@ -106,12 +101,12 @@ mod tests {
         assert_eq!(child.b_rooks,1004);
         assert_eq!(child.b_kings,1006);
         assert_eq!(child.material,42);
-        assert_eq!(child.halfmove_clock,12); //Note the incremented value
+        assert_eq!(child.halfmove_clock,11); //Note that we increment later
         assert_eq!(child.fullmove_number,15); //No change
         assert_eq!(child.white_king_square,2);
         assert_eq!(child.black_king_square,62);
         assert_eq!(child.castle_bits,134);
-        assert_eq!(child.to_move,1); //Note the change
+        assert_eq!(child.to_move,0); //Note that we change this later
         assert_eq!(child.move_id,0); // Cleared
         assert_eq!(child.b_current_piece,0); // Cleared
         assert_eq!(child.b_en_passant,0); // Cleared

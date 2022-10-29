@@ -61,7 +61,8 @@ impl Reset {
         if !child.black_is_safe(child.b_kings & child.b_black()) {
             child.in_check = 1;
         }
-        true
+        self.valid_child_post_processing(child);
+        return true;
     }
 
     pub fn generate_next_white_pawn_move(&mut self, child: &mut Reset) -> bool {
@@ -79,6 +80,7 @@ impl Reset {
                 } else {
                     self.generate_promotion_moves(child, 10);
                 }
+                self.valid_child_post_processing(child);
                 return true;
             }
         }
@@ -95,6 +97,7 @@ impl Reset {
                 self.add_move_if_valid(child, b_destination)
             {
                 child.b_en_passant = b_forward_one;
+                self.valid_child_post_processing(child);
                 return true;
             }
         }
@@ -111,6 +114,7 @@ impl Reset {
                 } else {
                     self.generate_promotion_moves(child, 30);
                 }
+                self.valid_child_post_processing(child);
                 return true;
             }
         }
@@ -127,6 +131,7 @@ impl Reset {
                 } else {
                     self.generate_promotion_moves(child, 40);
                 }
+                self.valid_child_post_processing(child);
                 return true;
             }
         }
@@ -170,6 +175,7 @@ impl Reset {
         if !child.white_is_safe(child.b_kings & child.b_white) {
             child.in_check = 1;
         }
+        self.valid_child_post_processing(child);
         true
     }
 
@@ -188,6 +194,7 @@ impl Reset {
                 } else {
                     self.generate_promotion_moves(child, 10);
                 }
+                self.valid_child_post_processing(child);
                 return true;
             }
         }
@@ -204,6 +211,7 @@ impl Reset {
                 self.add_move_if_valid(child, b_destination)
             {
                 child.b_en_passant = b_forward_one;
+                self.valid_child_post_processing(child);
                 return true;
             }
         }
@@ -220,6 +228,7 @@ impl Reset {
                 } else {
                     self.generate_promotion_moves(child, 30);
                 }
+                self.valid_child_post_processing(child);
                 return true;
             }
         }
@@ -236,6 +245,7 @@ impl Reset {
                 } else {
                     self.generate_promotion_moves(child, 40);
                 }
+                self.valid_child_post_processing(child);
                 return true;
             }
         }

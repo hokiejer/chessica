@@ -131,7 +131,7 @@ impl Reset {
                 child.print();
                 process::abort();
             }
-            child.capture_processing();
+            self.capture_processing(child);
         }
         child.b_all &= !child.b_from;
         child.b_all |= child.b_to;
@@ -255,6 +255,20 @@ impl Reset {
         true
     }
 
+    /// Processing to be done on a valid child before returning the move
+    pub fn valid_child_post_processing(&mut self, child: &mut Reset) {
+        if child.capture != 0 || child.b_to & child.b_pawns != 0 || child.promotion != 0 {
+            child.halfmove_clock = 0;
+        } else {
+            child.halfmove_clock += 1;
+        }
+        if self.white_to_move() {
+            child.to_move = 1;
+        } else {
+            //child.to_move = 0; This was already initialized to zero
+            child.fullmove_number += 1;
+        }
+    }
 }
 
 #[cfg(test)]

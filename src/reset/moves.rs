@@ -35,6 +35,7 @@ impl Reset {
         } else {
             self.b_current_piece = bitops::lowest_bit(self.b_black());
         }
+        self.bi_current_piece = bitops::get_bit_number(self.b_current_piece);
         self.move_id = 10;	//Prime the first move
     }
 
@@ -49,6 +50,7 @@ impl Reset {
         } else {
             self.b_current_piece = bitops::next_lowest_bit(self.b_black(), self.b_current_piece);
         }
+        self.bi_current_piece = bitops::get_bit_number(self.b_current_piece);
         self.move_id = 10;
     }
 

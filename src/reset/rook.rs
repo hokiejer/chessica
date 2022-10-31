@@ -1,4 +1,7 @@
 use crate::reset::Reset;
+use crate::reset::pinned::PinDimension;
+use crate::reset::r#const::WHITE;
+use crate::reset::r#const::BLACK;
 
 impl Reset {
 
@@ -21,132 +24,142 @@ impl Reset {
             self.b_white | !self.b_all
         };
 
-        // North
-        let next_line = 20;
-        if self.move_id < next_line {
-            let mut b_target = self.b_current_piece << ((self.move_id % 10) * 8);
+        if self.white_to_move() {
+            self.pin_dimension = self.is_pinned_to_king(self.white_king_square,self.bi_current_piece,WHITE);
+        } else {
+            self.pin_dimension = self.is_pinned_to_king(self.black_king_square,self.bi_current_piece,BLACK);
+        }
+
+        if self.pin_dimension == PinDimension::None || self.pin_dimension == PinDimension::NS {
+            // North
+            let next_line = 20;
+            if self.move_id < next_line {
+                let mut b_target = self.b_current_piece << ((self.move_id % 10) * 8);
+                loop {
+                    // If we can't move any farther, give up on this line
+                    if b_target & B_NOT_N_EDGE == 0 {
+                        self.move_id = next_line;
+                        break;
+                    }
+                    b_target <<= 8;
+                    self.move_id += 1;
+                    // If my color is on the target, give up on this line
+                    if b_available_moves & b_target == 0 {
+                        self.move_id = next_line;
+                        break;
+                    }
+                    if self.add_move_if_valid(child, b_target) {
+                        // If this is a capture, we're done with this line
+                        if b_target & self.b_all != 0 {
+                            self.move_id = next_line;
+                        }
+                        self.valid_child_post_processing(child);
+                        return true;
+                    } else {
+                        // If this is a capture, we're done with this line
+                        if b_target & self.b_all != 0 {
+                            self.move_id = next_line;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // South
+            let next_line = 30;
+            if self.move_id < next_line {
+                let mut b_target = self.b_current_piece >> ((self.move_id % 10) * 8);
+                loop {
+                    // If we can't move any farther, give up on this line
+                    if b_target & B_NOT_S_EDGE == 0 {
+                        self.move_id = next_line;
+                        break;
+                    }
+                    b_target >>= 8;
+                    self.move_id += 1;
+                    // If my color is on the target, give up on this line
+                    if b_available_moves & b_target == 0 {
+                        self.move_id = next_line;
+                        break;
+                    }
+                    if self.add_move_if_valid(child, b_target) {
+                        // If this is a capture, we're done with this line
+                        if b_target & self.b_all != 0 {
+                            self.move_id = next_line;
+                        }
+                        self.valid_child_post_processing(child);
+                        return true;
+                    } else {
+                        // If this is a capture, we're done with this line
+                        if b_target & self.b_all != 0 {
+                            self.move_id = next_line;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        if self.pin_dimension == PinDimension::None || self.pin_dimension == PinDimension::EW {
+            // West
+            let next_line = 40;
+            if self.move_id < next_line {
+                let mut b_target = self.b_current_piece << (self.move_id % 10);
+                loop {
+                    // If we can't move any farther, give up on this line
+                    if b_target & B_NOT_W_EDGE == 0 {
+                        self.move_id = next_line;
+                        break;
+                    }
+                    b_target <<= 1;
+                    self.move_id += 1;
+                    // If my color is on the target, give up on this line
+                    if b_available_moves & b_target == 0 {
+                        self.move_id = next_line;
+                        break;
+                    }
+                    if self.add_move_if_valid(child, b_target) {
+                        // If this is a capture, we're done with this line
+                        if b_target & self.b_all != 0 {
+                            self.move_id = next_line;
+                        }
+                        self.valid_child_post_processing(child);
+                        return true;
+                    } else {
+                        // If this is a capture, we're done with this line
+                        if b_target & self.b_all != 0 {
+                            self.move_id = next_line;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // East
+            let mut b_target = self.b_current_piece >> (self.move_id % 10);
             loop {
                 // If we can't move any farther, give up on this line
-                if b_target & B_NOT_N_EDGE == 0 {
-                    self.move_id = next_line;
+                if b_target & B_NOT_E_EDGE == 0 {
                     break;
                 }
-                b_target <<= 8;
+                b_target >>= 1;
                 self.move_id += 1;
                 // If my color is on the target, give up on this line
                 if b_available_moves & b_target == 0 {
-                    self.move_id = next_line;
                     break;
                 }
                 if self.add_move_if_valid(child, b_target) {
                     // If this is a capture, we're done with this line
                     if b_target & self.b_all != 0 {
-                        self.move_id = next_line;
+                        self.consider_next_moveable_piece();
                     }
                     self.valid_child_post_processing(child);
                     return true;
                 } else {
                     // If this is a capture, we're done with this line
                     if b_target & self.b_all != 0 {
-                        self.move_id = next_line;
                         break;
                     }
-                }
-            }
-        }
-
-        // South
-        let next_line = 30;
-        if self.move_id < next_line {
-            let mut b_target = self.b_current_piece >> ((self.move_id % 10) * 8);
-            loop {
-                // If we can't move any farther, give up on this line
-                if b_target & B_NOT_S_EDGE == 0 {
-                    self.move_id = next_line;
-                    break;
-                }
-                b_target >>= 8;
-                self.move_id += 1;
-                // If my color is on the target, give up on this line
-                if b_available_moves & b_target == 0 {
-                    self.move_id = next_line;
-                    break;
-                }
-                if self.add_move_if_valid(child, b_target) {
-                    // If this is a capture, we're done with this line
-                    if b_target & self.b_all != 0 {
-                        self.move_id = next_line;
-                    }
-                    self.valid_child_post_processing(child);
-                    return true;
-                } else {
-                    // If this is a capture, we're done with this line
-                    if b_target & self.b_all != 0 {
-                        self.move_id = next_line;
-                        break;
-                    }
-                }
-            }
-        }
-
-        // West
-        let next_line = 40;
-        if self.move_id < next_line {
-            let mut b_target = self.b_current_piece << (self.move_id % 10);
-            loop {
-                // If we can't move any farther, give up on this line
-                if b_target & B_NOT_W_EDGE == 0 {
-                    self.move_id = next_line;
-                    break;
-                }
-                b_target <<= 1;
-                self.move_id += 1;
-                // If my color is on the target, give up on this line
-                if b_available_moves & b_target == 0 {
-                    self.move_id = next_line;
-                    break;
-                }
-                if self.add_move_if_valid(child, b_target) {
-                    // If this is a capture, we're done with this line
-                    if b_target & self.b_all != 0 {
-                        self.move_id = next_line;
-                    }
-                    self.valid_child_post_processing(child);
-                    return true;
-                } else {
-                    // If this is a capture, we're done with this line
-                    if b_target & self.b_all != 0 {
-                        self.move_id = next_line;
-                        break;
-                    }
-                }
-            }
-        }
-
-        // East
-        let mut b_target = self.b_current_piece >> (self.move_id % 10);
-        loop {
-            // If we can't move any farther, give up on this line
-            if b_target & B_NOT_E_EDGE == 0 {
-                break;
-            }
-            b_target >>= 1;
-            self.move_id += 1;
-            // If my color is on the target, give up on this line
-            if b_available_moves & b_target == 0 {
-                break;
-            }
-            if self.add_move_if_valid(child, b_target) {
-                // If this is a capture, we're done with this line
-                if b_target & self.b_all != 0 {
-                    self.consider_next_moveable_piece();
-                }
-                self.valid_child_post_processing(child);
-                return true;
-            } else {
-                // If this is a capture, we're done with this line
-                if b_target & self.b_all != 0 {
-                    break;
                 }
             }
         }

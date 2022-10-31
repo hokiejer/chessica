@@ -1,6 +1,26 @@
 use std::process;
 use crate::reset::Reset;
 use crate::reset::r#const::WHITE;
+use crate::reset::safe_revealed::RevealedCheckSearchType;
+use crate::reset::safe_revealed::REVEALED_CHECK_BITMAPS;
+use crate::reset::safe_revealed::REVEALED_CHECK_ROUTES;
+use crate::reset::safe_revealed::is_safe_from_revealed_check_from_n;
+use crate::reset::safe_revealed::is_safe_from_revealed_check_from_ne;
+use crate::reset::safe_revealed::is_safe_from_revealed_check_from_e;
+use crate::reset::safe_revealed::is_safe_from_revealed_check_from_se;
+use crate::reset::safe_revealed::is_safe_from_revealed_check_from_s;
+use crate::reset::safe_revealed::is_safe_from_revealed_check_from_sw;
+use crate::reset::safe_revealed::is_safe_from_revealed_check_from_w;
+use crate::reset::safe_revealed::is_safe_from_revealed_check_from_nw;
+
+#[derive(PartialEq,Eq,Hash,Debug,Copy,Clone)]
+pub enum PinDimension {
+    None,
+    NS,
+    NESW,
+    EW,
+    SENW,
+}
 
 impl Reset {
 
@@ -9,22 +29,11 @@ impl Reset {
     ///
     /// Someday, king_square won't be needed by this method, but for now it's there for performance
     /// reasons.
-    pub fn is_pinned_to_king(&mut self, king_square: u8, from_square: u8, king_color: u8) -> bool {
-        use crate::reset::safe_revealed::RevealedCheckSearchType;
-        use crate::reset::safe_revealed::REVEALED_CHECK_BITMAPS;
-        use crate::reset::safe_revealed::REVEALED_CHECK_ROUTES;
-        use crate::reset::safe_revealed::is_safe_from_revealed_check_from_n;
-        use crate::reset::safe_revealed::is_safe_from_revealed_check_from_ne;
-        use crate::reset::safe_revealed::is_safe_from_revealed_check_from_e;
-        use crate::reset::safe_revealed::is_safe_from_revealed_check_from_se;
-        use crate::reset::safe_revealed::is_safe_from_revealed_check_from_s;
-        use crate::reset::safe_revealed::is_safe_from_revealed_check_from_sw;
-        use crate::reset::safe_revealed::is_safe_from_revealed_check_from_w;
-        use crate::reset::safe_revealed::is_safe_from_revealed_check_from_nw;
+    pub fn is_pinned_to_king(&mut self, king_square: u8, from_square: u8, king_color: u8) -> PinDimension {
 
         let search_type = &REVEALED_CHECK_ROUTES[king_square as usize][from_square as usize];
         if matches!(search_type,RevealedCheckSearchType::DoNotSearch) {
-            return true;
+            return PinDimension::None;
         }
 
         let mut b_opponents: u64 = if king_color == WHITE {
@@ -39,78 +48,87 @@ impl Reset {
                 let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][1];
                 b_opponents &= !(b_others | self.b_bishops);
                 if b_attacks & b_opponents == 0 {
-                    return true;
+                    return PinDimension::None;
                 }
-                return is_safe_from_revealed_check_from_n(king_square,b_board,b_opponents)
+                if !is_safe_from_revealed_check_from_n(king_square,b_board,b_opponents) {
+                    return PinDimension::NS;
+                }
             },
             RevealedCheckSearchType::FromNE => {
                 let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][2];
                 b_opponents &= !(b_others | self.b_rooks);
                 if b_attacks & b_opponents == 0 {
-                    return true;
+                    return PinDimension::None;
                 }
-                return is_safe_from_revealed_check_from_ne(king_square,b_board,b_opponents)
+                if !is_safe_from_revealed_check_from_ne(king_square,b_board,b_opponents) {
+                    return PinDimension::NESW;
+                }
             },
             RevealedCheckSearchType::FromE => {
                 let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][3];
                 b_opponents &= !(b_others | self.b_bishops);
                 if b_attacks & b_opponents == 0 {
-                    return true;
+                    return PinDimension::None;
                 }
-                return is_safe_from_revealed_check_from_e(king_square,b_board,b_opponents)
+                if !is_safe_from_revealed_check_from_e(king_square,b_board,b_opponents) {
+                    return PinDimension::EW;
+                }
             },
             RevealedCheckSearchType::FromSE => {
                 let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][4];
                 b_opponents &= !(b_others | self.b_rooks);
                 if b_attacks & b_opponents == 0 {
-                    return true;
+                    return PinDimension::None;
                 }
-                return is_safe_from_revealed_check_from_se(king_square,b_board,b_opponents)
+                if !is_safe_from_revealed_check_from_se(king_square,b_board,b_opponents) {
+                    return PinDimension::SENW;
+                }
             },
             RevealedCheckSearchType::FromS => {
                 let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][5];
                 b_opponents &= !(b_others | self.b_bishops);
                 if b_attacks & b_opponents == 0 {
-                    return true;
+                    return PinDimension::None;
                 }
-                return is_safe_from_revealed_check_from_s(king_square,b_board,b_opponents)
+                if !is_safe_from_revealed_check_from_s(king_square,b_board,b_opponents) {
+                    return PinDimension::NS;
+                }
             },
             RevealedCheckSearchType::FromSW => {
                 let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][6];
                 b_opponents &= !(b_others | self.b_rooks);
                 if b_attacks & b_opponents == 0 {
-                    return true;
+                    return PinDimension::None;
                 }
-                return is_safe_from_revealed_check_from_sw(king_square,b_board,b_opponents)
+                if !is_safe_from_revealed_check_from_sw(king_square,b_board,b_opponents) {
+                    return PinDimension::NESW;
+                }
             },
             RevealedCheckSearchType::FromW => {
                 let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][7];
                 b_opponents &= !(b_others | self.b_bishops);
                 if b_attacks & b_opponents == 0 {
-                    return true;
+                    return PinDimension::None;
                 }
-                return is_safe_from_revealed_check_from_w(king_square,b_board,b_opponents)
+                if !is_safe_from_revealed_check_from_w(king_square,b_board,b_opponents) {
+                    return PinDimension::EW;
+                }
             },
             RevealedCheckSearchType::FromNW => {
                 let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][8];
                 b_opponents &= !(b_others | self.b_rooks);
                 if b_attacks & b_opponents == 0 {
-                    return true;
+                    return PinDimension::None;
                 }
-                return is_safe_from_revealed_check_from_nw(king_square,b_board,b_opponents)
+                if !is_safe_from_revealed_check_from_nw(king_square,b_board,b_opponents) {
+                    return PinDimension::SENW;
+                }
             },
             RevealedCheckSearchType::DoNotSearch => {
-                // Can't get here
+                // Will not be reached
             }
         }
-        #[cfg(debug_assertions)]
-        {
-            println!("Did not expect to get here in revealed check router?!?!");
-            println!("Self:");
-            self.print();
-            process::abort();
-        }
-        false // Shouldn't get here, but just in case
+        PinDimension::None
     }
 
         

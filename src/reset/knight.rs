@@ -1,4 +1,5 @@
 use crate::reset::Reset;
+use crate::reset::pinned::PinDimension;
 use crate::reset::r#const::B_KNIGHT_CAN_MOVE_0100;
 use crate::reset::r#const::B_KNIGHT_CAN_MOVE_0200;
 use crate::reset::r#const::B_KNIGHT_CAN_MOVE_0400;
@@ -7,6 +8,8 @@ use crate::reset::r#const::B_KNIGHT_CAN_MOVE_0700;
 use crate::reset::r#const::B_KNIGHT_CAN_MOVE_0800;
 use crate::reset::r#const::B_KNIGHT_CAN_MOVE_1000;
 use crate::reset::r#const::B_KNIGHT_CAN_MOVE_1100;
+use crate::reset::r#const::BLACK;
+use crate::reset::r#const::WHITE;
 
 impl Reset {
 
@@ -19,96 +22,102 @@ impl Reset {
     /// ```
     pub fn generate_next_knight_move(&mut self, child: &mut Reset) -> bool {
 
-        let b_available_moves: u64 = if self.white_to_move() {
-            !self.b_white
+        if self.white_to_move() {
+            self.pin_dimension = self.is_pinned_to_king(self.white_king_square,self.bi_current_piece,WHITE);
         } else {
-            self.b_white | !self.b_all
-        };
+            self.pin_dimension = self.is_pinned_to_king(self.black_king_square,self.bi_current_piece,BLACK);
+        }
+        if self.pin_dimension == PinDimension::None {
+            let b_available_moves: u64 = if self.white_to_move() {
+                !self.b_white
+            } else {
+                self.b_white | !self.b_all
+            };
 
-        if self.move_id < 20 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_0100 != 0) {
-            self.move_id = 20;
-            let b_destination = self.b_current_piece << 15;
-            if (b_available_moves & b_destination != 0) 
-                && (self.add_move_if_valid(child, b_destination)) 
-            {
-                self.valid_child_post_processing(child);
-                return true;
+            if self.move_id < 20 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_0100 != 0) {
+                self.move_id = 20;
+                let b_destination = self.b_current_piece << 15;
+                if (b_available_moves & b_destination != 0) 
+                    && (self.add_move_if_valid(child, b_destination)) 
+                {
+                    self.valid_child_post_processing(child);
+                    return true;
+                }
             }
-        }
-        if self.move_id < 30 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_0200 != 0) {
-            self.move_id = 30;
-            let b_destination = self.b_current_piece << 6;
-            if (b_available_moves & b_destination != 0) 
-                && (self.add_move_if_valid(child, b_destination)) 
-            {
-                self.valid_child_post_processing(child);
-                return true;
+            if self.move_id < 30 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_0200 != 0) {
+                self.move_id = 30;
+                let b_destination = self.b_current_piece << 6;
+                if (b_available_moves & b_destination != 0) 
+                    && (self.add_move_if_valid(child, b_destination)) 
+                {
+                    self.valid_child_post_processing(child);
+                    return true;
+                }
             }
-        }
-        if self.move_id < 40 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_0400 != 0) {
-            self.move_id = 40;
-            let b_destination = self.b_current_piece >> 10;
-            if (b_available_moves & b_destination != 0) 
-                && (self.add_move_if_valid(child, b_destination)) 
-            {
-                self.valid_child_post_processing(child);
-                return true;
+            if self.move_id < 40 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_0400 != 0) {
+                self.move_id = 40;
+                let b_destination = self.b_current_piece >> 10;
+                if (b_available_moves & b_destination != 0) 
+                    && (self.add_move_if_valid(child, b_destination)) 
+                {
+                    self.valid_child_post_processing(child);
+                    return true;
+                }
             }
-        }
-        if self.move_id < 50 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_0500 != 0) {
-            self.move_id = 50;
-            let b_destination = self.b_current_piece >> 17;
-            if (b_available_moves & b_destination != 0) 
-                && (self.add_move_if_valid(child, b_destination)) 
-            {
-                self.valid_child_post_processing(child);
-                return true;
+            if self.move_id < 50 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_0500 != 0) {
+                self.move_id = 50;
+                let b_destination = self.b_current_piece >> 17;
+                if (b_available_moves & b_destination != 0) 
+                    && (self.add_move_if_valid(child, b_destination)) 
+                {
+                    self.valid_child_post_processing(child);
+                    return true;
+                }
             }
-        }
-        if self.move_id < 60 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_0700 != 0) {
-            self.move_id = 60;
-            let b_destination = self.b_current_piece >> 15;
-            if (b_available_moves & b_destination != 0) 
-                && (self.add_move_if_valid(child, b_destination)) 
-            {
-                self.valid_child_post_processing(child);
-                return true;
+            if self.move_id < 60 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_0700 != 0) {
+                self.move_id = 60;
+                let b_destination = self.b_current_piece >> 15;
+                if (b_available_moves & b_destination != 0) 
+                    && (self.add_move_if_valid(child, b_destination)) 
+                {
+                    self.valid_child_post_processing(child);
+                    return true;
+                }
             }
-        }
-        if self.move_id < 70 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_0800 != 0) {
-            self.move_id = 70;
-            let b_destination = self.b_current_piece >> 6;
-            if (b_available_moves & b_destination != 0) 
-                && (self.add_move_if_valid(child, b_destination)) 
-            {
-                self.valid_child_post_processing(child);
-                return true;
+            if self.move_id < 70 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_0800 != 0) {
+                self.move_id = 70;
+                let b_destination = self.b_current_piece >> 6;
+                if (b_available_moves & b_destination != 0) 
+                    && (self.add_move_if_valid(child, b_destination)) 
+                {
+                    self.valid_child_post_processing(child);
+                    return true;
+                }
             }
-        }
-        if self.move_id < 80 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_1000 != 0) {
-            self.move_id = 80;
-            let b_destination = self.b_current_piece << 10;
-            if (b_available_moves & b_destination != 0) 
-                && (self.add_move_if_valid(child, b_destination)) 
-            {
-                self.valid_child_post_processing(child);
-                return true;
+            if self.move_id < 80 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_1000 != 0) {
+                self.move_id = 80;
+                let b_destination = self.b_current_piece << 10;
+                if (b_available_moves & b_destination != 0) 
+                    && (self.add_move_if_valid(child, b_destination)) 
+                {
+                    self.valid_child_post_processing(child);
+                    return true;
+                }
             }
-        }
-        if self.move_id < 90 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_1100 != 0) {
-            let b_destination = self.b_current_piece << 17;
-            if (b_available_moves & b_destination != 0) 
-                && (self.add_move_if_valid(child, b_destination)) 
-            {
-                self.consider_next_moveable_piece();
-                self.valid_child_post_processing(child);
-                return true;
+            if self.move_id < 90 && (self.b_current_piece & B_KNIGHT_CAN_MOVE_1100 != 0) {
+                let b_destination = self.b_current_piece << 17;
+                if (b_available_moves & b_destination != 0) 
+                    && (self.add_move_if_valid(child, b_destination)) 
+                {
+                    self.consider_next_moveable_piece();
+                    self.valid_child_post_processing(child);
+                    return true;
+                }
             }
         }
         self.consider_next_moveable_piece();
         false
     }
-
 }
 
 #[cfg(test)]

@@ -1,4 +1,5 @@
 use crate::reset::Reset;
+use crate::reset::pinned::PinDimension;
 use crate::reset::r#const::B_NOT_N_EDGE;
 use crate::reset::r#const::B_NOT_S_EDGE;
 use crate::reset::r#const::B_NOT_NW_EDGE;
@@ -7,6 +8,8 @@ use crate::reset::r#const::B_NOT_SW_EDGE;
 use crate::reset::r#const::B_NOT_SE_EDGE;
 use crate::reset::r#const::B_RANK_2;
 use crate::reset::r#const::B_RANK_7;
+use crate::reset::r#const::WHITE;
+use crate::reset::r#const::BLACK;
 
 impl Reset {
 
@@ -68,71 +71,77 @@ impl Reset {
     pub fn generate_next_white_pawn_move(&mut self, child: &mut Reset) -> bool {
         let mut b_destination: u64;
 
-        // Forward one (North)
-        if self.move_id < 20 {
-            b_destination = self.b_current_piece << 8;
-            if self.b_current_piece & B_NOT_N_EDGE != 0 &&
-                (b_destination & self.b_all == 0) && 
-                self.add_move_if_valid(child, b_destination) 
-            {
-                if b_destination & B_NOT_N_EDGE != 0 {
-                    self.move_id = 20;
-                } else {
-                    self.generate_promotion_moves(child, 10);
+        if self.pin_dimension == PinDimension::None || self.pin_dimension == PinDimension::NS {
+            // Forward one (North)
+            if self.move_id < 20 {
+                b_destination = self.b_current_piece << 8;
+                if self.b_current_piece & B_NOT_N_EDGE != 0 &&
+                    (b_destination & self.b_all == 0) && 
+                    self.add_move_if_valid(child, b_destination) 
+                {
+                    if b_destination & B_NOT_N_EDGE != 0 {
+                        self.move_id = 20;
+                    } else {
+                        self.generate_promotion_moves(child, 10);
+                    }
+                    self.valid_child_post_processing(child);
+                    return true;
                 }
-                self.valid_child_post_processing(child);
-                return true;
             }
-        }
-                
-        // Forward two (North)
-        if self.move_id < 30 {
-            self.move_id = 30;
-            let b_forward_one: u64 = self.b_current_piece << 8;
-            b_destination = self.b_current_piece << 16;
+                    
+            // Forward two (North)
+            if self.move_id < 30 {
+                self.move_id = 30;
+                let b_forward_one: u64 = self.b_current_piece << 8;
+                b_destination = self.b_current_piece << 16;
 
-            if (self.b_current_piece & B_RANK_2 != 0) &&
-                ((b_forward_one & self.b_all) == 0) &&
-                ((b_destination & self.b_all) == 0) &&
-                self.add_move_if_valid(child, b_destination)
-            {
-                child.b_en_passant = b_forward_one;
-                self.valid_child_post_processing(child);
-                return true;
-            }
-        }
-
-        // Capture Left (Northwest)
-        if self.move_id < 40 {
-            b_destination = self.b_current_piece << 9;
-            if (self.b_current_piece & B_NOT_NW_EDGE != 0) && 
-                (b_destination & self.b_black() != 0) && 
-                self.add_move_if_valid(child, b_destination) 
-            {
-                if b_destination & B_NOT_N_EDGE != 0 {
-                    self.move_id = 40;
-                } else {
-                    self.generate_promotion_moves(child, 30);
+                if (self.b_current_piece & B_RANK_2 != 0) &&
+                    ((b_forward_one & self.b_all) == 0) &&
+                    ((b_destination & self.b_all) == 0) &&
+                    self.add_move_if_valid(child, b_destination)
+                {
+                    child.b_en_passant = b_forward_one;
+                    self.valid_child_post_processing(child);
+                    return true;
                 }
-                self.valid_child_post_processing(child);
-                return true;
-            }
+            } 
         }
 
-        // Capture Right (Northeast)
-        if self.move_id < 50 {
-            b_destination = self.b_current_piece << 7;
-            if (self.b_current_piece & B_NOT_NE_EDGE != 0) && 
-                (b_destination & self.b_black() != 0) && 
-                self.add_move_if_valid(child, b_destination) 
-            {
-                if b_destination & B_NOT_N_EDGE != 0 {
-                    self.move_id = 50;
-                } else {
-                    self.generate_promotion_moves(child, 40);
+        if self.pin_dimension == PinDimension::None || self.pin_dimension == PinDimension::SENW {
+            // Capture Left (Northwest)
+            if self.move_id < 40 {
+                b_destination = self.b_current_piece << 9;
+                if (self.b_current_piece & B_NOT_NW_EDGE != 0) && 
+                    (b_destination & self.b_black() != 0) && 
+                    self.add_move_if_valid(child, b_destination) 
+                {
+                    if b_destination & B_NOT_N_EDGE != 0 {
+                        self.move_id = 40;
+                    } else {
+                        self.generate_promotion_moves(child, 30);
+                    }
+                    self.valid_child_post_processing(child);
+                    return true;
                 }
-                self.valid_child_post_processing(child);
-                return true;
+            }
+        }
+
+        if self.pin_dimension == PinDimension::None || self.pin_dimension == PinDimension::NESW {
+            // Capture Right (Northeast)
+            if self.move_id < 50 {
+                b_destination = self.b_current_piece << 7;
+                if (self.b_current_piece & B_NOT_NE_EDGE != 0) && 
+                    (b_destination & self.b_black() != 0) && 
+                    self.add_move_if_valid(child, b_destination) 
+                {
+                    if b_destination & B_NOT_N_EDGE != 0 {
+                        self.move_id = 50;
+                    } else {
+                        self.generate_promotion_moves(child, 40);
+                    }
+                    self.valid_child_post_processing(child);
+                    return true;
+                }
             }
         }
 
@@ -182,71 +191,77 @@ impl Reset {
     pub fn generate_next_black_pawn_move(&mut self, child: &mut Reset) -> bool {
         let mut b_destination: u64;
 
-        // Forward one (South)
-        if self.move_id < 20 {
-            b_destination = self.b_current_piece >> 8;
-            if self.b_current_piece & B_NOT_S_EDGE != 0 &&
-                (b_destination & self.b_all == 0) && 
-                self.add_move_if_valid(child, b_destination) 
-            {
-                if b_destination & B_NOT_S_EDGE != 0 {
-                    self.move_id = 20;
-                } else {
-                    self.generate_promotion_moves(child, 10);
+        if self.pin_dimension == PinDimension::None || self.pin_dimension == PinDimension::NS {
+            // Forward one (South)
+            if self.move_id < 20 {
+                b_destination = self.b_current_piece >> 8;
+                if self.b_current_piece & B_NOT_S_EDGE != 0 &&
+                    (b_destination & self.b_all == 0) && 
+                    self.add_move_if_valid(child, b_destination) 
+                {
+                    if b_destination & B_NOT_S_EDGE != 0 {
+                        self.move_id = 20;
+                    } else {
+                        self.generate_promotion_moves(child, 10);
+                    }
+                    self.valid_child_post_processing(child);
+                    return true;
                 }
-                self.valid_child_post_processing(child);
-                return true;
             }
-        }
-                
-        // Forward two (South)
-        if self.move_id < 30 {
-            self.move_id = 30;
-            let b_forward_one: u64 = self.b_current_piece >> 8;
-            b_destination = self.b_current_piece >> 16;
+                    
+            // Forward two (South)
+            if self.move_id < 30 {
+                self.move_id = 30;
+                let b_forward_one: u64 = self.b_current_piece >> 8;
+                b_destination = self.b_current_piece >> 16;
 
-            if (self.b_current_piece & B_RANK_7 != 0) &&
-                ((b_forward_one & self.b_all) == 0) &&
-                ((b_destination & self.b_all) == 0) &&
-                self.add_move_if_valid(child, b_destination)
-            {
-                child.b_en_passant = b_forward_one;
-                self.valid_child_post_processing(child);
-                return true;
-            }
-        }
-
-        // Capture Left (Southeast)
-        if self.move_id < 40 {
-            b_destination = self.b_current_piece >> 9;
-            if (self.b_current_piece & B_NOT_SE_EDGE != 0) && 
-                (b_destination & self.b_white != 0) && 
-                self.add_move_if_valid(child, b_destination) 
-            {
-                if b_destination & B_NOT_S_EDGE != 0 {
-                    self.move_id = 40;
-                } else {
-                    self.generate_promotion_moves(child, 30);
+                if (self.b_current_piece & B_RANK_7 != 0) &&
+                    ((b_forward_one & self.b_all) == 0) &&
+                    ((b_destination & self.b_all) == 0) &&
+                    self.add_move_if_valid(child, b_destination)
+                {
+                    child.b_en_passant = b_forward_one;
+                    self.valid_child_post_processing(child);
+                    return true;
                 }
-                self.valid_child_post_processing(child);
-                return true;
             }
         }
 
-        // Capture Right (Southwest)
-        if self.move_id < 50 {
-            b_destination = self.b_current_piece >> 7;
-            if (self.b_current_piece & B_NOT_SW_EDGE != 0) && 
-                (b_destination & self.b_white != 0) && 
-                self.add_move_if_valid(child, b_destination) 
-            {
-                if b_destination & B_NOT_S_EDGE != 0 {
-                    self.move_id = 50;
-                } else {
-                    self.generate_promotion_moves(child, 40);
+        if self.pin_dimension == PinDimension::None || self.pin_dimension == PinDimension::SENW {
+            // Capture Left (Southeast)
+            if self.move_id < 40 {
+                b_destination = self.b_current_piece >> 9;
+                if (self.b_current_piece & B_NOT_SE_EDGE != 0) && 
+                    (b_destination & self.b_white != 0) && 
+                    self.add_move_if_valid(child, b_destination) 
+                {
+                    if b_destination & B_NOT_S_EDGE != 0 {
+                        self.move_id = 40;
+                    } else {
+                        self.generate_promotion_moves(child, 30);
+                    }
+                    self.valid_child_post_processing(child);
+                    return true;
                 }
-                self.valid_child_post_processing(child);
-                return true;
+            }
+        }
+
+        if self.pin_dimension == PinDimension::None || self.pin_dimension == PinDimension::NESW {
+            // Capture Right (Southwest)
+            if self.move_id < 50 {
+                b_destination = self.b_current_piece >> 7;
+                if (self.b_current_piece & B_NOT_SW_EDGE != 0) && 
+                    (b_destination & self.b_white != 0) && 
+                    self.add_move_if_valid(child, b_destination) 
+                {
+                    if b_destination & B_NOT_S_EDGE != 0 {
+                        self.move_id = 50;
+                    } else {
+                        self.generate_promotion_moves(child, 40);
+                    }
+                    self.valid_child_post_processing(child);
+                    return true;
+                }
             }
         }
 
@@ -278,8 +293,10 @@ impl Reset {
 
     pub fn generate_next_pawn_move(&mut self, child: &mut Reset) -> bool {
         if self.white_to_move() {
+            self.pin_dimension = self.is_pinned_to_king(self.white_king_square,self.bi_current_piece,WHITE);
             self.generate_next_white_pawn_move(child)
         } else {
+            self.pin_dimension = self.is_pinned_to_king(self.black_king_square,self.bi_current_piece,BLACK);
             self.generate_next_black_pawn_move(child)
         }
     }

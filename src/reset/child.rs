@@ -64,7 +64,7 @@ impl Reset {
         child.times_seen = 0;
         child.must_check_safety = 0;
         child.bi_current_piece = 0;
-        child.pin_dimension = PinDimension::None;
+        child.pin_dimension = PinDimension::Unset;
         child.reserved_14 = 0;
     }
 }

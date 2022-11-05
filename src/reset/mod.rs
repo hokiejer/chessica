@@ -217,7 +217,7 @@ pub fn new() -> Reset {
         times_seen: 0,
         must_check_safety: 0,
         bi_current_piece: 0,
-        pin_dimension: PinDimension::None,
+        pin_dimension: PinDimension::Unset,
         reserved_14: 0,
     }
 }

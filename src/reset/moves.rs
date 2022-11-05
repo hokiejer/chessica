@@ -1,6 +1,8 @@
 use std::process;
 use crate::reset::Reset;
 use crate::bitops;
+use crate::reset::pinned::PinDimension;
+
 use crate::reset::r#const::B_FOUR_CORNERS;
 use crate::reset::r#const::B_SE_CORNER;
 use crate::reset::r#const::B_SW_CORNER;
@@ -32,10 +34,13 @@ impl Reset {
     pub fn initialize_move_generation(&mut self) {
         if self.white_to_move() {
             self.b_current_piece = bitops::lowest_bit(self.b_white);
+            self.bi_current_piece = bitops::get_bit_number(self.b_current_piece);
+            self.pin_dimension = self.is_pinned_to_king(self.white_king_square,self.bi_current_piece,WHITE);
         } else {
             self.b_current_piece = bitops::lowest_bit(self.b_black());
+            self.bi_current_piece = bitops::get_bit_number(self.b_current_piece);
+            self.pin_dimension = self.is_pinned_to_king(self.black_king_square,self.bi_current_piece,BLACK);
         }
-        self.bi_current_piece = bitops::get_bit_number(self.b_current_piece);
         self.move_id = 10;	//Prime the first move
     }
 
@@ -47,10 +52,13 @@ impl Reset {
     pub fn consider_next_moveable_piece(&mut self) {
         if self.white_to_move() {
             self.b_current_piece = bitops::next_lowest_bit(self.b_white, self.b_current_piece);
+            self.bi_current_piece = bitops::get_bit_number(self.b_current_piece);
+            self.pin_dimension = self.is_pinned_to_king(self.white_king_square,self.bi_current_piece,WHITE);
         } else {
             self.b_current_piece = bitops::next_lowest_bit(self.b_black(), self.b_current_piece);
+            self.bi_current_piece = bitops::get_bit_number(self.b_current_piece);
+            self.pin_dimension = self.is_pinned_to_king(self.black_king_square,self.bi_current_piece,BLACK);
         }
-        self.bi_current_piece = bitops::get_bit_number(self.b_current_piece);
         self.move_id = 10;
     }
 
@@ -71,6 +79,9 @@ impl Reset {
     /// ```
     pub fn generate_next_move(&mut self, child: &mut Reset) -> bool {
         let mut found_move: bool = false;
+        if self.pin_dimension == PinDimension::Unset {
+            self.initialize_move_generation();
+        }
         while self.b_current_piece != 0 {
             if self.b_current_piece & self.b_pawns != 0 { // Pawn
                 if self.generate_next_pawn_move(child) {
@@ -105,7 +116,6 @@ impl Reset {
             }
         }
         if found_move {
-            child.initialize_move_generation();
             true
         } else {
             false
@@ -198,10 +208,6 @@ impl Reset {
                 if !child.white_is_safe(child.b_kings & child.b_white) {
                     return false;
                 }
-            } else {
-                if !child.is_safe_from_revealed_check(child.white_king_square,child.bi_from,WHITE) {
-                    return false;
-                }
             }
             if !child.is_safe_from_revealed_check(child.black_king_square,child.bi_from,BLACK) ||
                 !child.is_safe_from_direct_check(child.black_king_square,child.bi_to,BLACK) 
@@ -211,10 +217,6 @@ impl Reset {
         } else {
             if self.in_check != 0 {
                 if !child.black_is_safe(child.b_kings & child.b_black()) {
-                    return false;
-                }
-            } else {
-                if !child.is_safe_from_revealed_check(child.black_king_square,child.bi_from,BLACK) {
                     return false;
                 }
             }
@@ -315,28 +317,6 @@ mod tests {
         assert_eq!(r.b_current_piece,0x0800000000000000);
         r.consider_next_moveable_piece();
         assert_eq!(r.b_current_piece,0x0000000000000000);
-    }
-
-    #[test]
-    fn white_cannot_move_into_check() {
-        let mut r = reset::new();
-        let mut child = reset::new();
-        let fen = "k7/3r4/8/8/7P/3N4/8/3K4 w - - 0 1";
-        r.init_from_fen(fen.to_string());
-        r.b_current_piece = utils::convert_square_to_bitstring("d3".to_string());
-        let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("b2".to_string()));
-        assert!(!result);
-    }
-
-    #[test]
-    fn black_cannot_move_into_check() {
-        let mut r = reset::new();
-        let mut child = reset::new();
-        let fen = "rnbqk1nr/ppppbppp/8/8/3P4/8/PPP1QPPP/RNB1KBNR b KQkq d3 0 1";
-        r.init_from_fen(fen.to_string());
-        r.b_current_piece = utils::convert_square_to_bitstring("e7".to_string());
-        let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("b4".to_string()));
-        assert!(!result);
     }
 
     #[test]

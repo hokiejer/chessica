@@ -24,12 +24,6 @@ impl Reset {
             self.b_white | !self.b_all
         };
 
-        if self.white_to_move() {
-            self.pin_dimension = self.is_pinned_to_king(self.white_king_square,self.bi_current_piece,WHITE);
-        } else {
-            self.pin_dimension = self.is_pinned_to_king(self.black_king_square,self.bi_current_piece,BLACK);
-        }
-
         if self.pin_dimension == PinDimension::None || self.pin_dimension == PinDimension::NESW {
             // Northeast
             let next_line = 20;

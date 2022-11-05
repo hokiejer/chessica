@@ -15,6 +15,7 @@ use crate::reset::safe_revealed::is_safe_from_revealed_check_from_nw;
 
 #[derive(PartialEq,Eq,Hash,Debug,Copy,Clone)]
 pub enum PinDimension {
+    Unset,
     None,
     NS,
     NESW,

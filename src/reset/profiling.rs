@@ -31,7 +31,14 @@ pub fn count_possible_games(fen: &str, depth: u8) -> u64 {
 }
 
 pub fn burn() {
-
+    //After disabling revealed check 1: 
+    //After disabling revealed check 2: 
+    //After disabling revealed check 3: 
+    
+    //After omitting pinned moves 1: 
+    //After omitting pinned moves 2: 
+    //After omitting pinned moves 3: 
+    
     //After valid_move work shift and improved ordering of Reset fields 1: 7m37.862s
     //After valid_move work shift and improved ordering of Reset fields 2: 7m41.491s
     //After valid_move work shift and improved ordering of Reset fields 3: 7m46.781s

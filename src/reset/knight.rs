@@ -22,11 +22,6 @@ impl Reset {
     /// ```
     pub fn generate_next_knight_move(&mut self, child: &mut Reset) -> bool {
 
-        if self.white_to_move() {
-            self.pin_dimension = self.is_pinned_to_king(self.white_king_square,self.bi_current_piece,WHITE);
-        } else {
-            self.pin_dimension = self.is_pinned_to_king(self.black_king_square,self.bi_current_piece,BLACK);
-        }
         if self.pin_dimension == PinDimension::None {
             let b_available_moves: u64 = if self.white_to_move() {
                 !self.b_white

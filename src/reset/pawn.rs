@@ -293,10 +293,8 @@ impl Reset {
 
     pub fn generate_next_pawn_move(&mut self, child: &mut Reset) -> bool {
         if self.white_to_move() {
-            self.pin_dimension = self.is_pinned_to_king(self.white_king_square,self.bi_current_piece,WHITE);
             self.generate_next_white_pawn_move(child)
         } else {
-            self.pin_dimension = self.is_pinned_to_king(self.black_king_square,self.bi_current_piece,BLACK);
             self.generate_next_black_pawn_move(child)
         }
     }

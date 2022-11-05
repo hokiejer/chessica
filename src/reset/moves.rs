@@ -35,11 +35,11 @@ impl Reset {
         if self.white_to_move() {
             self.b_current_piece = bitops::lowest_bit(self.b_white);
             self.bi_current_piece = bitops::get_bit_number(self.b_current_piece);
-            self.pin_dimension = self.is_pinned_to_king(self.white_king_square,self.bi_current_piece,WHITE);
+            self.pin_dimension = self.current_piece_pin_dimension();
         } else {
             self.b_current_piece = bitops::lowest_bit(self.b_black());
             self.bi_current_piece = bitops::get_bit_number(self.b_current_piece);
-            self.pin_dimension = self.is_pinned_to_king(self.black_king_square,self.bi_current_piece,BLACK);
+            self.pin_dimension = self.current_piece_pin_dimension();
         }
         self.move_id = 10;	//Prime the first move
     }
@@ -53,11 +53,11 @@ impl Reset {
         if self.white_to_move() {
             self.b_current_piece = bitops::next_lowest_bit(self.b_white, self.b_current_piece);
             self.bi_current_piece = bitops::get_bit_number(self.b_current_piece);
-            self.pin_dimension = self.is_pinned_to_king(self.white_king_square,self.bi_current_piece,WHITE);
+            self.pin_dimension = self.current_piece_pin_dimension();
         } else {
             self.b_current_piece = bitops::next_lowest_bit(self.b_black(), self.b_current_piece);
             self.bi_current_piece = bitops::get_bit_number(self.b_current_piece);
-            self.pin_dimension = self.is_pinned_to_king(self.black_king_square,self.bi_current_piece,BLACK);
+            self.pin_dimension = self.current_piece_pin_dimension();
         }
         self.move_id = 10;
     }

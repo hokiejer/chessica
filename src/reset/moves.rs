@@ -35,12 +35,11 @@ impl Reset {
         if self.white_to_move() {
             self.b_current_piece = bitops::lowest_bit(self.b_white);
             self.bi_current_piece = bitops::get_bit_number(self.b_current_piece);
-            self.pin_dimension = self.current_piece_pin_dimension();
         } else {
             self.b_current_piece = bitops::lowest_bit(self.b_black());
             self.bi_current_piece = bitops::get_bit_number(self.b_current_piece);
-            self.pin_dimension = self.current_piece_pin_dimension();
         }
+        self.pin_dimension = PinDimension::Unset;
         self.move_id = 10;	//Prime the first move
     }
 
@@ -53,15 +52,21 @@ impl Reset {
         if self.white_to_move() {
             self.b_current_piece = bitops::next_lowest_bit(self.b_white, self.b_current_piece);
             self.bi_current_piece = bitops::get_bit_number(self.b_current_piece);
-            self.pin_dimension = self.current_piece_pin_dimension();
         } else {
             self.b_current_piece = bitops::next_lowest_bit(self.b_black(), self.b_current_piece);
             self.bi_current_piece = bitops::get_bit_number(self.b_current_piece);
-            self.pin_dimension = self.current_piece_pin_dimension();
         }
+        self.pin_dimension = PinDimension::Unset;
         self.move_id = 10;
     }
 
+    /// Processing when considering moves for a new piece
+    pub fn new_piece_processing(&mut self) {
+        if self.pin_dimension == PinDimension::Unset {
+            self.set_current_piece_pin_dimension();
+        }
+        //Code to set current_piece_type should go here
+    }
 
     /// Generate the next move for a Reset
     ///
@@ -79,10 +84,9 @@ impl Reset {
     /// ```
     pub fn generate_next_move(&mut self, child: &mut Reset) -> bool {
         let mut found_move: bool = false;
-        if self.pin_dimension == PinDimension::Unset {
-            self.initialize_move_generation();
-        }
         while self.b_current_piece != 0 {
+            self.new_piece_processing();
+
             if self.b_current_piece & self.b_pawns != 0 { // Pawn
                 if self.generate_next_pawn_move(child) {
                     found_move = true;
@@ -128,6 +132,7 @@ impl Reset {
     pub fn add_move_unconditional(&mut self, child: &mut Reset, b_destination: u64) {
 
         self.init_child(child);
+        child.initialize_move_generation();
         child.b_from = self.b_current_piece;
         child.b_to = b_destination;
         child.bi_from = bitops::get_bit_number(child.b_from);
@@ -272,6 +277,7 @@ impl Reset {
             //child.to_move = 0; This was already initialized to zero
             child.fullmove_number += 1;
         }
+        child.initialize_move_generation();
     }
 }
 

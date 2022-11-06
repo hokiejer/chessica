@@ -310,6 +310,7 @@ mod tests {
         let mut r = reset::new();
         let fen = String::from(fen);
         r.init_from_fen(fen);
+        r.set_current_piece_pin_dimension();
         r
     }
 
@@ -340,6 +341,7 @@ mod tests {
         assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("g2".to_string()));
         assert_eq!(r.move_id,10);
+        r.set_current_piece_pin_dimension();
 
         // g2 to g3
         let fen = String::from("rnbqkbnr/pppppppp/8/8/8/6P1/PPPPPP1P/RNBQKBNR b KQkq - 0 1");
@@ -362,6 +364,7 @@ mod tests {
         assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("f2".to_string()));
         assert_eq!(r.move_id,10);
+        r.set_current_piece_pin_dimension();
 
         // f2 to f3
         let fen = String::from("rnbqkbnr/pppppppp/8/8/8/5P2/PPPPP1PP/RNBQKBNR b KQkq - 0 1");
@@ -384,6 +387,7 @@ mod tests {
         assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e2".to_string()));
         assert_eq!(r.move_id,10);
+        r.set_current_piece_pin_dimension();
 
         // e2 to e3
         let fen = String::from("rnbqkbnr/pppppppp/8/8/8/4P3/PPPP1PPP/RNBQKBNR b KQkq - 0 1");
@@ -406,6 +410,7 @@ mod tests {
         assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d2".to_string()));
         assert_eq!(r.move_id,10);
+        r.set_current_piece_pin_dimension();
 
         // d2 to d3
         let fen = String::from("rnbqkbnr/pppppppp/8/8/8/3P4/PPP1PPPP/RNBQKBNR b KQkq - 0 1");
@@ -428,6 +433,7 @@ mod tests {
         assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c2".to_string()));
         assert_eq!(r.move_id,10);
+        r.set_current_piece_pin_dimension();
 
         // c2 to c3
         let fen = String::from("rnbqkbnr/pppppppp/8/8/8/2P5/PP1PPPPP/RNBQKBNR b KQkq - 0 1");
@@ -450,6 +456,7 @@ mod tests {
         assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("b2".to_string()));
         assert_eq!(r.move_id,10);
+        r.set_current_piece_pin_dimension();
 
         // b2 to b3
         let fen = String::from("rnbqkbnr/pppppppp/8/8/8/1P6/P1PPPPPP/RNBQKBNR b KQkq - 0 1");
@@ -472,6 +479,7 @@ mod tests {
         assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("a2".to_string()));
         assert_eq!(r.move_id,10);
+        r.set_current_piece_pin_dimension();
 
         // a2 to a3
         let fen = String::from("rnbqkbnr/pppppppp/8/8/8/P7/1PPPPPPP/RNBQKBNR b KQkq - 0 1");
@@ -524,6 +532,7 @@ mod tests {
         assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("g7".to_string()));
         assert_eq!(r.move_id,10);
+        r.set_current_piece_pin_dimension();
 
         // g7 to g6
         let fen = String::from("rnbqkbnr/pppppp1p/6p1/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 2");
@@ -546,6 +555,7 @@ mod tests {
         assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("f7".to_string()));
         assert_eq!(r.move_id,10);
+        r.set_current_piece_pin_dimension();
 
         // f7 to f6
         let fen = String::from("rnbqkbnr/ppppp1pp/5p2/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 2");
@@ -568,6 +578,7 @@ mod tests {
         assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e7".to_string()));
         assert_eq!(r.move_id,10);
+        r.set_current_piece_pin_dimension();
 
         // e7 to e6
         let fen = String::from("rnbqkbnr/pppp1ppp/4p3/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 2");
@@ -590,6 +601,7 @@ mod tests {
         assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d7".to_string()));
         assert_eq!(r.move_id,10);
+        r.set_current_piece_pin_dimension();
 
         // d7 to d6
         let fen = String::from("rnbqkbnr/ppp1pppp/3p4/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 2");
@@ -612,6 +624,7 @@ mod tests {
         assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c7".to_string()));
         assert_eq!(r.move_id,10);
+        r.set_current_piece_pin_dimension();
 
         // c7 to c6
         let fen = String::from("rnbqkbnr/pp1ppppp/2p5/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 2");
@@ -634,6 +647,7 @@ mod tests {
         assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("b7".to_string()));
         assert_eq!(r.move_id,10);
+        r.set_current_piece_pin_dimension();
 
         // b7 to b6
         let fen = String::from("rnbqkbnr/p1pppppp/1p6/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 2");
@@ -656,6 +670,7 @@ mod tests {
         assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("a7".to_string()));
         assert_eq!(r.move_id,10);
+        r.set_current_piece_pin_dimension();
 
         // a7 to a6
         let fen = String::from("rnbqkbnr/1ppppppp/p7/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 2");
@@ -719,6 +734,7 @@ mod tests {
         assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("b3".to_string()));
         assert_eq!(r.move_id,10);
+        r.set_current_piece_pin_dimension();
 
         // b3 to b4
         let fen = String::from("k7/8/2p2p2/3PP3/pP3p1p/6P1/P1P5/K7 b - - 0 1");
@@ -743,6 +759,7 @@ mod tests {
         assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e5".to_string()));
         assert_eq!(r.move_id,10);
+        r.set_current_piece_pin_dimension();
 
         // e5 to e6
         let fen = String::from("k7/8/2p1Pp2/3P4/p4p1p/1P4P1/P1P5/K7 b - - 0 1");
@@ -774,6 +791,7 @@ mod tests {
         let mut r = prep_board("k7/5p1p/1p4p1/P1P4P/3pp3/2P2P2/8/K7 b - - 0 1");
         let mut child = reset::new();
         r.b_current_piece = utils::convert_square_to_bitstring("e4".to_string());
+        r.set_current_piece_pin_dimension();
 
         // e4 to e3
         let fen = String::from("k7/5p1p/1p4p1/P1P4P/3p4/2P1pP2/8/K7 w - - 0 2");
@@ -798,6 +816,7 @@ mod tests {
         assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d4".to_string()));
         assert_eq!(r.move_id,10);
+        r.set_current_piece_pin_dimension();
 
         // d4 to d3
         let fen = String::from("k7/5p1p/1p4p1/P1P4P/4p3/2Pp1P2/8/K7 w - - 0 2");
@@ -822,6 +841,7 @@ mod tests {
         assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("g6".to_string()));
         assert_eq!(r.move_id,10);
+        r.set_current_piece_pin_dimension();
 
         // g6 to g5
         let fen = String::from("k7/5p1p/1p6/P1P3pP/3pp3/2P2P2/8/K7 w - - 0 2");
@@ -846,6 +866,7 @@ mod tests {
         assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("b6".to_string()));
         assert_eq!(r.move_id,10);
+        r.set_current_piece_pin_dimension();
 
         // b6 to b5
         let fen = String::from("k7/5p1p/6p1/PpP4P/3pp3/2P2P2/8/K7 w - - 0 2");
@@ -937,6 +958,7 @@ mod tests {
         assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e7".to_string()));
         assert_eq!(r.move_id,10);
+        r.set_current_piece_pin_dimension();
 
         // e7 to e8 Knight
         let fen = String::from("k2rN3/2P4P/8/8/8/8/8/K7 b - - 0 1");
@@ -1031,6 +1053,7 @@ mod tests {
         assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c7".to_string()));
         assert_eq!(r.move_id,10);
+        r.set_current_piece_pin_dimension();
 
         // c7 to c8 Knight
         let fen = String::from("k1Nr4/4P2P/8/8/8/8/8/K7 b - - 0 1");
@@ -1227,6 +1250,7 @@ mod tests {
         assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d2".to_string()));
         assert_eq!(r.move_id,10);
+        r.set_current_piece_pin_dimension();
 
         // d2 to d1 Knight
         let fen = String::from("7k/8/8/8/8/8/p4p2/3nR2K w - - 0 2");
@@ -1321,6 +1345,7 @@ mod tests {
         assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("a2".to_string()));
         assert_eq!(r.move_id,10);
+        r.set_current_piece_pin_dimension();
 
         // a2 to a1 Knight
         let fen = String::from("7k/8/8/8/8/8/3p1p2/n3R2K w - - 0 2");

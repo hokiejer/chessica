@@ -125,6 +125,7 @@ mod tests {
         let mut r = reset::new();
         let fen = String::from(fen);
         r.init_from_fen(fen);
+        r.set_current_piece_pin_dimension();
         r
     }
 

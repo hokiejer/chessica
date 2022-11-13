@@ -3,14 +3,6 @@ use crate::reset::Reset;
 use crate::reset::safe_revealed::RevealedCheckSearchType;
 use crate::reset::safe_revealed::REVEALED_CHECK_BITMAPS;
 use crate::reset::safe_revealed::REVEALED_CHECK_ROUTES;
-use crate::reset::safe_revealed::is_safe_from_revealed_check_from_n;
-use crate::reset::safe_revealed::is_safe_from_revealed_check_from_ne;
-use crate::reset::safe_revealed::is_safe_from_revealed_check_from_e;
-use crate::reset::safe_revealed::is_safe_from_revealed_check_from_se;
-use crate::reset::safe_revealed::is_safe_from_revealed_check_from_s;
-use crate::reset::safe_revealed::is_safe_from_revealed_check_from_sw;
-use crate::reset::safe_revealed::is_safe_from_revealed_check_from_w;
-use crate::reset::safe_revealed::is_safe_from_revealed_check_from_nw;
 use crate::reset::safe_revealed::IS_SAFE_FROM_REVEALED_CHECK_FUNCTIONS;
 
 pub const PIN_DIMENSION_UNSET: u8 = 0x00;

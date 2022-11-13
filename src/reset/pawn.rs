@@ -75,17 +75,16 @@ impl Reset {
         if self.move_id < 20 {
             b_destination = self.b_current_piece << 8;
             if self.b_current_piece & B_NOT_N_EDGE != 0 &&
-                (b_destination & self.b_all == 0) 
+                (b_destination & self.b_all == 0) &&
+                self.add_move_if_valid(child, b_destination, PIN_MATCH_NS) 
             {
-                if self.add_move_if_valid(child, b_destination, PIN_MATCH_NS) {
-                    if b_destination & B_NOT_N_EDGE != 0 {
-                        self.move_id = 20;
-                    } else {
-                        self.generate_promotion_moves(child, 10);
-                    }
-                    self.valid_child_post_processing(child);
-                    return true;
+                if b_destination & B_NOT_N_EDGE != 0 {
+                    self.move_id = 20;
+                } else {
+                    self.generate_promotion_moves(child, 10);
                 }
+                self.valid_child_post_processing(child);
+                return true;
             }
         }
                 
@@ -97,14 +96,12 @@ impl Reset {
 
             if (self.b_current_piece & B_RANK_2 != 0) &&
                 ((b_forward_one & self.b_all) == 0) &&
-                ((b_destination & self.b_all) == 0)
+                ((b_destination & self.b_all) == 0) &&
+                self.add_move_if_valid(child, b_destination, PIN_MATCH_NS)
             {
-                if self.add_move_if_valid(child, b_destination, PIN_MATCH_NS)
-                {
-                    child.b_en_passant = b_forward_one;
-                    self.valid_child_post_processing(child);
-                    return true;
-                }
+                child.b_en_passant = b_forward_one;
+                self.valid_child_post_processing(child);
+                return true;
             }
         } 
 
@@ -112,18 +109,16 @@ impl Reset {
         if self.move_id < 40 {
             b_destination = self.b_current_piece << 9;
             if (self.b_current_piece & B_NOT_NW_EDGE != 0) && 
-                (b_destination & self.b_black() != 0)
+                (b_destination & self.b_black() != 0) &&
+                self.add_move_if_valid(child, b_destination, PIN_MATCH_SENW) 
             {
-                if self.add_move_if_valid(child, b_destination, PIN_MATCH_SENW) 
-                {
-                    if b_destination & B_NOT_N_EDGE != 0 {
-                        self.move_id = 40;
-                    } else {
-                        self.generate_promotion_moves(child, 30);
-                    }
-                    self.valid_child_post_processing(child);
-                    return true;
+                if b_destination & B_NOT_N_EDGE != 0 {
+                    self.move_id = 40;
+                } else {
+                    self.generate_promotion_moves(child, 30);
                 }
+                self.valid_child_post_processing(child);
+                return true;
             }
         }
 
@@ -131,18 +126,16 @@ impl Reset {
         if self.move_id < 50 {
             b_destination = self.b_current_piece << 7;
             if (self.b_current_piece & B_NOT_NE_EDGE != 0) && 
-                (b_destination & self.b_black() != 0)
+                (b_destination & self.b_black() != 0) &&
+                self.add_move_if_valid(child, b_destination, PIN_MATCH_NESW) 
             {
-                if self.add_move_if_valid(child, b_destination, PIN_MATCH_NESW) 
-                {
-                    if b_destination & B_NOT_N_EDGE != 0 {
-                        self.move_id = 50;
-                    } else {
-                        self.generate_promotion_moves(child, 40);
-                    }
-                    self.valid_child_post_processing(child);
-                    return true;
+                if b_destination & B_NOT_N_EDGE != 0 {
+                    self.move_id = 50;
+                } else {
+                    self.generate_promotion_moves(child, 40);
                 }
+                self.valid_child_post_processing(child);
+                return true;
             }
         }
 
@@ -196,18 +189,16 @@ impl Reset {
         if self.move_id < 20 {
             b_destination = self.b_current_piece >> 8;
             if self.b_current_piece & B_NOT_S_EDGE != 0 &&
-                (b_destination & self.b_all == 0)
+                (b_destination & self.b_all == 0) &&
+                self.add_move_if_valid(child, b_destination,PIN_MATCH_NS) 
             {
-                if self.add_move_if_valid(child, b_destination,PIN_MATCH_NS) 
-                {
-                    if b_destination & B_NOT_S_EDGE != 0 {
-                        self.move_id = 20;
-                    } else {
-                        self.generate_promotion_moves(child, 10);
-                    }
-                    self.valid_child_post_processing(child);
-                    return true;
+                if b_destination & B_NOT_S_EDGE != 0 {
+                    self.move_id = 20;
+                } else {
+                    self.generate_promotion_moves(child, 10);
                 }
+                self.valid_child_post_processing(child);
+                return true;
             }
         }
                 
@@ -219,14 +210,12 @@ impl Reset {
 
             if (self.b_current_piece & B_RANK_7 != 0) &&
                 ((b_forward_one & self.b_all) == 0) &&
-                ((b_destination & self.b_all) == 0)
+                ((b_destination & self.b_all) == 0) &&
+                self.add_move_if_valid(child, b_destination, PIN_MATCH_NS)
             {
-                if self.add_move_if_valid(child, b_destination, PIN_MATCH_NS)
-                {
-                    child.b_en_passant = b_forward_one;
-                    self.valid_child_post_processing(child);
-                    return true;
-                }
+                child.b_en_passant = b_forward_one;
+                self.valid_child_post_processing(child);
+                return true;
             }
         }
 
@@ -234,18 +223,16 @@ impl Reset {
         if self.move_id < 40 {
             b_destination = self.b_current_piece >> 9;
             if (self.b_current_piece & B_NOT_SE_EDGE != 0) && 
-                (b_destination & self.b_white != 0)
+                (b_destination & self.b_white != 0) &&
+                self.add_move_if_valid(child, b_destination, PIN_MATCH_SENW) 
             {
-                if self.add_move_if_valid(child, b_destination, PIN_MATCH_SENW) 
-                {
-                    if b_destination & B_NOT_S_EDGE != 0 {
-                        self.move_id = 40;
-                    } else {
-                        self.generate_promotion_moves(child, 30);
-                    }
-                    self.valid_child_post_processing(child);
-                    return true;
+                if b_destination & B_NOT_S_EDGE != 0 {
+                    self.move_id = 40;
+                } else {
+                    self.generate_promotion_moves(child, 30);
                 }
+                self.valid_child_post_processing(child);
+                return true;
             }
         }
 
@@ -253,18 +240,16 @@ impl Reset {
         if self.move_id < 50 {
             b_destination = self.b_current_piece >> 7;
             if (self.b_current_piece & B_NOT_SW_EDGE != 0) && 
-                (b_destination & self.b_white != 0)
+                (b_destination & self.b_white != 0) &&
+                self.add_move_if_valid(child, b_destination, PIN_MATCH_NESW) 
             {
-                if self.add_move_if_valid(child, b_destination, PIN_MATCH_NESW) 
-                {
-                    if b_destination & B_NOT_S_EDGE != 0 {
-                        self.move_id = 50;
-                    } else {
-                        self.generate_promotion_moves(child, 40);
-                    }
-                    self.valid_child_post_processing(child);
-                    return true;
+                if b_destination & B_NOT_S_EDGE != 0 {
+                    self.move_id = 50;
+                } else {
+                    self.generate_promotion_moves(child, 40);
                 }
+                self.valid_child_post_processing(child);
+                return true;
             }
         }
 

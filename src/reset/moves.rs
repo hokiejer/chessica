@@ -108,6 +108,7 @@ impl Reset {
             }
         }
         if found_move {
+            child.initialize_move_generation();
             true
         } else {
             false
@@ -270,7 +271,6 @@ impl Reset {
             //child.to_move = 0; This was already initialized to zero
             child.fullmove_number += 1;
         }
-        child.initialize_move_generation();
     }
 }
 

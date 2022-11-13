@@ -15,6 +15,7 @@ ansi_term = "0.12.1"
 
 [profile.dev]
 opt-level = 3
+debug = 2
 
 [profile.release]
 opt-level = 3

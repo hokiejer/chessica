@@ -122,7 +122,6 @@ impl Reset {
     pub fn add_move_unconditional(&mut self, child: &mut Reset, b_destination: u64) {
 
         self.init_child(child);
-        child.initialize_move_generation();
         child.b_from = self.b_current_piece;
         child.b_to = b_destination;
         child.bi_from = bitops::get_bit_number(child.b_from);

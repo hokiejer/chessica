@@ -60,12 +60,6 @@ impl Reset {
         self.move_id = 10;
     }
 
-    /// Processing when considering moves for a new piece
-    pub fn new_piece_processing(&mut self) {
-        //self.set_current_piece_pin_dimension();
-        //Code to set current_piece_type should go here
-    }
-
     /// Generate the next move for a Reset
     ///
     /// Returns Boolean indicating `true` if a move was successfully returned
@@ -83,8 +77,6 @@ impl Reset {
     pub fn generate_next_move(&mut self, child: &mut Reset) -> bool {
         let mut found_move: bool = false;
         while self.b_current_piece != 0 {
-            //self.new_piece_processing();
-
             if self.b_current_piece & self.b_pawns != 0 { // Pawn
                 if self.generate_next_pawn_move(child) {
                     found_move = true;

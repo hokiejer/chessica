@@ -1,5 +1,4 @@
 use crate::reset::Reset;
-use crate::reset::pinned::PIN_DIMENSION_UNSET;
 use crate::reset::pinned::PIN_MATCH_NONE;
 use crate::reset::r#const::B_KNIGHT_CAN_MOVE_0100;
 use crate::reset::r#const::B_KNIGHT_CAN_MOVE_0200;
@@ -9,8 +8,6 @@ use crate::reset::r#const::B_KNIGHT_CAN_MOVE_0700;
 use crate::reset::r#const::B_KNIGHT_CAN_MOVE_0800;
 use crate::reset::r#const::B_KNIGHT_CAN_MOVE_1000;
 use crate::reset::r#const::B_KNIGHT_CAN_MOVE_1100;
-use crate::reset::r#const::BLACK;
-use crate::reset::r#const::WHITE;
 
 impl Reset {
 

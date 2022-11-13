@@ -28,6 +28,18 @@ pub enum RevealedCheckSearchType {
     FromNW,
 }
 
+pub static IS_SAFE_FROM_REVEALED_CHECK_FUNCTIONS: &'static [fn(u8,u64,u64)->bool] = &[
+    is_safe_from_revealed_check_from_n, // Slot 0 doesn't matter
+    is_safe_from_revealed_check_from_n,
+    is_safe_from_revealed_check_from_ne,
+    is_safe_from_revealed_check_from_e,
+    is_safe_from_revealed_check_from_se,
+    is_safe_from_revealed_check_from_s,
+    is_safe_from_revealed_check_from_sw,
+    is_safe_from_revealed_check_from_w,
+    is_safe_from_revealed_check_from_nw,
+];
+
 pub fn revealed_check_router(king: u8, revealed: u8) -> RevealedCheckSearchType {
     if king == revealed {
         return RevealedCheckSearchType::DoNotSearch;

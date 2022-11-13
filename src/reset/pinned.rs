@@ -12,6 +12,7 @@ use crate::reset::safe_revealed::is_safe_from_revealed_check_from_s;
 use crate::reset::safe_revealed::is_safe_from_revealed_check_from_sw;
 use crate::reset::safe_revealed::is_safe_from_revealed_check_from_w;
 use crate::reset::safe_revealed::is_safe_from_revealed_check_from_nw;
+use crate::reset::safe_revealed::IS_SAFE_FROM_REVEALED_CHECK_FUNCTIONS;
 
 pub const PIN_DIMENSION_UNSET: u8 = 0x00;
 pub const PIN_DIMENSION_NONE: u8 =  0x01;
@@ -64,17 +65,6 @@ impl Reset {
             return;
         }
 
-        let is_safe_from_revealed_check_functions = [
-            is_safe_from_revealed_check_from_n, // Slot 0 doesn't matter
-            is_safe_from_revealed_check_from_n,
-            is_safe_from_revealed_check_from_ne,
-            is_safe_from_revealed_check_from_e,
-            is_safe_from_revealed_check_from_se,
-            is_safe_from_revealed_check_from_s,
-            is_safe_from_revealed_check_from_sw,
-            is_safe_from_revealed_check_from_w,
-            is_safe_from_revealed_check_from_nw,
-        ];
         let mut b_attacks: u64;
         let mut index: u8;
         let b_others: u64 = self.b_pawns | self.b_knights | self.b_kings;
@@ -121,7 +111,7 @@ impl Reset {
             return;
         }
         let b_board: u64 = self.b_all & !self.b_current_piece;
-        if !(is_safe_from_revealed_check_functions[index as usize])(king_square,b_board,b_opponents) {
+        if !(IS_SAFE_FROM_REVEALED_CHECK_FUNCTIONS[index as usize])(king_square,b_board,b_opponents) {
             self.pin_dimension = PIN_DIMENSIONS[index as usize];
             return;
         }

@@ -1,6 +1,5 @@
 use crate::reset::Reset;
 use crate::reset::pinned::PIN_MATCH_NS;
-use crate::reset::pinned::PIN_MATCH_EW;
 use crate::reset::pinned::PIN_MATCH_NESW;
 use crate::reset::pinned::PIN_MATCH_SENW;
 use crate::reset::r#const::B_NOT_N_EDGE;

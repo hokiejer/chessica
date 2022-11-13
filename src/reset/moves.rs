@@ -34,11 +34,10 @@ impl Reset {
     pub fn initialize_move_generation(&mut self) {
         if self.white_to_move() {
             self.b_current_piece = bitops::lowest_bit(self.b_white);
-            self.bi_current_piece = bitops::get_bit_number(self.b_current_piece);
         } else {
             self.b_current_piece = bitops::lowest_bit(self.b_black());
-            self.bi_current_piece = bitops::get_bit_number(self.b_current_piece);
         }
+        self.bi_current_piece = bitops::get_bit_number(self.b_current_piece);
         self.pin_dimension = PIN_DIMENSION_UNSET;
         self.move_id = 10;	//Prime the first move
     }
@@ -51,11 +50,10 @@ impl Reset {
     pub fn consider_next_moveable_piece(&mut self) {
         if self.white_to_move() {
             self.b_current_piece = bitops::next_lowest_bit(self.b_white, self.b_current_piece);
-            self.bi_current_piece = bitops::get_bit_number(self.b_current_piece);
         } else {
             self.b_current_piece = bitops::next_lowest_bit(self.b_black(), self.b_current_piece);
-            self.bi_current_piece = bitops::get_bit_number(self.b_current_piece);
         }
+        self.bi_current_piece = bitops::get_bit_number(self.b_current_piece);
         self.pin_dimension = PIN_DIMENSION_UNSET;
         self.move_id = 10;
     }

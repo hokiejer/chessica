@@ -1,7 +1,10 @@
 use crate::reset::Reset;
-use crate::reset::pinned::PinDimension;
 use crate::reset::r#const::WHITE;
 use crate::reset::r#const::BLACK;
+use crate::reset::pinned::PIN_MATCH_NS;
+use crate::reset::pinned::PIN_MATCH_EW;
+use crate::reset::pinned::PIN_MATCH_NESW;
+use crate::reset::pinned::PIN_MATCH_SENW;
 
 impl Reset {
 
@@ -24,140 +27,132 @@ impl Reset {
             self.b_white | !self.b_all
         };
 
-        if self.pin_dimension == PinDimension::None || self.pin_dimension == PinDimension::NESW {
-            // Northeast
-            let next_line = 20;
-            if self.move_id < next_line {
-                let mut b_target = self.b_current_piece << ((self.move_id % 10) * 7);
-                loop {
-                    // If we can't move any farther, give up on this line
-                    if b_target & B_NOT_NE_EDGE == 0 {
-                        self.move_id = next_line;
-                        break;
-                    }
-                    b_target <<= 7;
-                    self.move_id += 1;
-                    // If my color is on the target, give up on this line
-                    if b_available_moves & b_target == 0 {
-                        self.move_id = next_line;
-                        break;
-                    }
-                    if self.add_move_if_valid(child, b_target) {
-                        // If this is a capture, we're done with this line
-                        if b_target & self.b_all != 0 {
-                            self.move_id = next_line;
-                        }
-                        self.valid_child_post_processing(child);
-                        return true;
-                    } else {
-                        // If this is a capture, we're done with this line
-                        if b_target & self.b_all != 0 {
-                            self.move_id = next_line;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        if self.pin_dimension == PinDimension::None || self.pin_dimension == PinDimension::SENW {
-            // Southeast
-            let next_line = 30;
-            if self.move_id < next_line {
-                let mut b_target = self.b_current_piece >> ((self.move_id % 10) * 9);
-                loop {
-                    // If we can't move any farther, give up on this line
-                    if b_target & B_NOT_SE_EDGE == 0 {
-                        self.move_id = next_line;
-                        break;
-                    }
-                    b_target >>= 9;
-                    self.move_id += 1;
-                    // If my color is on the target, give up on this line
-                    if b_available_moves & b_target == 0 {
-                        self.move_id = next_line;
-                        break;
-                    }
-                    if self.add_move_if_valid(child, b_target) {
-                        // If this is a capture, we're done with this line
-                        if b_target & self.b_all != 0 {
-                            self.move_id = next_line;
-                        }
-                        self.valid_child_post_processing(child);
-                        return true;
-                    } else {
-                        // If this is a capture, we're done with this line
-                        if b_target & self.b_all != 0 {
-                            self.move_id = next_line;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        if self.pin_dimension == PinDimension::None || self.pin_dimension == PinDimension::NESW {
-            // Southwest
-            let next_line = 40;
-            if self.move_id < next_line {
-                let mut b_target = self.b_current_piece >> ((self.move_id % 10) * 7);
-                loop {
-                    // If we can't move any farther, give up on this line
-                    if b_target & B_NOT_SW_EDGE == 0 {
-                        self.move_id = next_line;
-                        break;
-                    }
-                    b_target >>= 7;
-                    self.move_id += 1;
-                    // If my color is on the target, give up on this line
-                    if b_available_moves & b_target == 0 {
-                        self.move_id = next_line;
-                        break;
-                    }
-                    if self.add_move_if_valid(child, b_target) {
-                        // If this is a capture, we're done with this line
-                        if b_target & self.b_all != 0 {
-                            self.move_id = next_line;
-                        }
-                        self.valid_child_post_processing(child);
-                        return true;
-                    } else {
-                        // If this is a capture, we're done with this line
-                        if b_target & self.b_all != 0 {
-                            self.move_id = next_line;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        if self.pin_dimension == PinDimension::None || self.pin_dimension == PinDimension::SENW {
-            // Northwest
-            let mut b_target = self.b_current_piece << ((self.move_id % 10) * 9);
+        // Northeast
+        let next_line = 20;
+        if self.move_id < next_line {
+            let mut b_target = self.b_current_piece << ((self.move_id % 10) * 7);
             loop {
                 // If we can't move any farther, give up on this line
-                if b_target & B_NOT_NW_EDGE == 0 {
+                if b_target & B_NOT_NE_EDGE == 0 {
+                    self.move_id = next_line;
                     break;
                 }
-                b_target <<= 9;
+                b_target <<= 7;
                 self.move_id += 1;
                 // If my color is on the target, give up on this line
                 if b_available_moves & b_target == 0 {
+                    self.move_id = next_line;
                     break;
                 }
-                if self.add_move_if_valid(child, b_target) {
+                if self.add_move_if_valid(child, b_target, PIN_MATCH_NESW) {
                     // If this is a capture, we're done with this line
                     if b_target & self.b_all != 0 {
-                        self.consider_next_moveable_piece();
+                        self.move_id = next_line;
                     }
                     self.valid_child_post_processing(child);
                     return true;
                 } else {
                     // If this is a capture, we're done with this line
                     if b_target & self.b_all != 0 {
+                        self.move_id = next_line;
                         break;
                     }
+                }
+            }
+        }
+
+        // Southeast
+        let next_line = 30;
+        if self.move_id < next_line {
+            let mut b_target = self.b_current_piece >> ((self.move_id % 10) * 9);
+            loop {
+                // If we can't move any farther, give up on this line
+                if b_target & B_NOT_SE_EDGE == 0 {
+                    self.move_id = next_line;
+                    break;
+                }
+                b_target >>= 9;
+                self.move_id += 1;
+                // If my color is on the target, give up on this line
+                if b_available_moves & b_target == 0 {
+                    self.move_id = next_line;
+                    break;
+                }
+                if self.add_move_if_valid(child, b_target, PIN_MATCH_SENW) {
+                    // If this is a capture, we're done with this line
+                    if b_target & self.b_all != 0 {
+                        self.move_id = next_line;
+                    }
+                    self.valid_child_post_processing(child);
+                    return true;
+                } else {
+                    // If this is a capture, we're done with this line
+                    if b_target & self.b_all != 0 {
+                        self.move_id = next_line;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Southwest
+        let next_line = 40;
+        if self.move_id < next_line {
+            let mut b_target = self.b_current_piece >> ((self.move_id % 10) * 7);
+            loop {
+                // If we can't move any farther, give up on this line
+                if b_target & B_NOT_SW_EDGE == 0 {
+                    self.move_id = next_line;
+                    break;
+                }
+                b_target >>= 7;
+                self.move_id += 1;
+                // If my color is on the target, give up on this line
+                if b_available_moves & b_target == 0 {
+                    self.move_id = next_line;
+                    break;
+                }
+                if self.add_move_if_valid(child, b_target, PIN_MATCH_NESW) {
+                    // If this is a capture, we're done with this line
+                    if b_target & self.b_all != 0 {
+                        self.move_id = next_line;
+                    }
+                    self.valid_child_post_processing(child);
+                    return true;
+                } else {
+                    // If this is a capture, we're done with this line
+                    if b_target & self.b_all != 0 {
+                        self.move_id = next_line;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Northwest
+        let mut b_target = self.b_current_piece << ((self.move_id % 10) * 9);
+        loop {
+            // If we can't move any farther, give up on this line
+            if b_target & B_NOT_NW_EDGE == 0 {
+                break;
+            }
+            b_target <<= 9;
+            self.move_id += 1;
+            // If my color is on the target, give up on this line
+            if b_available_moves & b_target == 0 {
+                break;
+            }
+            if self.add_move_if_valid(child, b_target, PIN_MATCH_SENW) {
+                // If this is a capture, we're done with this line
+                if b_target & self.b_all != 0 {
+                    self.consider_next_moveable_piece();
+                }
+                self.valid_child_post_processing(child);
+                return true;
+            } else {
+                // If this is a capture, we're done with this line
+                if b_target & self.b_all != 0 {
+                    break;
                 }
             }
         }
@@ -178,7 +173,6 @@ mod tests {
         let mut r = reset::new();
         let fen = String::from(fen);
         r.init_from_fen(fen);
-        r.set_current_piece_pin_dimension();
         r
     }
 

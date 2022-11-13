@@ -13,16 +13,30 @@ use crate::reset::safe_revealed::is_safe_from_revealed_check_from_sw;
 use crate::reset::safe_revealed::is_safe_from_revealed_check_from_w;
 use crate::reset::safe_revealed::is_safe_from_revealed_check_from_nw;
 
-#[derive(PartialEq,Eq,Hash,Debug,Copy,Clone)]
-pub enum PinDimension {
-    Unset,
-    None,
-    NS,
-    NESW,
-    EW,
-    SENW,
-}
+pub const PIN_DIMENSION_UNSET: u8 = 0x00;
+pub const PIN_DIMENSION_NONE: u8 =  0x01;
+pub const PIN_DIMENSION_NS: u8 =    0x02;
+pub const PIN_DIMENSION_EW: u8 =    0x04;
+pub const PIN_DIMENSION_NESW: u8 =  0x08;
+pub const PIN_DIMENSION_SENW: u8 =  0x10;
 
+pub const PIN_MATCH_NS: u8 =   0xfc;
+pub const PIN_MATCH_EW: u8 =   0xfa;
+pub const PIN_MATCH_NESW: u8 = 0xf6;
+pub const PIN_MATCH_SENW: u8 = 0xee;
+pub const PIN_MATCH_NONE: u8 = 0xfe;
+
+static PIN_DIMENSIONS: &'static [u8] = &[
+            PIN_DIMENSION_NONE,
+            PIN_DIMENSION_NS,
+            PIN_DIMENSION_NESW,
+            PIN_DIMENSION_EW,
+            PIN_DIMENSION_SENW,
+            PIN_DIMENSION_NS,
+            PIN_DIMENSION_NESW,
+            PIN_DIMENSION_EW,
+            PIN_DIMENSION_SENW,
+];
 impl Reset {
 
     /// Considering the move made in this Reset, return `false` if check was revealed and `true` if
@@ -46,114 +60,72 @@ impl Reset {
 
         let search_type = &REVEALED_CHECK_ROUTES[king_square as usize][from_square as usize];
         if matches!(search_type,RevealedCheckSearchType::DoNotSearch) {
-            self.pin_dimension = PinDimension::None;
+            self.pin_dimension = PIN_DIMENSION_NONE;
             return;
         }
 
+        let is_safe_from_revealed_check_functions = [
+            is_safe_from_revealed_check_from_n, // Slot 0 doesn't matter
+            is_safe_from_revealed_check_from_n,
+            is_safe_from_revealed_check_from_ne,
+            is_safe_from_revealed_check_from_e,
+            is_safe_from_revealed_check_from_se,
+            is_safe_from_revealed_check_from_s,
+            is_safe_from_revealed_check_from_sw,
+            is_safe_from_revealed_check_from_w,
+            is_safe_from_revealed_check_from_nw,
+        ];
+        let mut b_attacks: u64;
+        let mut index: u8;
         let b_others: u64 = self.b_pawns | self.b_knights | self.b_kings;
-        let b_board: u64 = self.b_all & !self.b_current_piece;
         match search_type {
+            RevealedCheckSearchType::DoNotSearch => {
+                return; //Will not get here
+            },
             RevealedCheckSearchType::FromN => {
-                let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][1];
                 b_opponents &= !(b_others | self.b_bishops);
-                if b_attacks & b_opponents == 0 {
-                    self.pin_dimension = PinDimension::None;
-                    return;
-                }
-                if !is_safe_from_revealed_check_from_n(king_square,b_board,b_opponents) {
-                    self.pin_dimension = PinDimension::NS;
-                    return;
-                }
+                index = 1;
             },
             RevealedCheckSearchType::FromNE => {
-                let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][2];
                 b_opponents &= !(b_others | self.b_rooks);
-                if b_attacks & b_opponents == 0 {
-                    self.pin_dimension = PinDimension::None;
-                    return;
-                }
-                if !is_safe_from_revealed_check_from_ne(king_square,b_board,b_opponents) {
-                    self.pin_dimension = PinDimension::NESW;
-                    return;
-                }
+                index = 2;
             },
             RevealedCheckSearchType::FromE => {
-                let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][3];
                 b_opponents &= !(b_others | self.b_bishops);
-                if b_attacks & b_opponents == 0 {
-                    self.pin_dimension = PinDimension::None;
-                    return;
-                }
-                if !is_safe_from_revealed_check_from_e(king_square,b_board,b_opponents) {
-                    self.pin_dimension = PinDimension::EW;
-                    return;
-                }
+                index = 3;
             },
             RevealedCheckSearchType::FromSE => {
-                let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][4];
                 b_opponents &= !(b_others | self.b_rooks);
-                if b_attacks & b_opponents == 0 {
-                    self.pin_dimension = PinDimension::None;
-                    return;
-                }
-                if !is_safe_from_revealed_check_from_se(king_square,b_board,b_opponents) {
-                    self.pin_dimension = PinDimension::SENW;
-                    return;
-                }
+                index = 4;
             },
             RevealedCheckSearchType::FromS => {
-                let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][5];
                 b_opponents &= !(b_others | self.b_bishops);
-                if b_attacks & b_opponents == 0 {
-                    self.pin_dimension = PinDimension::None;
-                    return;
-                }
-                if !is_safe_from_revealed_check_from_s(king_square,b_board,b_opponents) {
-                    self.pin_dimension = PinDimension::NS;
-                    return;
-                }
+                index = 5;
             },
             RevealedCheckSearchType::FromSW => {
-                let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][6];
                 b_opponents &= !(b_others | self.b_rooks);
-                if b_attacks & b_opponents == 0 {
-                    self.pin_dimension = PinDimension::None;
-                    return;
-                }
-                if !is_safe_from_revealed_check_from_sw(king_square,b_board,b_opponents) {
-                    self.pin_dimension = PinDimension::NESW;
-                    return;
-                }
+                index = 6;
             },
             RevealedCheckSearchType::FromW => {
-                let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][7];
                 b_opponents &= !(b_others | self.b_bishops);
-                if b_attacks & b_opponents == 0 {
-                    self.pin_dimension = PinDimension::None;
-                    return;
-                }
-                if !is_safe_from_revealed_check_from_w(king_square,b_board,b_opponents) {
-                    self.pin_dimension = PinDimension::EW;
-                    return;
-                }
+                index = 7;
             },
             RevealedCheckSearchType::FromNW => {
-                let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][8];
                 b_opponents &= !(b_others | self.b_rooks);
-                if b_attacks & b_opponents == 0 {
-                    self.pin_dimension = PinDimension::None;
-                    return;
-                }
-                if !is_safe_from_revealed_check_from_nw(king_square,b_board,b_opponents) {
-                    self.pin_dimension = PinDimension::SENW;
-                    return;
-                }
+                index = 8;
             },
-            RevealedCheckSearchType::DoNotSearch => {
-                // Will not be reached
-            }
         }
-        self.pin_dimension = PinDimension::None;
+        b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][index as usize];
+        if b_attacks & b_opponents == 0 {
+            self.pin_dimension = PIN_DIMENSION_NONE;
+            return;
+        }
+        let b_board: u64 = self.b_all & !self.b_current_piece;
+        if !(is_safe_from_revealed_check_functions[index as usize])(king_square,b_board,b_opponents) {
+            self.pin_dimension = PIN_DIMENSIONS[index as usize];
+            return;
+        }
+        self.pin_dimension = PIN_DIMENSION_NONE;
     }
 }
 
@@ -164,7 +136,13 @@ mod tests {
     use crate::utils;
     use crate::reset::safe_revealed::revealed_check_router;
     use crate::reset::safe_revealed::RevealedCheckSearchType;
-    use crate::reset::pinned::PinDimension;
+
+    use crate::reset::pinned::PIN_DIMENSION_NONE;
+    use crate::reset::pinned::PIN_DIMENSION_NS;
+    use crate::reset::pinned::PIN_DIMENSION_EW;
+    use crate::reset::pinned::PIN_DIMENSION_NESW;
+    use crate::reset::pinned::PIN_DIMENSION_SENW;
+
     use crate::reset::r#const::BLACK;
     use crate::reset::r#const::WHITE;
 
@@ -181,13 +159,13 @@ mod tests {
         r.b_current_piece = utils::convert_square_to_bitstring("e3".to_string());
         r.bi_current_piece = utils::convert_square_to_number("e3".to_string());
         r.set_current_piece_pin_dimension();
-        assert_eq!(r.pin_dimension,PinDimension::NS);
+        assert_eq!(r.pin_dimension,PIN_DIMENSION_NS);
 
         let mut r = prep_board("8/k3r3/4n3/4B3/4K3/8/8/8 w - - 0 1");
         r.b_current_piece = utils::convert_square_to_bitstring("e5".to_string());
         r.bi_current_piece = utils::convert_square_to_number("e5".to_string());
         r.set_current_piece_pin_dimension();
-        assert_eq!(r.pin_dimension,PinDimension::None);
+        assert_eq!(r.pin_dimension,PIN_DIMENSION_NONE);
     }
 
     #[test]
@@ -196,13 +174,13 @@ mod tests {
         r.b_current_piece = utils::convert_square_to_bitstring("b4".to_string());
         r.bi_current_piece = utils::convert_square_to_number("b4".to_string());
         r.set_current_piece_pin_dimension();
-        assert_eq!(r.pin_dimension,PinDimension::NESW);
+        assert_eq!(r.pin_dimension,PIN_DIMENSION_NESW);
 
         let mut r = prep_board("6KQ/6Q1/5B2/4Pr2/3p4/2k5/8/5q2 b - - 0 1");
         r.b_current_piece = utils::convert_square_to_bitstring("d4".to_string());
         r.bi_current_piece = utils::convert_square_to_number("d4".to_string());
         r.set_current_piece_pin_dimension();
-        assert_eq!(r.pin_dimension,PinDimension::None);
+        assert_eq!(r.pin_dimension,PIN_DIMENSION_NONE);
     }
 
     #[test]
@@ -211,13 +189,13 @@ mod tests {
         r.b_current_piece = utils::convert_square_to_bitstring("b5".to_string());
         r.bi_current_piece = utils::convert_square_to_number("b5".to_string());
         r.set_current_piece_pin_dimension();
-        assert_eq!(r.pin_dimension,PinDimension::EW);
+        assert_eq!(r.pin_dimension,PIN_DIMENSION_EW);
 
         let mut r = prep_board("8/8/8/KRr4k/8/8/8/8 b - - 0 1");
         r.b_current_piece = utils::convert_square_to_bitstring("c5".to_string());
         r.bi_current_piece = utils::convert_square_to_number("c5".to_string());
         r.set_current_piece_pin_dimension();
-        assert_eq!(r.pin_dimension,PinDimension::EW);
+        assert_eq!(r.pin_dimension,PIN_DIMENSION_EW);
     }
 
     #[test]
@@ -226,13 +204,13 @@ mod tests {
         r.b_current_piece = utils::convert_square_to_bitstring("f4".to_string());
         r.bi_current_piece = utils::convert_square_to_number("f4".to_string());
         r.set_current_piece_pin_dimension();
-        assert_eq!(r.pin_dimension,PinDimension::SENW);
+        assert_eq!(r.pin_dimension,PIN_DIMENSION_SENW);
 
         let mut r = prep_board("1k6/2q5/5p2/4r3/5Q2/6K1/8/8 b - - 0 1");
         r.b_current_piece = utils::convert_square_to_bitstring("c7".to_string());
         r.bi_current_piece = utils::convert_square_to_number("c7".to_string());
         r.set_current_piece_pin_dimension();
-        assert_eq!(r.pin_dimension,PinDimension::None);
+        assert_eq!(r.pin_dimension,PIN_DIMENSION_NONE);
     }
 
     #[test]
@@ -241,19 +219,19 @@ mod tests {
         r.b_current_piece = utils::convert_square_to_bitstring("e5".to_string());
         r.bi_current_piece = utils::convert_square_to_number("e5".to_string());
         r.set_current_piece_pin_dimension();
-        assert_eq!(r.pin_dimension,PinDimension::NS);
+        assert_eq!(r.pin_dimension,PIN_DIMENSION_NS);
 
         let mut r = prep_board("1k6/1r6/8/8/8/2pK4/8/1Q6 b - - 0 1");
         r.b_current_piece = utils::convert_square_to_bitstring("b7".to_string());
         r.bi_current_piece = utils::convert_square_to_number("b7".to_string());
         r.set_current_piece_pin_dimension();
-        assert_eq!(r.pin_dimension,PinDimension::NS);
+        assert_eq!(r.pin_dimension,PIN_DIMENSION_NS);
 
         let mut r = prep_board("1k6/8/8/8/8/2pK4/1r6/1BQ5 b - - 0 1");
         r.b_current_piece = utils::convert_square_to_bitstring("b2".to_string());
         r.bi_current_piece = utils::convert_square_to_number("b2".to_string());
         r.set_current_piece_pin_dimension();
-        assert_eq!(r.pin_dimension,PinDimension::None);
+        assert_eq!(r.pin_dimension,PIN_DIMENSION_NONE);
     }
 
     #[test]
@@ -262,13 +240,13 @@ mod tests {
         r.b_current_piece = utils::convert_square_to_bitstring("d7".to_string());
         r.bi_current_piece = utils::convert_square_to_number("d7".to_string());
         r.set_current_piece_pin_dimension();
-        assert_eq!(r.pin_dimension,PinDimension::NESW);
+        assert_eq!(r.pin_dimension,PIN_DIMENSION_NESW);
 
         let mut r = prep_board("8/6k1/5p2/4r3/2KB4/8/8/Q7 b - - 0 1");
         r.b_current_piece = utils::convert_square_to_bitstring("f6".to_string());
         r.bi_current_piece = utils::convert_square_to_number("f6".to_string());
         r.set_current_piece_pin_dimension();
-        assert_eq!(r.pin_dimension,PinDimension::None);
+        assert_eq!(r.pin_dimension,PIN_DIMENSION_NONE);
     }
 
     #[test]
@@ -277,19 +255,19 @@ mod tests {
         r.b_current_piece = utils::convert_square_to_bitstring("g4".to_string());
         r.bi_current_piece = utils::convert_square_to_number("g4".to_string());
         r.set_current_piece_pin_dimension();
-        assert_eq!(r.pin_dimension,PinDimension::EW);
+        assert_eq!(r.pin_dimension,PIN_DIMENSION_EW);
 
         let mut r = prep_board("8/6k1/5p2/r1RK4/8/8/8/7Q w - - 0 1");
         r.b_current_piece = utils::convert_square_to_bitstring("c5".to_string());
         r.bi_current_piece = utils::convert_square_to_number("c5".to_string());
         r.set_current_piece_pin_dimension();
-        assert_eq!(r.pin_dimension,PinDimension::EW);
+        assert_eq!(r.pin_dimension,PIN_DIMENSION_EW);
 
         let mut r = prep_board("8/6k1/5p2/b1RK4/8/8/8/7Q w - - 0 1");
         r.b_current_piece = utils::convert_square_to_bitstring("c5".to_string());
         r.bi_current_piece = utils::convert_square_to_number("c5".to_string());
         r.set_current_piece_pin_dimension();
-        assert_eq!(r.pin_dimension,PinDimension::None);
+        assert_eq!(r.pin_dimension,PIN_DIMENSION_NONE);
     }
 
     #[test]
@@ -298,25 +276,25 @@ mod tests {
         r.b_current_piece = utils::convert_square_to_bitstring("d2".to_string());
         r.bi_current_piece = utils::convert_square_to_number("d2".to_string());
         r.set_current_piece_pin_dimension();
-        assert_eq!(r.pin_dimension,PinDimension::SENW);
+        assert_eq!(r.pin_dimension,PIN_DIMENSION_SENW);
 
         let mut r = prep_board("1KB5/P7/8/7p/6p1/7k/8/8 b - - 0 1");
         r.b_current_piece = utils::convert_square_to_bitstring("g4".to_string());
         r.bi_current_piece = utils::convert_square_to_number("g4".to_string());
         r.set_current_piece_pin_dimension();
-        assert_eq!(r.pin_dimension,PinDimension::SENW);
+        assert_eq!(r.pin_dimension,PIN_DIMENSION_SENW);
 
         let mut r = prep_board("r3kb1r/1pp1pppp/n1p2n2/pB6/1q4b1/2P2P1P/PP1P4/RNBQK1NR w KQkq - 0 1");
         r.b_current_piece = utils::convert_square_to_bitstring("d2".to_string());
         r.bi_current_piece = utils::convert_square_to_number("d2".to_string());
         r.set_current_piece_pin_dimension();
-        assert_eq!(r.pin_dimension,PinDimension::None);
+        assert_eq!(r.pin_dimension,PIN_DIMENSION_NONE);
 
         let mut r = prep_board("QK6/1b5p/8/8/8/8/8/7k b - - 0 1");
         r.b_current_piece = utils::convert_square_to_bitstring("b7".to_string());
         r.bi_current_piece = utils::convert_square_to_number("b7".to_string());
         r.set_current_piece_pin_dimension();
-        assert_eq!(r.pin_dimension,PinDimension::SENW);
+        assert_eq!(r.pin_dimension,PIN_DIMENSION_SENW);
     }
 
 }

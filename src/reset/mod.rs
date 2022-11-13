@@ -18,7 +18,7 @@ pub mod safe_direct;
 pub mod pinned;
 pub mod profiling;
 
-use crate::reset::pinned::PinDimension;
+use crate::reset::pinned::PIN_DIMENSION_UNSET;
 
 /// The complete status of a chess game at a given time
 ///
@@ -100,7 +100,7 @@ use crate::reset::pinned::PinDimension;
 /// | times_seen        | u8   | whatev |  139   | Number of times this reset has been seen in the current game |
 /// | must_check_safety | u8   | whatev |  140   | 1 if we must check king safety after this move, 0 otherwise.  I believe this is used for odd moves, like EP captures, castling, and promotions. |
 /// | bi_current_piece  | u8   | whatev |  141   | Bit index for b_current_piece |
-/// | pin_dimension     | enum | whatev |  142   | Dimension in which the piece under evaluation is pinned to the
+/// | pin_dimension     | u8   | whatev |  142   | Dimension in which the piece under evaluation is pinned to the
 /// king |
 /// | reserved_14       | u8   | whatev |  143   | Reserved |
 pub struct Reset {
@@ -155,7 +155,7 @@ pub struct Reset {
     times_seen: u8,
     must_check_safety: u8,
     bi_current_piece: u8,
-    pin_dimension: PinDimension,
+    pin_dimension: u8,
     reserved_14: u8,
 }
 
@@ -217,7 +217,7 @@ pub fn new() -> Reset {
         times_seen: 0,
         must_check_safety: 0,
         bi_current_piece: 0,
-        pin_dimension: PinDimension::Unset,
+        pin_dimension: PIN_DIMENSION_UNSET,
         reserved_14: 0,
     }
 }

@@ -1,5 +1,5 @@
 use crate::reset::Reset;
-use crate::reset::pinned::PinDimension;
+use crate::reset::pinned::PIN_DIMENSION_UNSET;
 
 impl Reset {
     /// Initialize a child of this Reset
@@ -64,7 +64,7 @@ impl Reset {
         child.times_seen = 0;
         child.must_check_safety = 0;
         child.bi_current_piece = 0;
-        child.pin_dimension = PinDimension::Unset;
+        child.pin_dimension = PIN_DIMENSION_UNSET;
         child.reserved_14 = 0;
     }
 }

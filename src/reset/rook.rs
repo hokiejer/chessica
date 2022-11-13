@@ -1,10 +1,6 @@
 use crate::reset::Reset;
 use crate::reset::pinned::PIN_MATCH_NS;
 use crate::reset::pinned::PIN_MATCH_EW;
-use crate::reset::pinned::PIN_MATCH_NESW;
-use crate::reset::pinned::PIN_MATCH_SENW;
-use crate::reset::r#const::WHITE;
-use crate::reset::r#const::BLACK;
 
 impl Reset {
 

@@ -11,8 +11,6 @@ use crate::reset::r#const::B_NOT_SW_EDGE;
 use crate::reset::r#const::B_NOT_SE_EDGE;
 use crate::reset::r#const::B_RANK_2;
 use crate::reset::r#const::B_RANK_7;
-use crate::reset::r#const::WHITE;
-use crate::reset::r#const::BLACK;
 
 impl Reset {
 

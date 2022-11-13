@@ -1,6 +1,5 @@
 use std::process;
 use crate::reset::Reset;
-use crate::reset::r#const::WHITE;
 use crate::reset::safe_revealed::RevealedCheckSearchType;
 use crate::reset::safe_revealed::REVEALED_CHECK_BITMAPS;
 use crate::reset::safe_revealed::REVEALED_CHECK_ROUTES;
@@ -65,7 +64,7 @@ impl Reset {
             return;
         }
 
-        let mut b_attacks: u64;
+        let b_attacks: u64;
         let mut index: u8;
         let b_others: u64 = self.b_pawns | self.b_knights | self.b_kings;
         match search_type {
@@ -132,9 +131,6 @@ mod tests {
     use crate::reset::pinned::PIN_DIMENSION_EW;
     use crate::reset::pinned::PIN_DIMENSION_NESW;
     use crate::reset::pinned::PIN_DIMENSION_SENW;
-
-    use crate::reset::r#const::BLACK;
-    use crate::reset::r#const::WHITE;
 
     fn prep_board(fen: &str) -> Reset {
         let mut r = reset::new();

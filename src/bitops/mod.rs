@@ -19,26 +19,8 @@ pub fn next_lowest_bit(bitstring: u64, singlebit: u64) -> u64 {
 
 // I think O(log(log(n)) is the best I can do here
 pub fn get_bit_number(singlebit: u64) -> u8 {
-    let mut result: u8 = 1;
-    if singlebit & 0xffffffff00000000 > 0 {
-        result += 32;
-    }
-    if singlebit & 0xffff0000ffff0000 > 0 {
-        result += 16;
-    }
-    if singlebit & 0xff00ff00ff00ff00 > 0 {
-        result += 8;
-    }
-    if singlebit & 0xf0f0f0f0f0f0f0f0 > 0 {
-        result += 4;
-    }
-    if singlebit & 0xcccccccccccccccc > 0 {
-        result += 2;
-    }
-    if singlebit & 0xaaaaaaaaaaaaaaaa > 0 {
-        result += 1;
-    }
-    result
+    let count_u32: u32 = (singlebit - 1).count_ones() + 1;
+    count_u32.try_into().unwrap()
 }
 
 #[cfg(test)]

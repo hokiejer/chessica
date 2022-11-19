@@ -44,7 +44,13 @@ sys	0m0.000s
 
 ## Processor
 
-8th Generation Intel Core i7-8 700 6-Core Processor (12MB Cache, up to 4.6 GHz)
+My processor = 8th Generation Intel Core i7-8 700 6-Core Processor (12MB Cache, up to 4.6 GHz)
+
+To take advantage of native CPU optimizations, add the following to `~/.profile`:
+```
+# Use native CPU optimizations in Rust compilation
+export RUSTFLAGS='-C target-cpu native'
+```
 
 ## Integration Tests
 

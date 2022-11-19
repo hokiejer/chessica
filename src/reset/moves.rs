@@ -1,5 +1,6 @@
 use std::process;
 use crate::reset::Reset;
+use crate::reset::PieceType;
 use crate::bitops;
 use crate::reset::pinned::PIN_DIMENSION_UNSET;
 
@@ -19,6 +20,23 @@ use crate::bitops::r#const::U8_NOT_BIT1_OR_BIT2;
 use crate::bitops::r#const::U8_NOT_BIT3_OR_BIT4;
 
 impl Reset {
+
+    /// Set the PieceType of current_piece
+    pub fn set_current_piece_type(&mut self) {
+        if self.b_current_piece & self.b_pawns != 0 { // Pawn
+            self.current_piece_type = PieceType::Pawn;
+        } else if self.b_current_piece & self.b_knights != 0 { // Knight
+            self.current_piece_type = PieceType::Knight;
+        } else if self.b_current_piece & self.b_bishops != 0 { // Bishop
+            self.current_piece_type = PieceType::Bishop;
+        } else if self.b_current_piece & self.b_rooks != 0 { // Rook
+            self.current_piece_type = PieceType::Rook;
+        } else if self.b_current_piece & self.b_kings != 0 { // King
+            self.current_piece_type = PieceType::King;
+        } else { // Queen
+            self.current_piece_type = PieceType::Queen;
+        }
+    }
 
     /// Prepare a Reset to generate moves.  This is called from both `init_from_fen` and after a
     /// child is created by `generate_next_move`.  That way any new Reset is ready to generate

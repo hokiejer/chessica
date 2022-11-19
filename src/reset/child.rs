@@ -1,4 +1,5 @@
 use crate::reset::Reset;
+use crate::reset::PieceType;
 use crate::reset::pinned::PIN_DIMENSION_UNSET;
 
 impl Reset {
@@ -65,7 +66,7 @@ impl Reset {
         child.must_check_safety = 0;
         child.bi_current_piece = 0;
         child.pin_dimension = PIN_DIMENSION_UNSET;
-        child.reserved_14 = 0;
+        child.current_piece_type = PieceType::Unknown;
     }
 }
 

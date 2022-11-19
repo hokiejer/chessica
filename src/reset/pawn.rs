@@ -481,7 +481,6 @@ mod tests {
         let retval = r.generate_next_pawn_move(&mut child);
         assert!(!retval);
         assert_eq!(r.b_current_piece,0);
-        assert_eq!(r.move_id,10);
 
     }
 
@@ -1112,7 +1111,6 @@ mod tests {
         let retval = r.generate_next_pawn_move(&mut child);
         assert!(!retval);
         assert_eq!(r.b_current_piece,0);
-        assert_eq!(r.move_id,10);
 
     }
 
@@ -1383,7 +1381,6 @@ mod tests {
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,0);
-        assert_eq!(r.move_id,10);
         assert_eq!(child.capture,1);
         assert_eq!(child.material,1);
     }
@@ -1409,7 +1406,6 @@ mod tests {
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,0);
-        assert_eq!(r.move_id,10);
         assert_eq!(child.capture,1);
         assert_eq!(child.material,1);
     }
@@ -1426,7 +1422,6 @@ mod tests {
         assert!(retval);
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,0);
-        assert_eq!(r.move_id,10);
         assert_eq!(child.capture,1);
     }
 

@@ -3,13 +3,6 @@ use crate::utils::convert_bitstring_to_square;
 
 /// Prints a Reset
 /// 
-/// # Examples
-///
-/// ```
-/// # use chessica::reset::Reset;
-/// let mut r = chessica::reset::new();
-/// r.print();
-/// ```
 impl Reset {
     pub fn print(&mut self) -> String {
         let piece_text = if self.b_to & self.b_pawns != 0 {
@@ -206,6 +199,8 @@ mod tests {
     fn test_print_board_small() {
         let mut r = reset::new();
         let fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        r.b_from = 1;
+        r.b_to = 2;
         r.init_from_fen(fen);
         r.print_board_small();
         assert!(true);

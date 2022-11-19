@@ -311,7 +311,6 @@ mod tests {
         let retval = r.generate_next_king_move(&mut child);
         assert!(!retval);
         assert_eq!(r.b_current_piece,0);
-        assert_eq!(r.move_id,10);
     }
 
     #[test]
@@ -395,7 +394,6 @@ mod tests {
         let retval = r.generate_next_king_move(&mut child);
         assert!(!retval);
         assert_eq!(r.b_current_piece,0);
-        assert_eq!(r.move_id,10);
     }
 
     #[test]
@@ -513,7 +511,6 @@ mod tests {
         let retval = r.generate_next_king_move(&mut child);
         assert!(!retval);
         assert_eq!(r.b_current_piece,0);
-        assert_eq!(r.move_id,10);
     }
 
     #[test]

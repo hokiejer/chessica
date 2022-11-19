@@ -1,4 +1,7 @@
 use crate::reset::Reset;
+use crate::reset::pinned::PIN_MATCH_NS;
+use crate::reset::pinned::PIN_MATCH_NESW;
+use crate::reset::pinned::PIN_MATCH_SENW;
 use crate::reset::r#const::B_NOT_N_EDGE;
 use crate::reset::r#const::B_NOT_S_EDGE;
 use crate::reset::r#const::B_NOT_NW_EDGE;
@@ -72,8 +75,8 @@ impl Reset {
         if self.move_id < 20 {
             b_destination = self.b_current_piece << 8;
             if self.b_current_piece & B_NOT_N_EDGE != 0 &&
-                (b_destination & self.b_all == 0) && 
-                self.add_move_if_valid(child, b_destination) 
+                (b_destination & self.b_all == 0) &&
+                self.add_move_if_valid(child, b_destination, PIN_MATCH_NS) 
             {
                 if b_destination & B_NOT_N_EDGE != 0 {
                     self.move_id = 20;
@@ -94,20 +97,20 @@ impl Reset {
             if (self.b_current_piece & B_RANK_2 != 0) &&
                 ((b_forward_one & self.b_all) == 0) &&
                 ((b_destination & self.b_all) == 0) &&
-                self.add_move_if_valid(child, b_destination)
+                self.add_move_if_valid(child, b_destination, PIN_MATCH_NS)
             {
                 child.b_en_passant = b_forward_one;
                 self.valid_child_post_processing(child);
                 return true;
             }
-        }
+        } 
 
         // Capture Left (Northwest)
         if self.move_id < 40 {
             b_destination = self.b_current_piece << 9;
             if (self.b_current_piece & B_NOT_NW_EDGE != 0) && 
-                (b_destination & self.b_black() != 0) && 
-                self.add_move_if_valid(child, b_destination) 
+                (b_destination & self.b_black() != 0) &&
+                self.add_move_if_valid(child, b_destination, PIN_MATCH_SENW) 
             {
                 if b_destination & B_NOT_N_EDGE != 0 {
                     self.move_id = 40;
@@ -123,8 +126,8 @@ impl Reset {
         if self.move_id < 50 {
             b_destination = self.b_current_piece << 7;
             if (self.b_current_piece & B_NOT_NE_EDGE != 0) && 
-                (b_destination & self.b_black() != 0) && 
-                self.add_move_if_valid(child, b_destination) 
+                (b_destination & self.b_black() != 0) &&
+                self.add_move_if_valid(child, b_destination, PIN_MATCH_NESW) 
             {
                 if b_destination & B_NOT_N_EDGE != 0 {
                     self.move_id = 50;
@@ -186,8 +189,8 @@ impl Reset {
         if self.move_id < 20 {
             b_destination = self.b_current_piece >> 8;
             if self.b_current_piece & B_NOT_S_EDGE != 0 &&
-                (b_destination & self.b_all == 0) && 
-                self.add_move_if_valid(child, b_destination) 
+                (b_destination & self.b_all == 0) &&
+                self.add_move_if_valid(child, b_destination,PIN_MATCH_NS) 
             {
                 if b_destination & B_NOT_S_EDGE != 0 {
                     self.move_id = 20;
@@ -208,7 +211,7 @@ impl Reset {
             if (self.b_current_piece & B_RANK_7 != 0) &&
                 ((b_forward_one & self.b_all) == 0) &&
                 ((b_destination & self.b_all) == 0) &&
-                self.add_move_if_valid(child, b_destination)
+                self.add_move_if_valid(child, b_destination, PIN_MATCH_NS)
             {
                 child.b_en_passant = b_forward_one;
                 self.valid_child_post_processing(child);
@@ -220,8 +223,8 @@ impl Reset {
         if self.move_id < 40 {
             b_destination = self.b_current_piece >> 9;
             if (self.b_current_piece & B_NOT_SE_EDGE != 0) && 
-                (b_destination & self.b_white != 0) && 
-                self.add_move_if_valid(child, b_destination) 
+                (b_destination & self.b_white != 0) &&
+                self.add_move_if_valid(child, b_destination, PIN_MATCH_SENW) 
             {
                 if b_destination & B_NOT_S_EDGE != 0 {
                     self.move_id = 40;
@@ -237,8 +240,8 @@ impl Reset {
         if self.move_id < 50 {
             b_destination = self.b_current_piece >> 7;
             if (self.b_current_piece & B_NOT_SW_EDGE != 0) && 
-                (b_destination & self.b_white != 0) && 
-                self.add_move_if_valid(child, b_destination) 
+                (b_destination & self.b_white != 0) &&
+                self.add_move_if_valid(child, b_destination, PIN_MATCH_NESW) 
             {
                 if b_destination & B_NOT_S_EDGE != 0 {
                     self.move_id = 50;

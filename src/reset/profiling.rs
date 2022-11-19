@@ -31,7 +31,14 @@ pub fn count_possible_games(fen: &str, depth: u8) -> u64 {
 }
 
 pub fn burn() {
+    // Updated get_bit_number, native architecture setting 1: 6m23.128s
+    // Updated get_bit_number, native architecture setting 2: 6m23.111s
+    // Updated get_bit_number, native architecture setting 3: 6m24.554s
 
+    //After omitting pinned moves 1: 7m55.888s
+    //After omitting pinned moves 2: 7m56.040s
+    //After omitting pinned moves 3: 7m54.592s
+    
     //After valid_move work shift and improved ordering of Reset fields 1: 7m37.862s
     //After valid_move work shift and improved ordering of Reset fields 2: 7m41.491s
     //After valid_move work shift and improved ordering of Reset fields 3: 7m46.781s

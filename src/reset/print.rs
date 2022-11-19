@@ -1,7 +1,5 @@
 use crate::reset::Reset;
 use crate::utils::convert_bitstring_to_square;
-use crate::reset::r#const::BLACK;
-use crate::reset::r#const::WHITE;
 
 /// Prints a Reset
 /// 

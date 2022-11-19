@@ -1,4 +1,6 @@
 use crate::reset::Reset;
+use crate::reset::pinned::PIN_MATCH_NS;
+use crate::reset::pinned::PIN_MATCH_EW;
 
 impl Reset {
 
@@ -38,7 +40,7 @@ impl Reset {
                     self.move_id = next_line;
                     break;
                 }
-                if self.add_move_if_valid(child, b_target) {
+                if self.add_move_if_valid(child, b_target, PIN_MATCH_NS) {
                     // If this is a capture, we're done with this line
                     if b_target & self.b_all != 0 {
                         self.move_id = next_line;
@@ -72,7 +74,7 @@ impl Reset {
                     self.move_id = next_line;
                     break;
                 }
-                if self.add_move_if_valid(child, b_target) {
+                if self.add_move_if_valid(child, b_target, PIN_MATCH_NS) {
                     // If this is a capture, we're done with this line
                     if b_target & self.b_all != 0 {
                         self.move_id = next_line;
@@ -106,7 +108,7 @@ impl Reset {
                     self.move_id = next_line;
                     break;
                 }
-                if self.add_move_if_valid(child, b_target) {
+                if self.add_move_if_valid(child, b_target, PIN_MATCH_EW) {
                     // If this is a capture, we're done with this line
                     if b_target & self.b_all != 0 {
                         self.move_id = next_line;
@@ -136,7 +138,7 @@ impl Reset {
             if b_available_moves & b_target == 0 {
                 break;
             }
-            if self.add_move_if_valid(child, b_target) {
+            if self.add_move_if_valid(child, b_target, PIN_MATCH_EW) {
                 // If this is a capture, we're done with this line
                 if b_target & self.b_all != 0 {
                     self.consider_next_moveable_piece();

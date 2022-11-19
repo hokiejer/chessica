@@ -64,8 +64,8 @@ impl Reset {
         clone.hash_count = self.hash_count;
         clone.times_seen = self.times_seen;
         clone.must_check_safety = self.must_check_safety;
-        clone.reserved_12 = self.reserved_12;
-        clone.reserved_13 = self.reserved_13;
+        clone.bi_current_piece = self.bi_current_piece;
+        clone.pin_dimension = self.pin_dimension;
         clone.reserved_14 = self.reserved_14;
     }
 }
@@ -112,6 +112,8 @@ mod tests {
         r.promotion = 1;
         r.king_castled = 1;
         r.game_over = 1;
+        r.must_check_safety = 1;
+        r.bi_current_piece = 132;
         r.clone_to(&mut child);
         assert_eq!(child.b_all,123);
         assert_eq!(child.b_white,234);
@@ -136,6 +138,8 @@ mod tests {
         assert_eq!(child.promotion,1);
         assert_eq!(child.king_castled,1);
         assert_eq!(child.game_over,1);
+        assert_eq!(child.must_check_safety,1);
+        assert_eq!(child.bi_current_piece,132);
     }
 
     #[test]

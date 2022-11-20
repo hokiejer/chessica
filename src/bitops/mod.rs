@@ -18,14 +18,10 @@ pub fn next_lowest_bit(bitstring: u64, singlebit: u64) -> u64 {
 }
 
 // This will convert into a single popcnt instruction!!
-// This will blow up if singlebit == 0
+// This will return 65 (gibberish) if passed 0
 pub fn get_bit_number(singlebit: u64) -> u8 {
-    if singlebit == 0 {
-        0
-    } else {
-        let count_u32: u32 = (singlebit - 1).count_ones() + 1;
-        count_u32.try_into().unwrap()
-    }
+    let count_u32: u32 = singlebit.trailing_zeros() + 1;
+    count_u32.try_into().unwrap()
 }
 
 #[cfg(test)]

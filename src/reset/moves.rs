@@ -53,6 +53,7 @@ impl Reset {
         } else {
             self.b_current_piece = bitops::next_lowest_bit(self.b_black(), self.b_current_piece);
         }
+        // We don't care about these fields if current_piece is zero
         self.bi_current_piece = bitops::get_bit_number(self.b_current_piece);
         self.pin_dimension = PIN_DIMENSION_UNSET;
         self.move_id = 10;

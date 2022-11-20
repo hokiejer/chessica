@@ -31,6 +31,10 @@ pub fn count_possible_games(fen: &str, depth: u8) -> u64 {
 }
 
 pub fn burn() {
+    // Switch get_bit_number to a lowest_bit function 1: 6m16.882s
+    // Switch get_bit_number to a lowest_bit function 1: 6m17.003s
+    // Switch get_bit_number to a lowest_bit function 1: 6m24.105s
+
     // Updated get_bit_number, native architecture setting 1: 6m23.128s
     // Updated get_bit_number, native architecture setting 2: 6m23.111s
     // Updated get_bit_number, native architecture setting 3: 6m24.554s

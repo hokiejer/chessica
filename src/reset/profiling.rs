@@ -1,4 +1,5 @@
 use crate::reset::Reset;
+use crate::reset::PieceType;
 use std::collections::HashMap;
 
 pub fn perft(fen: &str, depth: u8) {
@@ -31,9 +32,13 @@ pub fn count_possible_games(fen: &str, depth: u8) -> u64 {
 }
 
 pub fn burn() {
+    // PieceType 1: 6m21.456s
+    // PieceType 2: 6m20.028s
+    // PieceType 3: 6m19.498s
+
     // Switch get_bit_number to a lowest_bit function 1: 6m16.882s
-    // Switch get_bit_number to a lowest_bit function 1: 6m17.003s
-    // Switch get_bit_number to a lowest_bit function 1: 6m24.105s
+    // Switch get_bit_number to a lowest_bit function 2: 6m17.003s
+    // Switch get_bit_number to a lowest_bit function 3: 6m24.105s
 
     // Updated get_bit_number, native architecture setting 1: 6m23.128s
     // Updated get_bit_number, native architecture setting 2: 6m23.111s
@@ -95,6 +100,9 @@ impl Reset {
             //hit_enter_to_continue();
         }
         if search_flag {
+            if self.b_current_piece != 0 && self.current_piece_type == PieceType::Unknown {
+                self.complete_move_initialization();
+            }
             while self.generate_next_move(&mut child) {
                 //let old: u64 = *move_count;
                 child.in_place_move_tree(depth - 1, move_count);

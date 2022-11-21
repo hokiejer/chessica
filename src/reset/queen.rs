@@ -318,6 +318,7 @@ mod tests {
         let mut r = prep_board("4k3/2P5/8/3pnr1p/8/1PQ2q2/8/4K2R w - - 0 1");
         let mut child = reset::new();
         r.b_current_piece = utils::convert_square_to_bitstring("c3".to_string());
+        r.set_current_piece_type();
 
         // Up 1
         let fen = String::from("4k3/2P5/8/3pnr1p/2Q5/1P3q2/8/4K2R b - - 1 1");
@@ -634,6 +635,7 @@ mod tests {
         let mut r = prep_board("3k4/3r4/5PP1/2P2QP1/5PP1/8/2P5/3K4 w - - 0 1");
         let mut child = reset::new();
         r.b_current_piece = utils::convert_square_to_bitstring("f5".to_string());
+        r.set_current_piece_type();
 
         // Down Left 2
         let fen = String::from("3k4/3r4/5PP1/2P3P1/5PP1/3Q4/2P5/3K4 b - - 1 1");

@@ -305,7 +305,7 @@ mod tests {
     fn pawn_moves_white_first_starting_position() {
         let mut r = prep_board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         let mut child = reset::new();
-        r.b_current_piece = utils::convert_square_to_bitstring("h2".to_string());
+        r.current_piece_init("h2");
 
         // h2 to h3
         let fen = String::from("rnbqkbnr/pppppppp/8/8/8/7P/PPPPPPP1/RNBQKBNR b KQkq - 0 1");
@@ -488,7 +488,7 @@ mod tests {
     fn pawn_moves_black_first_starting_position() {
         let mut r = prep_board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1");
         let mut child = reset::new();
-        r.b_current_piece = utils::convert_square_to_bitstring("h7".to_string());
+        r.current_piece_init("h7");
 
         // h7 to h6
         let fen = String::from("rnbqkbnr/ppppppp1/7p/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 2");
@@ -672,7 +672,7 @@ mod tests {
     fn pawn_moves_white_captures() {
         let mut r = prep_board("k7/8/2p2p2/3PP3/p4p1p/1P4P1/P1P5/K7 w - - 0 1");
         let mut child = reset::new();
-        r.b_current_piece = utils::convert_square_to_bitstring("g3".to_string());
+        r.current_piece_init("g3");
 
         // g3 to g4
         let fen = String::from("k7/8/2p2p2/3PP3/p4pPp/1P6/P1P5/K7 b - - 0 1");
@@ -760,7 +760,7 @@ mod tests {
     fn pawn_moves_black_captures() {
         let mut r = prep_board("k7/5p1p/1p4p1/P1P4P/3pp3/2P2P2/8/K7 b - - 0 1");
         let mut child = reset::new();
-        r.b_current_piece = utils::convert_square_to_bitstring("e4".to_string());
+        r.current_piece_init("e4");
 
         // e4 to e3
         let fen = String::from("k7/5p1p/1p4p1/P1P4P/3p4/2P1pP2/8/K7 w - - 0 2");
@@ -873,7 +873,7 @@ mod tests {
     fn pawn_moves_white_promotion() {
         let mut r = prep_board("k2r4/2P1P2P/8/8/8/8/8/K7 w - - 0 1");
         let mut child = reset::new();
-        r.b_current_piece = utils::convert_square_to_bitstring("h7".to_string());
+        r.current_piece_init("h7");
 
         // h7 to h8 Knight
         let fen = String::from("k2r3N/2P1P3/8/8/8/8/8/K7 b - - 0 1");
@@ -1118,7 +1118,7 @@ mod tests {
     fn pawn_moves_black_promotion() {
         let mut r = prep_board("7k/8/8/8/8/8/p2p1p2/4R2K b - - 0 1");
         let mut child = reset::new();
-        r.b_current_piece = utils::convert_square_to_bitstring("f2".to_string());
+        r.current_piece_init("f2");
 
         // f2 to f1 Knight
         let fen = String::from("7k/8/8/8/8/8/p2p4/4Rn1K w - - 0 2");
@@ -1364,7 +1364,7 @@ mod tests {
     fn pawn_moves_white_ep_capture_right() {
         let mut r = prep_board("rnbqkbnr/ppppp1p1/8/5pPp/8/8/PPPPPP1P/RNBQKBNR w KQkq f6 0 1");
         let mut child = reset::new();
-        r.b_current_piece = utils::convert_square_to_bitstring("g5".to_string());
+        r.current_piece_init("g5");
 
         // g5 to g6
         let fen = String::from("rnbqkbnr/ppppp1p1/6P1/5p1p/8/8/PPPPPP1P/RNBQKBNR b KQkq - 0 1");
@@ -1389,7 +1389,7 @@ mod tests {
     fn pawn_moves_white_ep_capture_left() {
         let mut r = prep_board("rnbqkbnr/ppppp1p1/8/5pPp/8/8/PPPPPP1P/RNBQKBNR w KQkq h6 0 1");
         let mut child = reset::new();
-        r.b_current_piece = utils::convert_square_to_bitstring("g5".to_string());
+        r.current_piece_init("g5");
 
         // g5 to g6
         let fen = String::from("rnbqkbnr/ppppp1p1/6P1/5p1p/8/8/PPPPPP1P/RNBQKBNR b KQkq - 0 1");
@@ -1414,7 +1414,7 @@ mod tests {
     fn pawn_moves_white_ep_capture_to_escape_check() {
         let mut r = prep_board("8/8/8/pP6/1K1k2p1/6P1/7P/8 w - a6 0 3");
         let mut child = reset::new();
-        r.b_current_piece = utils::convert_square_to_bitstring("b5".to_string());
+        r.current_piece_init("b5");
 
         // g5 to g6
         let fen = String::from("8/8/P7/8/1K1k2p1/6P1/7P/8 b - - 0 3");
@@ -1429,7 +1429,7 @@ mod tests {
     fn pawn_moves_black_ep_capture_right() {
         let mut r = prep_board("rnbqkb1r/pppp1ppp/7n/8/3PpP2/8/PPP1P1PP/RNBQKBNR b KQkq d3 0 1");
         let mut child = reset::new();
-        r.b_current_piece = utils::convert_square_to_bitstring("e4".to_string());
+        r.current_piece_init("e4");
 
         // e4 to e3
         let fen = String::from("rnbqkb1r/pppp1ppp/7n/8/3P1P2/4p3/PPP1P1PP/RNBQKBNR w KQkq - 0 2");
@@ -1455,7 +1455,7 @@ mod tests {
     fn pawn_moves_black_ep_capture_left() {
         let mut r = prep_board("rnbqkb1r/pppp1ppp/7n/8/3PpP2/8/PPP1P1PP/RNBQKBNR b KQkq f3 0 1");
         let mut child = reset::new();
-        r.b_current_piece = utils::convert_square_to_bitstring("e4".to_string());
+        r.current_piece_init("e4");
 
         // e4 to e3
         let fen = String::from("rnbqkb1r/pppp1ppp/7n/8/3P1P2/4p3/PPP1P1PP/RNBQKBNR w KQkq - 0 2");

@@ -55,9 +55,14 @@ impl Reset {
         } else {
             self.b_current_piece = bitops::lowest_bit(self.b_black());
         }
+    }
+
+    /// Complete move generation initialization
+    pub fn complete_move_initialization(&mut self) {
         self.bi_current_piece = bitops::get_bit_number(self.b_current_piece);
         self.pin_dimension = PIN_DIMENSION_UNSET;
-        self.move_id = 10;	//Prime the first move
+        self.move_id = 10;
+        self.set_current_piece_type();
     }
 
     /// Consider the next moveable piece
@@ -71,10 +76,9 @@ impl Reset {
         } else {
             self.b_current_piece = bitops::next_lowest_bit(self.b_black(), self.b_current_piece);
         }
-        // We don't care about these fields if current_piece is zero
-        self.bi_current_piece = bitops::get_bit_number(self.b_current_piece);
-        self.pin_dimension = PIN_DIMENSION_UNSET;
-        self.move_id = 10;
+        if self.b_current_piece != 0 {
+            self.complete_move_initialization();
+        }
     }
 
     /// Generate the next move for a Reset
@@ -93,37 +97,49 @@ impl Reset {
     /// ```
     pub fn generate_next_move(&mut self, child: &mut Reset) -> bool {
         let mut found_move: bool = false;
+        if self.b_current_piece != 0 && self.current_piece_type == PieceType::Unknown {
+            self.complete_move_initialization();
+        }
         while self.b_current_piece != 0 {
-            if self.b_current_piece & self.b_pawns != 0 { // Pawn
-                if self.generate_next_pawn_move(child) {
-                    found_move = true;
-                    break;
-                }
-            } else if self.b_current_piece & self.b_knights != 0 { // Knight
-                if self.generate_next_knight_move(child) {
-                    found_move = true;
-                    break;
-                }
-            } else if self.b_current_piece & self.b_bishops != 0 { // Bishop
-                if self.generate_next_bishop_move(child) {
-                    found_move = true;
-                    break;
-                }
-            } else if self.b_current_piece & self.b_rooks != 0 { // Rook
-                if self.generate_next_rook_move(child) {
-                    found_move = true;
-                    break;
-                }
-            } else if self.b_current_piece & self.b_kings != 0 { // King
-                if self.generate_next_king_move(child) {
-                    found_move = true;
-                    break;
-                }
-            } else { // Queen
-                if self.generate_next_queen_move(child) {
-                    found_move = true;
-                    break;
-                }
+            match self.current_piece_type {
+                PieceType::Unknown => {
+                },
+                PieceType::Pawn => {
+                    if self.generate_next_pawn_move(child) {
+                        found_move = true;
+                        break;
+                    }
+                },
+                PieceType::Knight => {
+                    if self.generate_next_knight_move(child) {
+                        found_move = true;
+                        break;
+                    }
+                },
+                PieceType::Bishop => {
+                    if self.generate_next_bishop_move(child) {
+                        found_move = true;
+                        break;
+                    }
+                },
+                PieceType::Rook => {
+                    if self.generate_next_rook_move(child) {
+                        found_move = true;
+                        break;
+                    }
+                },
+                PieceType::Queen => {
+                    if self.generate_next_queen_move(child) {
+                        found_move = true;
+                        break;
+                    }
+                },
+                PieceType::King => {
+                    if self.generate_next_king_move(child) {
+                        found_move = true;
+                        break;
+                    }
+                },
             }
         }
         if found_move {
@@ -164,46 +180,54 @@ impl Reset {
             child.b_white |= child.b_to;
         }
 
-        if child.b_from & child.b_pawns != 0 {
-            child.b_pawns &= !child.b_from;
-            child.b_pawns |= child.b_to;
-            child.halfmove_clock = 0; // Resets on pawn move
-        } else if child.b_from & child.b_knights != 0 {
-            child.b_knights &= !child.b_from;
-            child.b_knights |= child.b_to;
-        } else if child.b_from & child.b_bishops != 0 {
-            child.b_bishops &= !child.b_from;
-            child.b_bishops |= child.b_to;
-        } else if child.b_from & child.b_rooks != 0 {
-            child.b_rooks &= !child.b_from;
-            child.b_rooks |= child.b_to;
-            if child.b_from & B_FOUR_CORNERS != 0 {
-                if child.b_from & B_SE_CORNER != 0 {
-                    //white_castle_k = 0;
-                    child.castle_bits &= U8_NOT_BIT1;
-                } else if child.b_from & B_SW_CORNER != 0 {
-                    //white_castle_q = 0;
-                    child.castle_bits &= U8_NOT_BIT2;
-                } else if child.b_from & B_NE_CORNER != 0 {
-                    //black_castle_k = 0;
-                    child.castle_bits &= U8_NOT_BIT3;
-                } else { // B_NW_CORNER
-                    //black_castle_q = 0;
-                    child.castle_bits &= U8_NOT_BIT4;
+        match self.current_piece_type {
+            PieceType::Pawn => {
+                child.b_pawns &= !child.b_from;
+                child.b_pawns |= child.b_to;
+                child.halfmove_clock = 0; // Resets on pawn move
+            },
+            PieceType::Knight => {
+                child.b_knights &= !child.b_from;
+                child.b_knights |= child.b_to;
+            },
+            PieceType::Bishop => {
+                child.b_bishops &= !child.b_from;
+                child.b_bishops |= child.b_to;
+            },
+            PieceType::Rook => {
+                child.b_rooks &= !child.b_from;
+                child.b_rooks |= child.b_to;
+                if child.b_from & B_FOUR_CORNERS != 0 {
+                    if child.b_from & B_SE_CORNER != 0 {
+                        //white_castle_k = 0;
+                        child.castle_bits &= U8_NOT_BIT1;
+                    } else if child.b_from & B_SW_CORNER != 0 {
+                        //white_castle_q = 0;
+                        child.castle_bits &= U8_NOT_BIT2;
+                    } else if child.b_from & B_NE_CORNER != 0 {
+                        //black_castle_k = 0;
+                        child.castle_bits &= U8_NOT_BIT3;
+                    } else { // B_NW_CORNER
+                        //black_castle_q = 0;
+                        child.castle_bits &= U8_NOT_BIT4;
+                    }
                 }
-            }
-        } else if child.b_from & child.b_kings != 0 {
-            child.b_kings &= !child.b_from;
-            child.b_kings |= child.b_to;
-            if self.white_to_move() {
-                child.white_king_square = bitops::get_bit_number(child.b_to);
-                child.castle_bits &= U8_NOT_BIT1_OR_BIT2;
-            } else {
-                child.black_king_square = bitops::get_bit_number(child.b_to);
-                child.castle_bits &= U8_NOT_BIT3_OR_BIT4;
-            }
-        } else {
-            // Queen moved
+            },
+            PieceType::Queen => {
+            },
+            PieceType::King => {
+                child.b_kings &= !child.b_from;
+                child.b_kings |= child.b_to;
+                if self.white_to_move() {
+                    child.white_king_square = bitops::get_bit_number(child.b_to);
+                    child.castle_bits &= U8_NOT_BIT1_OR_BIT2;
+                } else {
+                    child.black_king_square = bitops::get_bit_number(child.b_to);
+                    child.castle_bits &= U8_NOT_BIT3_OR_BIT4;
+                }
+            },
+            PieceType::Unknown => {
+            },
         }
     }
 
@@ -354,6 +378,7 @@ mod tests {
         let fen = "r1bqkbnr/ppp2ppp/2np4/4pN2/4P3/8/PPPP1PPP/RNBQKB1R w KQkq - 0 1";
         r.init_from_fen(fen.to_string());
         r.b_current_piece = utils::convert_square_to_bitstring("f5".to_string());
+        r.set_current_piece_type();
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("g7".to_string()),PIN_MATCH_NONE);
         assert!(result);
         assert_eq!(child.in_check,1);
@@ -366,6 +391,7 @@ mod tests {
         let fen = "rnbqk1nr/ppppbppp/8/8/3P4/8/PPP1BPPP/RNBQK1NR b KQkq - 1 2";
         r.init_from_fen(fen.to_string());
         r.b_current_piece = utils::convert_square_to_bitstring("e7".to_string());
+        r.set_current_piece_type();
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("b4".to_string()),PIN_MATCH_NONE);
         child.print();
         assert!(result);
@@ -379,6 +405,7 @@ mod tests {
         let fen = "rnb1kb1r/p2p1ppp/5n2/1p3NqP/4PpP1/3P4/PPP5/RNBQ1KR1 w kq - 1 14";
         r.init_from_fen(fen.to_string());
         r.b_current_piece = utils::convert_square_to_bitstring("f5".to_string());
+        r.set_current_piece_type();
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("g7".to_string()),PIN_MATCH_NONE);
         child.print();
         assert!(result);
@@ -656,5 +683,32 @@ mod tests {
         assert!(!result);
     }
 
+    #[test]
+    fn set_current_piece_type_initial_board() {
+        use crate::utils;
+        use crate::reset::PieceType;
+        let mut r = reset::new();
+        let mut child: Reset = reset::new();
+        let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        r.init_from_fen(fen.to_string());
+        r.b_current_piece = utils::convert_square_to_bitstring("a1".to_string());
+        r.set_current_piece_type();
+        assert_eq!(r.current_piece_type,PieceType::Rook);
+        r.b_current_piece = utils::convert_square_to_bitstring("b1".to_string());
+        r.set_current_piece_type();
+        assert_eq!(r.current_piece_type,PieceType::Knight);
+        r.b_current_piece = utils::convert_square_to_bitstring("c1".to_string());
+        r.set_current_piece_type();
+        assert_eq!(r.current_piece_type,PieceType::Bishop);
+        r.b_current_piece = utils::convert_square_to_bitstring("d1".to_string());
+        r.set_current_piece_type();
+        assert_eq!(r.current_piece_type,PieceType::Queen);
+        r.b_current_piece = utils::convert_square_to_bitstring("e1".to_string());
+        r.set_current_piece_type();
+        assert_eq!(r.current_piece_type,PieceType::King);
+        r.b_current_piece = utils::convert_square_to_bitstring("e2".to_string());
+        r.set_current_piece_type();
+        assert_eq!(r.current_piece_type,PieceType::Pawn);
+    }
 }
 

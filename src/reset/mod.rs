@@ -17,6 +17,7 @@ pub mod safe_revealed;
 pub mod safe_direct;
 pub mod pinned;
 pub mod profiling;
+pub mod test_helpers;
 
 use crate::reset::pinned::PIN_DIMENSION_UNSET;
 

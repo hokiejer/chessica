@@ -341,6 +341,7 @@ mod tests {
         let mut r = prep_board("2rk4/8/8/8/4B3/8/8/2K5 w - - 0 1");
         let mut child = reset::new();
         r.b_current_piece = utils::convert_square_to_bitstring("e4".to_string());
+        r.set_current_piece_type();
         r.in_check = 1;
 
         // Down Left 2

@@ -97,11 +97,6 @@ impl Reset {
     /// ```
     pub fn generate_next_move(&mut self, child: &mut Reset) -> bool {
         let mut found_move: bool = false;
-        /*
-        if self.b_current_piece != 0 && self.current_piece_type == PieceType::Unknown {
-            self.complete_move_initialization();
-        }
-        */
         while self.b_current_piece != 0 {
             match self.current_piece_type {
                 PieceType::Unknown => {

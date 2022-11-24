@@ -176,7 +176,7 @@ mod tests {
     fn white_rook_moves_box() {
         let mut r = prep_board("7k/8/1R2r3/8/8/1r2R3/8/7K w - - 0 1");
         let mut child = reset::new();
-        r.b_current_piece = utils::convert_square_to_bitstring("b6".to_string());
+        r.current_piece_init("b6");
 
         // Up 1
         let fen = String::from("7k/1R6/4r3/8/8/1r2R3/8/7K b - - 1 1");
@@ -263,7 +263,7 @@ mod tests {
     fn black_rook_moves_box() {
         let mut r = prep_board("7k/8/1R2r3/8/8/1r2R3/8/7K b - - 0 1");
         let mut child = reset::new();
-        r.b_current_piece = utils::convert_square_to_bitstring("e6".to_string());
+        r.current_piece_init("e6");
 
         // Up 1
         let fen = String::from("7k/4r3/1R6/8/8/1r2R3/8/7K w - - 1 2");
@@ -374,7 +374,7 @@ mod tests {
     fn white_rook_moves_invisible_piece() {
         let mut r = prep_board("3kr1nR/8/8/8/8/8/8/4K3 w - - 1 2");
         let mut child = reset::new();
-        r.b_current_piece = utils::convert_square_to_bitstring("h8".to_string());
+        r.current_piece_init("h8");
         r.in_check = 1;
 
         // No rook moves possible

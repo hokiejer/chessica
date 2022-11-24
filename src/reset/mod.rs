@@ -17,8 +17,20 @@ pub mod safe_revealed;
 pub mod safe_direct;
 pub mod pinned;
 pub mod profiling;
+pub mod test_helpers;
 
 use crate::reset::pinned::PIN_DIMENSION_UNSET;
+
+#[derive(PartialEq,Eq,Copy,Clone,Hash,Debug)]
+pub enum PieceType {
+    Unknown,
+    Pawn,
+    Knight,
+    Bishop,
+    Rook,
+    Queen,
+    King,
+}
 
 /// The complete status of a chess game at a given time
 ///
@@ -45,64 +57,63 @@ use crate::reset::pinned::PIN_DIMENSION_UNSET;
 /// 
 /// Resets contain the following fields:
 ///
-/// | field             | type | child? | offset | description |
-/// | ----------------- | ---- | ------ | ------ | ----------- |
-/// | b_all             | u64  | copy   |    0   | Bitstring representing the presence of any piece |
-/// | b_white           | u64  | copy   |    8   | Bitstring representing the presence of white pieces. |
-/// |                   |      |        |        | Note that there is no `b_black` - a user must call `b_black()` to derive this value. |
-/// | b_pawns           | u64  | copy   |   16   | Bitstring representing the presence of pawns |
-/// | b_knights         | u64  | copy   |   24   | Bitstring representing the presence of knights |
-/// | b_bishops         | u64  | copy   |   32   | Bitstring representing the presence of bishops |
-/// | b_rooks           | u64  | copy   |   40   | Bitstring representing the presence of rooks |
-/// |                   |      |        |        | Note that there is no `b_queens` - a user must call `b_queens()` to derive this value. |
-/// | b_kings           | u64  | copy   |   48   | Bitstring representing the presence of kings |
-/// | reserved_01       | u64  | copy   |   56   | Reserved |
-/// | b_current_piece   | u64  | clear  |   64   | Bitstring representing the piece currently under consideration for move generation |
-/// | b_en_passant      | u64  | clear  |   72   | Bitstring representing a piece that is eligible for en passant capture.  This is an entire bitstring to represent a single bit, which seems wasteful. |
-/// | b_from            | u64  | whatev |   80   | Bitstring representing where the last piece was moved from |
-/// | b_to              | u64  | whatev |   88   | Bitstring representing where the last piece was moved to |
-/// | score             | i32  | clear  |   96   | Score of this reset.  White is positive, Black negative.  If white is up exactly a pawn, the score will be 1,000,000.  Checkmate for Black is -128,000,000. |
-/// | hash_value        | u32  | whatev |  100   | Hash value for this reset |
-/// | min               | i32  | whatev |  104   | Min value used for move searching |
-/// | max               | i32  | whatev |  108   | Max value used for move searching |
-/// | material          | i8   | copy   |  112   | Material score of this board |
-/// | halfmove_clock    | u8   | copy   |  113   | Halfmoves elapsed since last pawn move or capture |
-/// | fullmove_number   | u8   | copy   |  114   | Full moves elapsed since beginning of the game |
-/// | white_king_square | u8   | copy   |  115   | Square number of the white king |
-/// | black_king_square | u8   | copy   |  116   | Square number of the black king |
-/// | castle_bits       | u8   | copy   |  117   | `1` if white is eligible to castle queenside, `0` if not |
-/// | white_castle_k    |      |        |        | 0x01: `1` if white is eligible to castle kingside, `0` if not |
-/// | white_castle_q    |      |        |        | 0x02: `1` if white is eligible to castle queenside, `0` if not |
-/// | black_castle_k    |      |        |        | 0x04: `1` if black is eligible to castle kingside, `0` if not |
-/// | black_castle_q    |      |        |        | 0x08: `1` if black is eligible to castle queenside, `0` if not |
-/// | reserved_02       | u8   | copy   |  118   | Reserved |
-/// | reserved_03       | u8   | copy   |  119   | Reserved |
-/// | reserved_04       | u8   | copy   |  120   | Reserved |
-/// | reserved_05       | u8   | copy   |  121   | Reserved |
-/// | reserved_06       | u8   | copy   |  122   | Reserved |
-/// | reserved_07       | u8   | copy   |  123   | Reserved |
-/// | reserved_08       | u8   | copy   |  124   | Reserved |
-/// | reserved_09       | u8   | copy   |  125   | Reserved |
-/// | reserved_10       | u8   | copy   |  126   | Reserved |
-/// | reserved_11       | u8   | copy   |  127   | Reserved |
-/// | field             | type | child? | offset | description |
-/// | move_id           | u8   | clear  |  128   | ID of tne next move to be considered for a given piece type |
-/// | to_move           | u8   | clear  |  129   | `0` if it is white's move, `1` if it is black's move |
-/// | capture           | u8   | clear  |  130   | `1` if the last move was a capture, `0` otherwise |
-/// | in_check          | u8   | clear  |  131   | `1` if the side moving is currently in check, `0` otherwise |
-/// | promotion         | u8   | clear  |  132   | `1` if the last move was a promotion, `0` otherwise |
-/// | king_castled      | u8   | clear  |  133   | `1` if the last move was a castle, `0` otherwise |
-/// | game_over         | u8   | clear  |  134   | `1` if the game is over |
-/// | bi_from           | u8   | whatev |  135   | Bit index of the move's originating square |
-/// | bi_to             | u8   | whatev |  136   | Bit index of the move's destination square |
-/// | score_depth       | u8   | whatev |  137   | Search depth from which score was obtained |
-/// | hash_count        | u8   | whatev |  138   | Number of times this reset was saved to the hash table |
-/// | times_seen        | u8   | whatev |  139   | Number of times this reset has been seen in the current game |
-/// | must_check_safety | u8   | whatev |  140   | 1 if we must check king safety after this move, 0 otherwise.  I believe this is used for odd moves, like EP captures, castling, and promotions. |
-/// | bi_current_piece  | u8   | whatev |  141   | Bit index for b_current_piece |
-/// | pin_dimension     | u8   | whatev |  142   | Dimension in which the piece under evaluation is pinned to the
-/// king |
-/// | reserved_14       | u8   | whatev |  143   | Reserved |
+/// | field              | type | child? | offset | description |
+/// | ------------------ | ---- | ------ | ------ | ----------- |
+/// | b_all              | u64  | copy   |    0   | Bitstring representing the presence of any piece |
+/// | b_white            | u64  | copy   |    8   | Bitstring representing the presence of white pieces. |
+/// |                    |      |        |        | Note that there is no `b_black` - a user must call `b_black()` to derive this value. |
+/// | b_pawns            | u64  | copy   |   16   | Bitstring representing the presence of pawns |
+/// | b_knights          | u64  | copy   |   24   | Bitstring representing the presence of knights |
+/// | b_bishops          | u64  | copy   |   32   | Bitstring representing the presence of bishops |
+/// | b_rooks            | u64  | copy   |   40   | Bitstring representing the presence of rooks |
+/// |                    |      |        |        | Note that there is no `b_queens` - a user must call `b_queens()` to derive this value. |
+/// | b_kings            | u64  | copy   |   48   | Bitstring representing the presence of kings |
+/// | reserved_01        | u64  | copy   |   56   | Reserved |
+/// | b_current_piece    | u64  | clear  |   64   | Bitstring representing the piece currently under consideration for move generation |
+/// | b_en_passant       | u64  | clear  |   72   | Bitstring representing a piece that is eligible for en passant capture.  This is an entire bitstring to represent a single bit, which seems wasteful. |
+/// | b_from             | u64  | whatev |   80   | Bitstring representing where the last piece was moved from |
+/// | b_to               | u64  | whatev |   88   | Bitstring representing where the last piece was moved to |
+/// | score              | i32  | clear  |   96   | Score of this reset.  White is positive, Black negative.  If white is up exactly a pawn, the score will be 1,000,000.  Checkmate for Black is -128,000,000. |
+/// | hash_value         | u32  | whatev |  100   | Hash value for this reset |
+/// | min                | i32  | whatev |  104   | Min value used for move searching |
+/// | max                | i32  | whatev |  108   | Max value used for move searching |
+/// | material           | i8   | copy   |  112   | Material score of this board |
+/// | halfmove_clock     | u8   | copy   |  113   | Halfmoves elapsed since last pawn move or capture |
+/// | fullmove_number    | u8   | copy   |  114   | Full moves elapsed since beginning of the game |
+/// | white_king_square  | u8   | copy   |  115   | Square number of the white king |
+/// | black_king_square  | u8   | copy   |  116   | Square number of the black king |
+/// | castle_bits        | u8   | copy   |  117   | `1` if white is eligible to castle queenside, `0` if not |
+/// | white_castle_k     |      |        |        | 0x01: `1` if white is eligible to castle kingside, `0` if not |
+/// | white_castle_q     |      |        |        | 0x02: `1` if white is eligible to castle queenside, `0` if not |
+/// | black_castle_k     |      |        |        | 0x04: `1` if black is eligible to castle kingside, `0` if not |
+/// | black_castle_q     |      |        |        | 0x08: `1` if black is eligible to castle queenside, `0` if not |
+/// | reserved_02        | u8   | whatev |  143   | Reserved |
+/// | reserved_03        | u8   | copy   |  119   | Reserved |
+/// | reserved_04        | u8   | copy   |  120   | Reserved |
+/// | reserved_05        | u8   | copy   |  121   | Reserved |
+/// | reserved_06        | u8   | copy   |  122   | Reserved |
+/// | reserved_07        | u8   | copy   |  123   | Reserved |
+/// | reserved_08        | u8   | copy   |  124   | Reserved |
+/// | reserved_09        | u8   | copy   |  125   | Reserved |
+/// | reserved_10        | u8   | copy   |  126   | Reserved |
+/// | reserved_11        | u8   | copy   |  127   | Reserved |
+/// | field              | type | child? | offset | description |
+/// | move_id            | u8   | clear  |  128   | ID of tne next move to be considered for a given piece type |
+/// | to_move            | u8   | clear  |  129   | `0` if it is white's move, `1` if it is black's move |
+/// | capture            | u8   | clear  |  130   | `1` if the last move was a capture, `0` otherwise |
+/// | in_check           | u8   | clear  |  131   | `1` if the side moving is currently in check, `0` otherwise |
+/// | promotion          | u8   | clear  |  132   | `1` if the last move was a promotion, `0` otherwise |
+/// | king_castled       | u8   | clear  |  133   | `1` if the last move was a castle, `0` otherwise |
+/// | game_over          | u8   | clear  |  134   | `1` if the game is over |
+/// | bi_from            | u8   | whatev |  135   | Bit index of the move's originating square |
+/// | bi_to              | u8   | whatev |  136   | Bit index of the move's destination square |
+/// | score_depth        | u8   | whatev |  137   | Search depth from which score was obtained |
+/// | hash_count         | u8   | whatev |  138   | Number of times this reset was saved to the hash table |
+/// | times_seen         | u8   | whatev |  139   | Number of times this reset has been seen in the current game |
+/// | must_check_safety  | u8   | whatev |  140   | 1 if we must check king safety after this move, 0 otherwise.  I believe this is used for odd moves, like EP captures, castling, and promotions. |
+/// | bi_current_piece   | u8   | whatev |  141   | Bit index for b_current_piece |
+/// | pin_dimension      | u8   | whatev |  142   | Dimension in which the piece under evaluation is pinned to the king |
+/// | current_piece_type | u8   | copy   |  118   | Reserved |
 pub struct Reset {
     //Fields passed from parent to child
     b_all: u64,
@@ -156,7 +167,7 @@ pub struct Reset {
     must_check_safety: u8,
     bi_current_piece: u8,
     pin_dimension: u8,
-    reserved_14: u8,
+    current_piece_type: PieceType,
 }
 
 /// Constructs a new Reset
@@ -218,7 +229,7 @@ pub fn new() -> Reset {
         must_check_safety: 0,
         bi_current_piece: 0,
         pin_dimension: PIN_DIMENSION_UNSET,
-        reserved_14: 0,
+        current_piece_type: PieceType::Unknown,
     }
 }
 

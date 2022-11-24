@@ -1,4 +1,5 @@
 use crate::reset::Reset;
+use crate::reset::PieceType;
 
 impl Reset {
 
@@ -66,13 +67,14 @@ impl Reset {
         clone.must_check_safety = self.must_check_safety;
         clone.bi_current_piece = self.bi_current_piece;
         clone.pin_dimension = self.pin_dimension;
-        clone.reserved_14 = self.reserved_14;
+        clone.current_piece_type = self.current_piece_type;
     }
 }
 
 #[cfg(test)]
 mod tests {
     use crate::reset;
+    use crate::reset::PieceType;
     #[test]
     fn reset_clone_to_fen() {
         let mut r = reset::new();
@@ -114,6 +116,8 @@ mod tests {
         r.game_over = 1;
         r.must_check_safety = 1;
         r.bi_current_piece = 132;
+        r.pin_dimension = 14;
+        r.current_piece_type = PieceType::Queen;
         r.clone_to(&mut child);
         assert_eq!(child.b_all,123);
         assert_eq!(child.b_white,234);
@@ -140,6 +144,8 @@ mod tests {
         assert_eq!(child.game_over,1);
         assert_eq!(child.must_check_safety,1);
         assert_eq!(child.bi_current_piece,132);
+        assert_eq!(child.pin_dimension,14);
+        assert_eq!(child.current_piece_type,PieceType::Queen);
     }
 
     #[test]

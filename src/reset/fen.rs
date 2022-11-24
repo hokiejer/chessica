@@ -133,6 +133,7 @@ impl Reset {
             self.in_check = 1;
         }
         self.initialize_move_generation();
+        self.complete_move_initialization();
     }
 
     /// Generate a FEN notation string from a reset

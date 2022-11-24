@@ -223,7 +223,7 @@ mod tests {
     use crate::reset::Reset;
     use crate::utils;
 
-    fn prep_board(fen: &str) -> Reset {
+    pub fn prep_board(fen: &str) -> Reset {
         let mut r = reset::new();
         let fen = String::from(fen);
         r.init_from_fen(fen);
@@ -234,7 +234,7 @@ mod tests {
     fn white_king_moves_basic() {
         let mut r = prep_board("8/8/3k4/8/8/2K5/8/8 w - - 0 1");
         let mut child = reset::new();
-        r.b_current_piece = utils::convert_square_to_bitstring("c3".to_string());
+        r.current_piece_init("c3");
 
         // c3 to c4
         let fen = String::from("8/8/3k4/8/2K5/8/8/8 b - - 1 1");
@@ -317,7 +317,7 @@ mod tests {
     fn black_king_moves_basic() {
         let mut r = prep_board("8/8/3k4/8/8/2K5/8/8 b - - 0 1");
         let mut child = reset::new();
-        r.b_current_piece = utils::convert_square_to_bitstring("d6".to_string());
+        r.current_piece_init("d6");
 
         // d6 to d7
         let fen = String::from("8/3k4/8/8/8/2K5/8/8 w - - 1 2");
@@ -400,7 +400,7 @@ mod tests {
     fn white_king_castle_kingside_valid() {
         let mut r = prep_board("r1bqkbnr/pppp2pp/2n2p2/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 1");
         let mut child = reset::new();
-        r.b_current_piece = utils::convert_square_to_bitstring("e1".to_string());
+        r.current_piece_init("e1");
 
         // e1 to e2
         let fen = String::from("r1bqkbnr/pppp2pp/2n2p2/1B2p3/4P3/5N2/PPPPKPPP/RNBQ3R b kq - 1 1");
@@ -439,7 +439,7 @@ mod tests {
     fn white_king_castle_queenside_valid() {
         let mut r = prep_board("rnb1kb1r/ppp1qppp/4pn2/3p4/3P1B2/2N5/PPPQPPPP/R3KBNR w KQkq - 0 1");
         let mut child = reset::new();
-        r.b_current_piece = utils::convert_square_to_bitstring("e1".to_string());
+        r.current_piece_init("e1");
 
         // e1 to d1
         let fen = String::from("rnb1kb1r/ppp1qppp/4pn2/3p4/3P1B2/2N5/PPPQPPPP/R2K1BNR b kq - 1 1");
@@ -462,7 +462,7 @@ mod tests {
     fn white_king_castle_queenside_invalid() {
         let mut r = prep_board("r3kr2/8/7b/8/8/8/8/R3K3 w Qq - 0 1");
         let mut child = reset::new();
-        r.b_current_piece = utils::convert_square_to_bitstring("e1".to_string());
+        r.current_piece_init("e1");
         r.move_id = 90;
 
         let retval = r.generate_next_king_move(&mut child);
@@ -475,7 +475,7 @@ mod tests {
     fn black_king_castle_kingside_valid() {
         let mut r = prep_board("rnbqk2r/ppppbppp/5n2/4p3/2B1P3/3P1N2/PPP2PPP/RNBQK2R b KQkq - 0 1");
         let mut child = reset::new();
-        r.b_current_piece = utils::convert_square_to_bitstring("e8".to_string());
+        r.current_piece_init("e8");
 
         // e8 to f8
         let fen = String::from("rnbq1k1r/ppppbppp/5n2/4p3/2B1P3/3P1N2/PPP2PPP/RNBQK2R w KQ - 1 2");
@@ -505,7 +505,7 @@ mod tests {
     fn black_king_castle_kingside_invalid() {
         let mut r = prep_board("4k2r/8/8/8/B7/8/8/R3K3 b Qk - 0 1");
         let mut child = reset::new();
-        r.b_current_piece = utils::convert_square_to_bitstring("e8".to_string());
+        r.current_piece_init("e8");
         r.move_id = 90;
 
         let retval = r.generate_next_king_move(&mut child);
@@ -517,7 +517,7 @@ mod tests {
     fn black_king_castle_queenside_valid() {
         let mut r = prep_board("r3kb1r/pppbqppp/2n1pn2/3p4/3P1B2/2N3P1/PPPQPPBP/2KR2NR b kq - 0 1");
         let mut child = reset::new();
-        r.b_current_piece = utils::convert_square_to_bitstring("e8".to_string());
+        r.current_piece_init("e8");
 
         // e8 to d8
         let fen = String::from("r2k1b1r/pppbqppp/2n1pn2/3p4/3P1B2/2N3P1/PPPQPPBP/2KR2NR w - - 1 2");

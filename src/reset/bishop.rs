@@ -176,7 +176,7 @@ mod tests {
     fn white_bishop_moves() {
         let mut r = prep_board("B1k5/1b6/8/8/8/K7/1B6/b7 w - - 0 1");
         let mut child = reset::new();
-        r.b_current_piece = utils::convert_square_to_bitstring("b2".to_string());
+        r.current_piece_init("b2");
 
         // Up Right 1
         let fen = String::from("B1k5/1b6/8/8/8/K1B5/8/b7 b - - 1 1");
@@ -261,7 +261,7 @@ mod tests {
     fn black_bishop_moves() {
         let mut r = prep_board("B1k5/1b6/8/8/8/K7/1B6/b7 b - - 0 1");
         let mut child = reset::new();
-        r.b_current_piece = utils::convert_square_to_bitstring("b7".to_string());
+        r.current_piece_init("b7");
 
         // Down Right 1
         let fen = String::from("B1k5/8/2b5/8/8/K7/1B6/b7 w - - 1 2");
@@ -340,7 +340,7 @@ mod tests {
     fn white_bishop_block_check() {
         let mut r = prep_board("2rk4/8/8/8/4B3/8/8/2K5 w - - 0 1");
         let mut child = reset::new();
-        r.b_current_piece = utils::convert_square_to_bitstring("e4".to_string());
+        r.current_piece_init("e4");
         r.in_check = 1;
 
         // Down Left 2
@@ -371,7 +371,7 @@ mod tests {
     fn black_bishop_moves_invisible_piece() {
         let mut r = prep_board("3k4/8/8/4N3/5b2/4p3/8/3RK3 b - - 1 2");
         let mut child = reset::new();
-        r.b_current_piece = utils::convert_square_to_bitstring("f4".to_string());
+        r.current_piece_init("f4");
         r.in_check = 1;
 
         // No bishop moves possible

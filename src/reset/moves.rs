@@ -355,8 +355,7 @@ mod tests {
         let mut child = reset::new();
         let fen = "r1bqkbnr/ppp2ppp/2np4/4pN2/4P3/8/PPPP1PPP/RNBQKB1R w KQkq - 0 1";
         r.init_from_fen(fen.to_string());
-        r.b_current_piece = utils::convert_square_to_bitstring("f5".to_string());
-        r.set_current_piece_type();
+        r.current_piece_init("f5");
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("g7".to_string()),PIN_MATCH_NONE);
         assert!(result);
         assert_eq!(child.in_check,1);
@@ -368,8 +367,7 @@ mod tests {
         let mut child = reset::new();
         let fen = "rnbqk1nr/ppppbppp/8/8/3P4/8/PPP1BPPP/RNBQK1NR b KQkq - 1 2";
         r.init_from_fen(fen.to_string());
-        r.b_current_piece = utils::convert_square_to_bitstring("e7".to_string());
-        r.set_current_piece_type();
+        r.current_piece_init("e7");
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("b4".to_string()),PIN_MATCH_NONE);
         child.print();
         assert!(result);
@@ -382,8 +380,7 @@ mod tests {
         let mut child = reset::new();
         let fen = "rnb1kb1r/p2p1ppp/5n2/1p3NqP/4PpP1/3P4/PPP5/RNBQ1KR1 w kq - 1 14";
         r.init_from_fen(fen.to_string());
-        r.b_current_piece = utils::convert_square_to_bitstring("f5".to_string());
-        r.set_current_piece_type();
+        r.current_piece_init("f5");
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("g7".to_string()),PIN_MATCH_NONE);
         child.print();
         assert!(result);
@@ -396,7 +393,7 @@ mod tests {
         let mut child = reset::new();
         let fen = "rnb1kb1r/p2p1ppp/5n2/1p3NqP/4P1P1/3P4/PPP5/RNBQ1KR1 b kq - 1 14";
         r.init_from_fen(fen.to_string());
-        r.b_current_piece = utils::convert_square_to_bitstring("g5".to_string());
+        r.current_piece_init("g5");
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("f4".to_string()),PIN_MATCH_NONE);
         child.print();
         assert!(result);
@@ -410,31 +407,31 @@ mod tests {
         let fen = "k1r1r3/8/8/8/8/8/3B4/3K4 w - - 0 1";
 
         r.init_from_fen(fen.to_string());
-        r.b_current_piece = utils::convert_square_to_bitstring("d2".to_string());
+        r.current_piece_init("d2");
         r.pin_dimension = PIN_DIMENSION_NS;
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("f4".to_string()),PIN_MATCH_NS);
         assert!(result);
 
         r.init_from_fen(fen.to_string());
-        r.b_current_piece = utils::convert_square_to_bitstring("d2".to_string());
+        r.current_piece_init("d2");
         r.pin_dimension = PIN_DIMENSION_EW;
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("f4".to_string()),PIN_MATCH_NS);
         assert!(!result);
 
         r.init_from_fen(fen.to_string());
-        r.b_current_piece = utils::convert_square_to_bitstring("d2".to_string());
+        r.current_piece_init("d2");
         r.pin_dimension = PIN_DIMENSION_NESW;
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("f4".to_string()),PIN_MATCH_NS);
         assert!(!result);
 
         r.init_from_fen(fen.to_string());
-        r.b_current_piece = utils::convert_square_to_bitstring("d2".to_string());
+        r.current_piece_init("d2");
         r.pin_dimension = PIN_DIMENSION_SENW;
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("f4".to_string()),PIN_MATCH_NS);
         assert!(!result);
 
         r.init_from_fen(fen.to_string());
-        r.b_current_piece = utils::convert_square_to_bitstring("d2".to_string());
+        r.current_piece_init("d2");
         r.pin_dimension = PIN_DIMENSION_NONE;
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("f4".to_string()),PIN_MATCH_NS);
         assert!(result);
@@ -447,31 +444,31 @@ mod tests {
         let fen = "k1r1r3/8/8/8/8/8/3B4/3K4 w - - 0 1";
 
         r.init_from_fen(fen.to_string());
-        r.b_current_piece = utils::convert_square_to_bitstring("d2".to_string());
+        r.current_piece_init("d2");
         r.pin_dimension = PIN_DIMENSION_NS;
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("f4".to_string()),PIN_MATCH_EW);
         assert!(!result);
 
         r.init_from_fen(fen.to_string());
-        r.b_current_piece = utils::convert_square_to_bitstring("d2".to_string());
+        r.current_piece_init("d2");
         r.pin_dimension = PIN_DIMENSION_EW;
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("f4".to_string()),PIN_MATCH_EW);
         assert!(result);
 
         r.init_from_fen(fen.to_string());
-        r.b_current_piece = utils::convert_square_to_bitstring("d2".to_string());
+        r.current_piece_init("d2");
         r.pin_dimension = PIN_DIMENSION_NESW;
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("f4".to_string()),PIN_MATCH_EW);
         assert!(!result);
 
         r.init_from_fen(fen.to_string());
-        r.b_current_piece = utils::convert_square_to_bitstring("d2".to_string());
+        r.current_piece_init("d2");
         r.pin_dimension = PIN_DIMENSION_SENW;
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("f4".to_string()),PIN_MATCH_EW);
         assert!(!result);
 
         r.init_from_fen(fen.to_string());
-        r.b_current_piece = utils::convert_square_to_bitstring("d2".to_string());
+        r.current_piece_init("d2");
         r.pin_dimension = PIN_DIMENSION_NONE;
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("f4".to_string()),PIN_MATCH_EW);
         assert!(result);
@@ -483,31 +480,31 @@ mod tests {
         let mut child = reset::new();
         let fen = "k1r1r3/8/8/8/8/8/3B4/3K4 w - - 0 1";
         r.init_from_fen(fen.to_string());
-        r.b_current_piece = utils::convert_square_to_bitstring("d2".to_string());
+        r.current_piece_init("d2");
         r.pin_dimension = PIN_DIMENSION_NS;
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("f4".to_string()),PIN_MATCH_NESW);
         assert!(!result);
 
         r.init_from_fen(fen.to_string());
-        r.b_current_piece = utils::convert_square_to_bitstring("d2".to_string());
+        r.current_piece_init("d2");
         r.pin_dimension = PIN_DIMENSION_EW;
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("f4".to_string()),PIN_MATCH_NESW);
         assert!(!result);
 
         r.init_from_fen(fen.to_string());
-        r.b_current_piece = utils::convert_square_to_bitstring("d2".to_string());
+        r.current_piece_init("d2");
         r.pin_dimension = PIN_DIMENSION_NESW;
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("f4".to_string()),PIN_MATCH_NESW);
         assert!(result);
 
         r.init_from_fen(fen.to_string());
-        r.b_current_piece = utils::convert_square_to_bitstring("d2".to_string());
+        r.current_piece_init("d2");
         r.pin_dimension = PIN_DIMENSION_SENW;
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("f4".to_string()),PIN_MATCH_NESW);
         assert!(!result);
 
         r.init_from_fen(fen.to_string());
-        r.b_current_piece = utils::convert_square_to_bitstring("d2".to_string());
+        r.current_piece_init("d2");
         r.pin_dimension = PIN_DIMENSION_NONE;
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("f4".to_string()),PIN_MATCH_NESW);
         assert!(result);
@@ -519,31 +516,31 @@ mod tests {
         let mut child = reset::new();
         let fen = "k1r1r3/8/8/8/8/8/3B4/3K4 w - - 0 1";
         r.init_from_fen(fen.to_string());
-        r.b_current_piece = utils::convert_square_to_bitstring("d2".to_string());
+        r.current_piece_init("d2");
         r.pin_dimension = PIN_DIMENSION_NS;
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("f4".to_string()),PIN_MATCH_SENW);
         assert!(!result);
 
         r.init_from_fen(fen.to_string());
-        r.b_current_piece = utils::convert_square_to_bitstring("d2".to_string());
+        r.current_piece_init("d2");
         r.pin_dimension = PIN_DIMENSION_EW;
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("f4".to_string()),PIN_MATCH_SENW);
         assert!(!result);
 
         r.init_from_fen(fen.to_string());
-        r.b_current_piece = utils::convert_square_to_bitstring("d2".to_string());
+        r.current_piece_init("d2");
         r.pin_dimension = PIN_DIMENSION_NESW;
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("f4".to_string()),PIN_MATCH_SENW);
         assert!(!result);
 
         r.init_from_fen(fen.to_string());
-        r.b_current_piece = utils::convert_square_to_bitstring("d2".to_string());
+        r.current_piece_init("d2");
         r.pin_dimension = PIN_DIMENSION_SENW;
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("f4".to_string()),PIN_MATCH_SENW);
         assert!(result);
 
         r.init_from_fen(fen.to_string());
-        r.b_current_piece = utils::convert_square_to_bitstring("d2".to_string());
+        r.current_piece_init("d2");
         r.pin_dimension = PIN_DIMENSION_NONE;
         let result = r.add_move_if_valid(&mut child, utils::convert_square_to_bitstring("f4".to_string()),PIN_MATCH_SENW);
         assert!(result);

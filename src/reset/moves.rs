@@ -102,49 +102,30 @@ impl Reset {
                 PieceType::Unknown => {
                 },
                 PieceType::Pawn => {
-                    if self.generate_next_pawn_move(child) {
-                        found_move = true;
-                        break;
-                    }
+                    found_move = self.generate_next_pawn_move(child);
                 },
                 PieceType::Knight => {
-                    if self.generate_next_knight_move(child) {
-                        found_move = true;
-                        break;
-                    }
+                    found_move = self.generate_next_knight_move(child);
                 },
                 PieceType::Bishop => {
-                    if self.generate_next_bishop_move(child) {
-                        found_move = true;
-                        break;
-                    }
+                    found_move = self.generate_next_bishop_move(child);
                 },
                 PieceType::Rook => {
-                    if self.generate_next_rook_move(child) {
-                        found_move = true;
-                        break;
-                    }
+                    found_move = self.generate_next_rook_move(child);
                 },
                 PieceType::Queen => {
-                    if self.generate_next_queen_move(child) {
-                        found_move = true;
-                        break;
-                    }
+                    found_move = self.generate_next_queen_move(child);
                 },
                 PieceType::King => {
-                    if self.generate_next_king_move(child) {
-                        found_move = true;
-                        break;
-                    }
+                    found_move = self.generate_next_king_move(child);
                 },
             }
+            if found_move {
+                child.initialize_move_generation();
+                return true;
+            }
         }
-        if found_move {
-            child.initialize_move_generation();
-            true
-        } else {
-            false
-        }
+        false
     }
 
     /// Adds a move to the specified child - MAY BE INVALID

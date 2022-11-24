@@ -666,23 +666,17 @@ mod tests {
         let mut child: Reset = reset::new();
         let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         r.init_from_fen(fen.to_string());
-        r.b_current_piece = utils::convert_square_to_bitstring("a1".to_string());
-        r.set_current_piece_type();
+        r.current_piece_init("a1");
         assert_eq!(r.current_piece_type,PieceType::Rook);
-        r.b_current_piece = utils::convert_square_to_bitstring("b1".to_string());
-        r.set_current_piece_type();
+        r.current_piece_init("b1");
         assert_eq!(r.current_piece_type,PieceType::Knight);
-        r.b_current_piece = utils::convert_square_to_bitstring("c1".to_string());
-        r.set_current_piece_type();
+        r.current_piece_init("c1");
         assert_eq!(r.current_piece_type,PieceType::Bishop);
-        r.b_current_piece = utils::convert_square_to_bitstring("d1".to_string());
-        r.set_current_piece_type();
+        r.current_piece_init("d1");
         assert_eq!(r.current_piece_type,PieceType::Queen);
-        r.b_current_piece = utils::convert_square_to_bitstring("e1".to_string());
-        r.set_current_piece_type();
+        r.current_piece_init("e1");
         assert_eq!(r.current_piece_type,PieceType::King);
-        r.b_current_piece = utils::convert_square_to_bitstring("e2".to_string());
-        r.set_current_piece_type();
+        r.current_piece_init("e2");
         assert_eq!(r.current_piece_type,PieceType::Pawn);
     }
 }

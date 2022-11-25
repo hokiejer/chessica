@@ -24,9 +24,6 @@ pub fn process_args(args: Vec<String>) -> ArgStruct {
         error: false,
     };
 
-    for (pos,val) in args.iter().enumerate() {
-        println!("vec[{}] == {}",pos,val);
-    }
     while arg_index < args.len() {
         let option: &str = &((&args[arg_index])[..]);
         match option {

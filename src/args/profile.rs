@@ -2,7 +2,6 @@ use crate::args::ArgStruct;
 use crate::args::ProfileType;
 
 pub fn args_profile(arg: &str, response: &mut ArgStruct) {
-    println!("arg == {}",arg);
     match arg {
         "reset" => {
             response.profile_type = ProfileType::Reset;
@@ -41,7 +40,6 @@ mod tests {
         let mut vec = Vec::new();
         for item in arr.into_iter().enumerate() {
             let (i, x): (usize, &&str) = item;
-            println!("array[{i}] = {x}");
             vec.push(x.to_string());
         }
         vec

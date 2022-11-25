@@ -65,6 +65,14 @@ impl Reset {
         self.set_current_piece_type();
     }
 
+    /// Complete move generation initialization only if necessary
+    pub fn conditionally_complete_move_initialization(&mut self) {
+
+        if self.b_current_piece != 0 && self.current_piece_type == PieceType::Unknown {
+            self.complete_move_initialization();
+        }
+    }
+
     /// Consider the next moveable piece
     ///
     /// # Examples

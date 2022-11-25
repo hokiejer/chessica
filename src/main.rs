@@ -19,22 +19,23 @@ fn main() {
     let args: Vec<String> = env::args().collect();
 
     let argdata: ArgStruct = process_args(args);
-    //let starting_fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     //println!("Size of Reset: {}",mem::size_of::<Reset>());
-    //let mut move_count: u64 = 0;
-    //let mut t: Tree = tree::from_fen(starting_fen);
-
-    //t.simple_move_tree(5, &mut move_count);
-    //println!("Move count = {}",move_count);
 
     //crate::reset::profiling::perft("rnbqkbnr/8/8/8/8/8/8/RNBQKBNR w KQkq - 0 1",6);
     if argdata.error() {
         return;
     }
     if argdata.profile_reset() {
+        println!("Running profile script for resets...");
         use crate::reset::profiling;
         crate::reset::profiling::burn();
     } else if argdata.profile_tree() {
+        println!("Running profile script for trees...");
+        let starting_fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        let mut t: Tree = tree::from_fen(starting_fen);
+        let mut move_count: u64 = 0;
+        t.simple_move_tree(5, &mut move_count);
+        println!("Move count = {}",move_count);
     }
 
 }

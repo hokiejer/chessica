@@ -67,7 +67,7 @@ mod tests {
     use crate::reset::r#const::SCORE_BLACK_CHECKMATE;
 
     #[test]
-    fn tree_ab_stalemate_test() {
+    fn ab_in_place_stalemate_test() {
         let fen = String::from("8/8/8/8/8/3K4/3B4/3k4 b - - 0 1");
         let mut t: Tree = crate::tree::from_fen(fen);
         let score = t.alpha_beta_in_place(8, SCORE_MAX, SCORE_MIN);
@@ -80,7 +80,7 @@ mod tests {
     }
 
     #[test]
-    fn tree_ab_checkmate_test() {
+    fn ab_in_place_checkmate_test() {
         let fen = String::from("r1bqkbnr/pppp1Qpp/8/4p3/2BnP3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 1");
         let mut t: Tree = crate::tree::from_fen(fen);
         let score = t.alpha_beta_in_place(8, SCORE_MAX, SCORE_MIN);

@@ -1,5 +1,6 @@
 pub mod r#const;
 pub mod moves;
+pub mod ab_in_place;
 
 use crate::reset::Reset;
 use std::cell::RefCell;

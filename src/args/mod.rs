@@ -1,12 +1,6 @@
 pub mod profile;
+use crate::args::profile::ProfileType;
 
-#[derive(PartialEq,Eq,Debug)]
-pub enum ProfileType {
-    None,
-    Reset,
-    Tree,
-}
-    
 pub struct ArgStruct {
     profile: bool,
     profile_type: ProfileType,

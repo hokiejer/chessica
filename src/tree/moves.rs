@@ -1,4 +1,5 @@
 use crate::reset::Reset;
+use crate::reset::PieceType;
 use crate::tree::Tree;
 
 impl Tree {
@@ -20,6 +21,7 @@ impl Tree {
         }
         let mut i = 0;
 
+        self.reset.conditionally_complete_move_initialization();
         while self.add_next_child() {
             let mut child = &mut self.children[i];
             //child.print();

@@ -100,9 +100,7 @@ impl Reset {
             //hit_enter_to_continue();
         }
         if search_flag {
-            if self.b_current_piece != 0 && self.current_piece_type == PieceType::Unknown {
-                self.complete_move_initialization();
-            }
+            self.conditionally_complete_move_initialization();
             while self.generate_next_move(&mut child) {
                 //let old: u64 = *move_count;
                 child.in_place_move_tree(depth - 1, move_count);

@@ -293,6 +293,15 @@ impl Reset {
     }
 }
 
+/// Is the moving side currently in check?
+///
+/// This dynamically replaces `b_queens` that used to be a Reset field
+impl Reset {
+    pub fn in_check(&self) -> bool {
+        self.in_check != 0
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::reset;
@@ -318,6 +327,15 @@ mod tests {
         r.b_rooks = 0x8100000000000180;
         r.b_kings = 0x0800000000000008;
         assert_eq!(r.b_queens(),0x1000004000000000);
+    }
+
+    #[test]
+    fn reset_in_check() {
+        let mut r = reset::new();
+        r.in_check = 1;
+        assert_eq!(r.in_check(),true);
+        r.in_check = 0;
+        assert_eq!(r.in_check(),false);
     }
 }
 

@@ -12,7 +12,7 @@ fn main() {
     use std::mem;
     use crate::reset::Reset;
     use crate::tree::Tree;
-    use crate::args::ProfileType;
+    use crate::args::profile::ProfileType;
     use crate::args::ArgStruct;
     use crate::args::process_args;
     use std::env;
@@ -29,6 +29,7 @@ fn main() {
         println!("Running profile script for resets...");
         use crate::reset::profiling;
         crate::reset::profiling::burn();
+
     } else if argdata.profile_tree() {
         println!("Running profile script for trees...");
         let starting_fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
@@ -36,6 +37,15 @@ fn main() {
         let mut move_count: u64 = 0;
         t.simple_move_tree(5, &mut move_count);
         println!("Move count = {}",move_count);
+
+    } else if argdata.profile_in_place_ab() {
+        use crate::reset::r#const::SCORE_MIN;
+        use crate::reset::r#const::SCORE_MAX;
+        println!("Running profile script for In Place Alpha-Beta...");
+        let starting_fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        let mut t: Tree = tree::from_fen(starting_fen);
+        let score = t.alpha_beta_in_place(6, SCORE_MAX, SCORE_MIN);
+        println!("Score == {}",score);
     }
 
 }

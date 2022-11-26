@@ -4,14 +4,8 @@ impl Reset {
 
     pub fn score(&mut self) -> i32 {
         self.score = self.material as i32 * 1000000;
-        let randomfactor: i32 = ((self.b_all % 1997) - 998).try_into().unwrap();
+        let randomfactor: i32 = ((self.b_all % 1997) as i32 - 998).try_into().unwrap();
         self.score += randomfactor;
-        #[cfg(debug_assertions)]
-        {
-            println!("IN DEBUG");
-            return self.score;
-        }
-        println!("NOT IN DEBUG");
         self.score
     }
 

@@ -1,6 +1,13 @@
 use crate::args::ArgStruct;
-use crate::args::ProfileType;
 
+#[derive(PartialEq,Eq,Debug)]
+pub enum ProfileType {
+    None,
+    Reset,
+    Tree,
+    InPlaceAB,
+}
+    
 pub fn args_profile(arg: &str, response: &mut ArgStruct) {
     match arg {
         "reset" => {
@@ -8,6 +15,9 @@ pub fn args_profile(arg: &str, response: &mut ArgStruct) {
         },
         "tree" => {
             response.profile_type = ProfileType::Tree;
+        },
+        "in_place_ab" => {
+            response.profile_type = ProfileType::InPlaceAB;
         },
         "" => {
             response.error = true;
@@ -27,6 +37,10 @@ impl ArgStruct {
 
     pub fn profile_tree(&self) -> bool {
         self.profile & (self.profile_type == ProfileType::Tree)
+    }
+
+    pub fn profile_in_place_ab(&self) -> bool {
+        self.profile & (self.profile_type == ProfileType::InPlaceAB)
     }
 }
 
@@ -55,6 +69,7 @@ mod tests {
         assert_eq!(a.error,false);
         assert!(a.profile_reset());
         assert!(!a.profile_tree());
+        assert!(!a.profile_in_place_ab());
 
         let arr = ["chessica","--profile","tree"];
         let vec = convert_to_strings(&arr);
@@ -64,6 +79,17 @@ mod tests {
         assert_eq!(a.error,false);
         assert!(a.profile_tree());
         assert!(!a.profile_reset());
+        assert!(!a.profile_in_place_ab());
+
+        let arr = ["chessica","--profile","in_place_ab"];
+        let vec = convert_to_strings(&arr);
+        let a = process_args(vec);
+        assert_eq!(a.profile,true);
+        assert_eq!(a.profile_type,ProfileType::InPlaceAB);
+        assert_eq!(a.error,false);
+        assert!(!a.profile_tree());
+        assert!(!a.profile_reset());
+        assert!(a.profile_in_place_ab());
 
         let arr = ["chessica","--profile","noclue"];
         let vec = convert_to_strings(&arr);

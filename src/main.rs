@@ -44,7 +44,16 @@ fn main() {
         println!("Running profile script for In Place Alpha-Beta...");
         let starting_fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         let mut t: Tree = tree::from_fen(starting_fen);
-        let score = t.alpha_beta_in_place(6, SCORE_MAX, SCORE_MIN);
+        let score = t.alpha_beta_in_place(8, SCORE_MAX, SCORE_MIN);
+        println!("Score == {}",score);
+
+    } else if argdata.profile_keep_depth_ab() {
+        use crate::reset::r#const::SCORE_MIN;
+        use crate::reset::r#const::SCORE_MAX;
+        println!("Running profile script for Keep Depth Alpha-Beta...");
+        let starting_fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        let mut t: Tree = tree::from_fen(starting_fen);
+        let score = t.alpha_beta_keep_depth(4, 8, SCORE_MAX, SCORE_MIN);
         println!("Score == {}",score);
     }
 

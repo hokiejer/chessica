@@ -6,6 +6,7 @@ pub enum ProfileType {
     Reset,
     Tree,
     InPlaceAB,
+    KeepDepthAB,
 }
     
 pub fn args_profile(arg: &str, response: &mut ArgStruct) {
@@ -18,6 +19,9 @@ pub fn args_profile(arg: &str, response: &mut ArgStruct) {
         },
         "in_place_ab" => {
             response.profile_type = ProfileType::InPlaceAB;
+        },
+        "keep_depth_ab" => {
+            response.profile_type = ProfileType::KeepDepthAB;
         },
         "" => {
             response.error = true;
@@ -41,6 +45,10 @@ impl ArgStruct {
 
     pub fn profile_in_place_ab(&self) -> bool {
         self.profile & (self.profile_type == ProfileType::InPlaceAB)
+    }
+
+    pub fn profile_keep_depth_ab(&self) -> bool {
+        self.profile & (self.profile_type == ProfileType::KeepDepthAB)
     }
 }
 
@@ -70,6 +78,7 @@ mod tests {
         assert!(a.profile_reset());
         assert!(!a.profile_tree());
         assert!(!a.profile_in_place_ab());
+        assert!(!a.profile_keep_depth_ab());
 
         let arr = ["chessica","--profile","tree"];
         let vec = convert_to_strings(&arr);
@@ -80,6 +89,7 @@ mod tests {
         assert!(a.profile_tree());
         assert!(!a.profile_reset());
         assert!(!a.profile_in_place_ab());
+        assert!(!a.profile_keep_depth_ab());
 
         let arr = ["chessica","--profile","in_place_ab"];
         let vec = convert_to_strings(&arr);
@@ -90,6 +100,18 @@ mod tests {
         assert!(!a.profile_tree());
         assert!(!a.profile_reset());
         assert!(a.profile_in_place_ab());
+        assert!(!a.profile_keep_depth_ab());
+
+        let arr = ["chessica","--profile","keep_depth_ab"];
+        let vec = convert_to_strings(&arr);
+        let a = process_args(vec);
+        assert_eq!(a.profile,true);
+        assert_eq!(a.profile_type,ProfileType::KeepDepthAB);
+        assert_eq!(a.error,false);
+        assert!(!a.profile_tree());
+        assert!(!a.profile_reset());
+        assert!(!a.profile_in_place_ab());
+        assert!(a.profile_keep_depth_ab());
 
         let arr = ["chessica","--profile","noclue"];
         let vec = convert_to_strings(&arr);

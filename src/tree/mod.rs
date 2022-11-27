@@ -1,6 +1,7 @@
 pub mod r#const;
 pub mod moves;
 pub mod ab_in_place;
+pub mod ab_keep_depth;
 
 use crate::reset::Reset;
 use std::cell::RefCell;
@@ -44,6 +45,10 @@ impl Tree {
 
     pub fn add_child_last(&mut self, child: Tree) {
         self.children.push(child);
+    }
+
+    pub fn purge_children(&mut self) {
+        self.children.clear();
     }
 
     //pub fn add_child_first(&mut self, child: Tree) {

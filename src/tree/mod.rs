@@ -2,6 +2,7 @@ pub mod r#const;
 pub mod moves;
 pub mod ab_in_place;
 pub mod ab_keep_depth;
+pub mod ab_iterative_keep_depth;
 
 use crate::reset::Reset;
 use std::cell::RefCell;

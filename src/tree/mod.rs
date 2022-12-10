@@ -2,7 +2,9 @@ pub mod r#const;
 pub mod moves;
 pub mod ab_in_place;
 pub mod ab_keep_depth;
+pub mod ab_keep_depth_promote;
 pub mod ab_iterative_keep_depth;
+pub mod ab_iterative_keep_depth_promote;
 
 use crate::reset::Reset;
 use std::cell::RefCell;
@@ -48,12 +50,22 @@ impl Tree {
         self.children.push(child);
     }
 
+    // The child I specify shall be first and the first shall be last
+    pub fn promote_last_child_to_first(&mut self, last_child_index: usize) {
+        let mut my_slice = &mut self.children[..=last_child_index];
+        my_slice.rotate_right(1);
+    }
+
     pub fn purge_children(&mut self) {
         self.children.clear();
     }
 
     pub fn number_of_children(&mut self) -> u32 {
         self.children.len().try_into().unwrap()
+    }
+
+    pub fn number_of_children_usize(&mut self) -> usize {
+        self.children.len()
     }
 
     pub fn count_tree_nodes(&mut self, level: u8, node_count: &mut Vec<u64>) {
@@ -86,9 +98,6 @@ impl Tree {
 
         //let child = crate::tree::new();
         //self.children.push(child);
-    //}
-
-    //pub fn swap_with_first(&mut self) {
     //}
 }
 

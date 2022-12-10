@@ -2,6 +2,7 @@ pub mod r#const;
 pub mod moves;
 pub mod ab_in_place;
 pub mod ab_keep_depth;
+pub mod ab_iterative_keep_depth;
 
 use crate::reset::Reset;
 use std::cell::RefCell;
@@ -49,6 +50,30 @@ impl Tree {
 
     pub fn purge_children(&mut self) {
         self.children.clear();
+    }
+
+    pub fn number_of_children(&mut self) -> u32 {
+        self.children.len().try_into().unwrap()
+    }
+
+    pub fn count_tree_nodes(&mut self, level: u8, node_count: &mut Vec<u64>) {
+        if node_count.len() <= level as usize {
+            node_count.push(0);
+        }
+        node_count[level as usize] += self.children.len() as u64;
+        for c in 0..self.children.len() {
+            let mut child = &mut self.children[c];
+            child.count_tree_nodes(level+1, node_count);
+        }
+    }
+
+    pub fn print_diagnostics(&mut self) {
+        let mut node_count: Vec<u64> = Vec::new();
+        node_count.push(1);
+        self.count_tree_nodes(1, &mut node_count);
+        for i in 0..node_count.len() {
+            println!("Depth = {}, node_count = {}",i,node_count[i]);
+        }
     }
 
     //pub fn add_child_first(&mut self, child: Tree) {

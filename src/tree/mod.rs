@@ -50,12 +50,25 @@ impl Tree {
         self.children.push(child);
     }
 
+    // The child I specify shall be first and the first shall be last
+    pub fn add_child_first_with_swap(&mut self, child: Tree) {
+        let size: usize = self.number_of_children_usize();
+        if size > 0 {
+            self.add_child_last(child);
+            self.children.swap(0,size);
+        }
+    }
+
     pub fn purge_children(&mut self) {
         self.children.clear();
     }
 
     pub fn number_of_children(&mut self) -> u32 {
         self.children.len().try_into().unwrap()
+    }
+
+    pub fn number_of_children_usize(&mut self) -> usize {
+        self.children.len()
     }
 
     pub fn count_tree_nodes(&mut self, level: u8, node_count: &mut Vec<u64>) {

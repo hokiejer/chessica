@@ -74,7 +74,7 @@ fn main() {
         println!("Running profile script for Iterative Keep Depth Alpha-Beta with Swap...");
         let starting_fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         let mut t: Tree = tree::from_fen(starting_fen);
-        let score = t.iterative_alpha_beta_keep_depth_swap(4, 8, SCORE_MAX, SCORE_MIN);
+        let score = t.iterative_alpha_beta_keep_depth_swap(5, 8, SCORE_MAX, SCORE_MIN);
         println!("Score == {}",score);
     }
 

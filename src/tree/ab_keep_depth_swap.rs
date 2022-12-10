@@ -28,10 +28,16 @@ impl Tree {
                     if self.reset.white_to_move() {
                         if temp_score > max {
                             max = temp_score;
+                            //self.children.swap(0,c);
+                            let mut my_slice = &mut self.children[..=c];
+                            my_slice.rotate_right(1);
                         }
                     } else {
                         if temp_score < min {
                             min = temp_score;
+                            //self.children.swap(0,c);
+                            let mut my_slice = &mut self.children[..=c];
+                            my_slice.rotate_right(1);
                         }
                     }
                     if min <= max {
@@ -50,10 +56,16 @@ impl Tree {
                     if self.reset.white_to_move() {
                         if temp_score > max {
                             max = temp_score;
+                            //self.children.swap(0,i);
+                            let mut my_slice = &mut self.children[..=i];
+                            my_slice.rotate_right(1);
                         }
                     } else {
                         if temp_score < min {
                             min = temp_score;
+                            //self.children.swap(0,i);
+                            let mut my_slice = &mut self.children[..=i];
+                            my_slice.rotate_right(1);
                         }
                     }
                     if min <= max {

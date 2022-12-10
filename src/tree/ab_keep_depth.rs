@@ -20,7 +20,6 @@ impl Tree {
                     let temp_score: i32 = if keep_depth == 1 {
                         if child.number_of_children() == 0 {
                             child.reset.initialize_move_generation();
-                            child.reset.complete_move_initialization();
                         }
                         child.alpha_beta_in_place(depth-1,min,max,move_count)
                     } else {

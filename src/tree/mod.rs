@@ -2,9 +2,9 @@ pub mod r#const;
 pub mod moves;
 pub mod ab_in_place;
 pub mod ab_keep_depth;
-pub mod ab_keep_depth_swap;
+pub mod ab_keep_depth_promote;
 pub mod ab_iterative_keep_depth;
-pub mod ab_iterative_keep_depth_swap;
+pub mod ab_iterative_keep_depth_promote;
 
 use crate::reset::Reset;
 use std::cell::RefCell;
@@ -51,12 +51,9 @@ impl Tree {
     }
 
     // The child I specify shall be first and the first shall be last
-    pub fn add_child_first_with_swap(&mut self, child: Tree) {
-        let size: usize = self.number_of_children_usize();
-        if size > 0 {
-            self.add_child_last(child);
-            self.children.swap(0,size);
-        }
+    pub fn promote_last_child_to_first(&mut self, last_child_index: usize) {
+        let mut my_slice = &mut self.children[..=last_child_index];
+        my_slice.rotate_right(1);
     }
 
     pub fn purge_children(&mut self) {
@@ -101,9 +98,6 @@ impl Tree {
 
         //let child = crate::tree::new();
         //self.children.push(child);
-    //}
-
-    //pub fn swap_with_first(&mut self) {
     //}
 }
 

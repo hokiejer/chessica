@@ -68,13 +68,13 @@ fn main() {
         let mut t: Tree = tree::from_fen(starting_fen);
         let score = t.iterative_alpha_beta_keep_depth(4, 8, SCORE_MAX, SCORE_MIN);
         println!("Score == {}",score);
-    } else if argdata.profile_iterative_keep_depth_ab_swap() {
+    } else if argdata.profile_iterative_keep_depth_ab_promote() {
         use crate::reset::r#const::SCORE_MIN;
         use crate::reset::r#const::SCORE_MAX;
         println!("Running profile script for Iterative Keep Depth Alpha-Beta with Swap...");
         let starting_fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         let mut t: Tree = tree::from_fen(starting_fen);
-        let score = t.iterative_alpha_beta_keep_depth_swap(5, 8, SCORE_MAX, SCORE_MIN);
+        let score = t.iterative_alpha_beta_keep_depth_promote(5, 8, SCORE_MAX, SCORE_MIN);
         println!("Score == {}",score);
     }
 

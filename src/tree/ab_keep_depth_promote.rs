@@ -6,7 +6,11 @@ use crate::reset::r#const::SCORE_WHITE_CHECKMATE;
 
 impl Tree {
 
-    pub fn alpha_beta_keep_depth_swap(&mut self, keep_depth: u8, depth: u8, mut min: i32, mut max: i32, move_count: &mut u64) -> i32 {
+    // Alpha-Beta search built to:
+    // - Keep all nodes down to a cetain depth
+    // - Keep no nodes beyond that depth
+    // - Reorder kept nodes by promoting each new best score to the front of the list
+    pub fn alpha_beta_keep_depth_promote(&mut self, keep_depth: u8, depth: u8, mut min: i32, mut max: i32, move_count: &mut u64) -> i32 {
         let mut moves_generated: bool = false;
         if depth == 0 {
             *move_count += 1;
@@ -23,21 +27,17 @@ impl Tree {
                         }
                         child.alpha_beta_in_place(depth-1,min,max,move_count)
                     } else {
-                        child.alpha_beta_keep_depth_swap(keep_depth-1,depth-1,min,max,move_count)
+                        child.alpha_beta_keep_depth_promote(keep_depth-1,depth-1,min,max,move_count)
                     };
                     if self.reset.white_to_move() {
                         if temp_score > max {
                             max = temp_score;
-                            //self.children.swap(0,c);
-                            let mut my_slice = &mut self.children[..=c];
-                            my_slice.rotate_right(1);
+                            self.promote_last_child_to_first(c);
                         }
                     } else {
                         if temp_score < min {
                             min = temp_score;
-                            //self.children.swap(0,c);
-                            let mut my_slice = &mut self.children[..=c];
-                            my_slice.rotate_right(1);
+                            self.promote_last_child_to_first(c);
                         }
                     }
                     if min <= max {
@@ -51,21 +51,17 @@ impl Tree {
                     let temp_score: i32 = if keep_depth == 1 {
                         child.alpha_beta_in_place(depth-1,min,max,move_count)
                     } else {
-                        child.alpha_beta_keep_depth_swap(keep_depth-1,depth-1,min,max,move_count)
+                        child.alpha_beta_keep_depth_promote(keep_depth-1,depth-1,min,max,move_count)
                     };
                     if self.reset.white_to_move() {
                         if temp_score > max {
                             max = temp_score;
-                            //self.children.swap(0,i);
-                            let mut my_slice = &mut self.children[..=i];
-                            my_slice.rotate_right(1);
+                            self.promote_last_child_to_first(i);
                         }
                     } else {
                         if temp_score < min {
                             min = temp_score;
-                            //self.children.swap(0,i);
-                            let mut my_slice = &mut self.children[..=i];
-                            my_slice.rotate_right(1);
+                            self.promote_last_child_to_first(i);
                         }
                     }
                     if min <= max {
@@ -118,13 +114,13 @@ mod tests {
         let fen = String::from("8/8/8/8/8/3K4/3B4/3k4 b - - 0 1");
         let mut t: Tree = crate::tree::from_fen(fen);
         let mut move_count: u64 = 0;
-        let score = t.alpha_beta_keep_depth_swap(4, 8, SCORE_MAX, SCORE_MIN, &mut move_count);
+        let score = t.alpha_beta_keep_depth_promote(4, 8, SCORE_MAX, SCORE_MIN, &mut move_count);
         assert_eq!(score,SCORE_STALEMATE);
 
         let fen = String::from("7K/5k2/p4n2/Pp2b3/1P6/8/8/8 w - - 0 1");
         let mut t: Tree = crate::tree::from_fen(fen);
         let mut move_count: u64 = 0;
-        let score = t.alpha_beta_keep_depth_swap(4, 8, SCORE_MAX, SCORE_MIN, &mut move_count);
+        let score = t.alpha_beta_keep_depth_promote(4, 8, SCORE_MAX, SCORE_MIN, &mut move_count);
         assert_eq!(score,SCORE_STALEMATE);
     }
 
@@ -133,13 +129,13 @@ mod tests {
         let fen = String::from("r1bqkbnr/pppp1Qpp/8/4p3/2BnP3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 1");
         let mut t: Tree = crate::tree::from_fen(fen);
         let mut move_count: u64 = 0;
-        let score = t.alpha_beta_keep_depth_swap(4, 8, SCORE_MAX, SCORE_MIN, &mut move_count);
+        let score = t.alpha_beta_keep_depth_promote(4, 8, SCORE_MAX, SCORE_MIN, &mut move_count);
         assert_eq!(score,SCORE_WHITE_CHECKMATE);
 
         let fen = String::from("8/7P/5n2/1P6/2P2p2/4k3/8/r3K3 w - - 0 1");
         let mut t: Tree = crate::tree::from_fen(fen);
         let mut move_count: u64 = 0;
-        let score = t.alpha_beta_keep_depth_swap(4, 8, SCORE_MAX, SCORE_MIN, &mut move_count);
+        let score = t.alpha_beta_keep_depth_promote(4, 8, SCORE_MAX, SCORE_MIN, &mut move_count);
         assert_eq!(score,SCORE_BLACK_CHECKMATE);
     }
 }

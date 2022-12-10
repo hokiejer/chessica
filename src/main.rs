@@ -45,7 +45,7 @@ fn main() {
         let mut move_count: u64 = 0;
         let starting_fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         let mut t: Tree = tree::from_fen(starting_fen);
-        let score = t.alpha_beta_in_place(4, SCORE_MAX, SCORE_MIN, &mut move_count);
+        let score = t.alpha_beta_in_place(8, SCORE_MAX, SCORE_MIN, &mut move_count);
         println!("Score == {}",score);
         println!("Move count == {}",move_count);
 
@@ -56,7 +56,7 @@ fn main() {
         let mut move_count: u64 = 0;
         let starting_fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         let mut t: Tree = tree::from_fen(starting_fen);
-        let score = t.alpha_beta_keep_depth(2, 5, SCORE_MAX, SCORE_MIN, &mut move_count);
+        let score = t.alpha_beta_keep_depth(4, 8, SCORE_MAX, SCORE_MIN, &mut move_count);
         println!("Score == {}",score);
         println!("Move count == {}",move_count);
 
@@ -66,9 +66,7 @@ fn main() {
         println!("Running profile script for Iterative Keep Depth Alpha-Beta...");
         let starting_fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         let mut t: Tree = tree::from_fen(starting_fen);
-        // This errors with checkmates and stalemates all over the place
-        //let score = t.iterative_alpha_beta_keep_depth(4, 8, SCORE_MAX, SCORE_MIN);
-        let score = t.iterative_alpha_beta_keep_depth(2, 5, SCORE_MAX, SCORE_MIN);
+        let score = t.iterative_alpha_beta_keep_depth(4, 8, SCORE_MAX, SCORE_MIN);
         println!("Score == {}",score);
     }
 

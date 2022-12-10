@@ -15,7 +15,7 @@ impl Tree {
             temp_score = self.alpha_beta_keep_depth(keep_depth,i,min,max,&mut move_count);
             println!("Score == {}",temp_score);
             println!("Move count == {}",move_count);
-            self.print_diagnostics();
+            //self.print_diagnostics();
         }
         temp_score
     }

@@ -39,14 +39,14 @@ impl Tree {
             } else {
                 if self.reset.in_check() {
                     if self.reset.white_to_move() {
-                        println!("Found Black Checkmate???");
+                        //println!("Found Black Checkmate???");
                         SCORE_BLACK_CHECKMATE
                     } else {
-                        println!("Found White Checkmate???");
+                        //println!("Found White Checkmate???");
                         SCORE_WHITE_CHECKMATE
                     }
                 } else {
-                        println!("Found Stalemate???");
+                        //println!("Found Stalemate???");
                     SCORE_STALEMATE
                 }
             }

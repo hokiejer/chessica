@@ -89,6 +89,10 @@ impl Reset {
         }
     }
 
+    pub fn no_moves_left(&mut self) -> bool {
+        self.b_current_piece == 0
+    }
+
     /// Generate the next move for a Reset
     ///
     /// Returns Boolean indicating `true` if a move was successfully returned

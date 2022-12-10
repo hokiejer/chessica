@@ -9,8 +9,13 @@ impl Tree {
     pub fn iterative_alpha_beta_keep_depth(&mut self, keep_depth: u8, depth: u8, mut min: i32, mut max: i32) -> i32 {
         let mut temp_score: i32 = 0;
         self.reset.conditionally_complete_move_initialization();
-        for i in 1..depth {
-            temp_score = self.alpha_beta_keep_depth(keep_depth,i,min,max);
+        for i in 1..(depth+1) {
+            let mut move_count: u64 = 0;
+            println!("i == {}",i);
+            temp_score = self.alpha_beta_keep_depth(keep_depth,i,min,max,&mut move_count);
+            println!("Score == {}",temp_score);
+            println!("Move count == {}",move_count);
+            self.print_diagnostics();
         }
         temp_score
     }

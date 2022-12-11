@@ -68,3 +68,15 @@ cargo asm chessica::reset::new
 cargo asm chessica::reset::new | wc -l
 ```
 
+## Score Data
+(From In Place Alpha Beta)
+1      975
+2     -586
+3      880
+4     -794
+5   999021
+6  -999033
+7   999410
+8  -999134
+9   999592
+10 -xxxxxx

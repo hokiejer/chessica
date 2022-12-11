@@ -4,11 +4,11 @@ use crate::args::profile::ProfileType;
 use std::process;
 
 pub struct ArgStruct {
-    profile: bool,
-    profile_type: ProfileType,
-    ab_search_depth: u8,
-    ab_keep_depth: u8,
-    error: bool,
+    pub profile: bool,
+    pub profile_type: ProfileType,
+    pub ab_search_depth: u8,
+    pub ab_keep_depth: u8,
+    pub error: bool,
 }
 
 pub fn usage() {

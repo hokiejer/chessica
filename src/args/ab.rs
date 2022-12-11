@@ -1,5 +1,15 @@
 use crate::args::ArgStruct;
 
+pub fn args_ab(arg: &str, option: &str, response: &mut ArgStruct) {
+    match option {
+        "--ab-search-depth" => args_ab_search_depth(arg, response),
+        "--ab-keep-depth" => args_ab_keep_depth(arg, response),
+        _ => {
+            // Will not get here
+        },
+    }
+}
+
 pub fn args_ab_search_depth(arg: &str, response: &mut ArgStruct) {
     match arg.parse::<u8>() {
         Ok(n) => {

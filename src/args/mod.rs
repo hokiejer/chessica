@@ -18,8 +18,7 @@ pub fn usage() {
 pub fn process_args(args: Vec<String>) -> ArgStruct {
     use std::env;
     use crate::args::profile::args_profile;
-    use crate::args::ab::args_ab_search_depth;
-    use crate::args::ab::args_ab_keep_depth;
+    use crate::args::ab::args_ab;
 
     let mut arg_index = 1;
     let mut response = ArgStruct {
@@ -45,26 +44,14 @@ pub fn process_args(args: Vec<String>) -> ArgStruct {
                     arg_index += 1;
                 }
             },
-            "--ab-search-depth" => {
+            "--ab-search-depth" | "--ab-keep-depth" => {
                 response.profile = true;
                 if arg_index + 1 < args.len() {
                     let parameter: &str = &((&args[arg_index+1])[..]);
-                    args_ab_search_depth(parameter,&mut response);
+                    args_ab(parameter,option,&mut response);
                     arg_index += 2;
                 } else {
-                    println!("No argument specifed for \"--ab-search-depth\" option");
-                    response.error = true;
-                    arg_index += 1;
-                }
-            },
-            "--ab-keep-depth" => {
-                response.profile = true;
-                if arg_index + 1 < args.len() {
-                    let parameter: &str = &((&args[arg_index+1])[..]);
-                    args_ab_keep_depth(parameter,&mut response);
-                    arg_index += 2;
-                } else {
-                    println!("No argument specifed for \"--ab-keep-depth\" option");
+                    println!("No argument specifed for \"{}\" option",option);
                     response.error = true;
                     arg_index += 1;
                 }

@@ -15,6 +15,7 @@ fn main() {
     use crate::args::profile::ProfileType;
     use crate::args::ArgStruct;
     use crate::args::process_args;
+    use crate::args::usage;
     use std::env;
     let args: Vec<String> = env::args().collect();
 
@@ -23,6 +24,7 @@ fn main() {
 
     //crate::reset::profiling::perft("rnbqkbnr/8/8/8/8/8/8/RNBQKBNR w KQkq - 0 1",6);
     if argdata.error() {
+        usage();
         return;
     }
     if argdata.profile_reset() {

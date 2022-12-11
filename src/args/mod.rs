@@ -1,20 +1,31 @@
 pub mod profile;
+pub mod ab;
 use crate::args::profile::ProfileType;
+use std::process;
 
 pub struct ArgStruct {
-    profile: bool,
-    profile_type: ProfileType,
-    error: bool,
+    pub profile: bool,
+    pub profile_type: ProfileType,
+    pub ab_search_depth: u8,
+    pub ab_keep_depth: u8,
+    pub error: bool,
+}
+
+pub fn usage() {
+    println!("USAGE:");
 }
 
 pub fn process_args(args: Vec<String>) -> ArgStruct {
     use std::env;
     use crate::args::profile::args_profile;
+    use crate::args::ab::args_ab;
 
     let mut arg_index = 1;
     let mut response = ArgStruct {
         profile: false,
         profile_type: ProfileType::None,
+        ab_search_depth: 8, // <= This should be a constant somewhere
+        ab_keep_depth: 4, // <= This should be a constant somewhere
         error: false,
     };
 
@@ -29,6 +40,18 @@ pub fn process_args(args: Vec<String>) -> ArgStruct {
                     arg_index += 2;
                 } else {
                     println!("No argument specifed for \"--profile\" option");
+                    response.error = true;
+                    arg_index += 1;
+                }
+            },
+            "--ab-search-depth" | "--ab-keep-depth" => {
+                response.profile = true;
+                if arg_index + 1 < args.len() {
+                    let parameter: &str = &((&args[arg_index+1])[..]);
+                    args_ab(parameter,option,&mut response);
+                    arg_index += 2;
+                } else {
+                    println!("No argument specifed for \"{}\" option",option);
                     response.error = true;
                     arg_index += 1;
                 }

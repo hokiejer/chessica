@@ -19,16 +19,16 @@ pub fn args_profile(arg: &str, response: &mut ArgStruct) {
         "tree" => {
             response.profile_type = ProfileType::Tree;
         },
-        "in_place_ab" => {
+        "in-place-ab" => {
             response.profile_type = ProfileType::InPlaceAB;
         },
-        "keep_depth_ab" => {
+        "keep-depth-ab" => {
             response.profile_type = ProfileType::KeepDepthAB;
         },
-        "iterative_keep_depth_ab" => {
+        "iterative-keep-depth-ab" => {
             response.profile_type = ProfileType::IterativeKeepDepthAB;
         },
-        "iterative_keep_depth_ab_promote" => {
+        "iterative-keep-depth-ab-promote" => {
             response.profile_type = ProfileType::IterativeKeepDepthABSwap;
         },
         "" => {

@@ -25,7 +25,7 @@ pub fn process_args(args: Vec<String>) -> ArgStruct {
     let mut response = ArgStruct {
         profile: false,
         profile_type: ProfileType::None,
-        ab_search_depth: 6, // <= This should be a constant somewhere
+        ab_search_depth: 8, // <= This should be a constant somewhere
         ab_keep_depth: 4, // <= This should be a constant somewhere
         error: false,
     };

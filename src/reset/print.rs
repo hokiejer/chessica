@@ -42,7 +42,7 @@ impl Reset {
         };
         let from_text = convert_bitstring_to_square(self.b_from);
         let to_text = convert_bitstring_to_square(self.b_to);
-        println!("{}:{}-{} => {}",piece_text,from_text,to_text,self.to_fen());
+        println!("{}:{}-{} => {} [{}]",piece_text,from_text,to_text,self.to_fen(),self.score());
         self.to_fen()
     }
 

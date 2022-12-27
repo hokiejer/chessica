@@ -6,6 +6,29 @@ use crate::reset::r#const::SCORE_WHITE_CHECKMATE;
 
 impl Tree {
 
+    /// Use Alpha-Beta search to build a pruned tree to a specified depth (working in memory beyond
+    /// that depth)
+    ///
+    /// For example, with (depth,keep_depth) = (9,5) here's what we expect:
+    /// 0.   O   <= root (9,5)
+    ///     /|\
+    /// 1. O O O <= keep (8,4)
+    ///     /|\
+    /// 2. O O O <= keep (7,3)
+    ///     /|\
+    /// 3. O O O <= keep (6,2)
+    ///     /|\
+    /// 4. O O O <= keep (5,1)
+    ///     /|\
+    /// 5. O O O <= keep (4,0)
+    ///     /|\
+    /// 6. O O O <= search in memory and discard
+    ///     /|\
+    /// 7. O O O <= search in memory and discard
+    ///     /|\ 
+    /// 8. O O O <= search in memory and discard
+    ///     /|\
+    /// 9. O O O <= search in memory and discard
     pub fn alpha_beta_keep_depth(&mut self, keep_depth: u8, depth: u8, mut min: i32, mut max: i32, move_count: &mut u64) -> i32 {
         let mut moves_generated: bool = false;
         if depth == 0 {
@@ -18,9 +41,7 @@ impl Tree {
                     let mut child = &mut self.children[c];
                     moves_generated = true;
                     let temp_score: i32 = if keep_depth == 1 {
-                        if child.number_of_children() == 0 {
-                            child.reset.initialize_move_generation();
-                        }
+                        child.reset.initialize_move_generation();
                         child.alpha_beta_in_place(depth-1,min,max,move_count)
                     } else {
                         child.alpha_beta_keep_depth(keep_depth-1,depth-1,min,max,move_count)
@@ -43,6 +64,7 @@ impl Tree {
                     moves_generated = true;
                     let mut child = &mut self.children[i];
                     let temp_score: i32 = if keep_depth == 1 {
+                        // Child move generation will already be initialized because it was just created
                         child.alpha_beta_in_place(depth-1,min,max,move_count)
                     } else {
                         child.alpha_beta_keep_depth(keep_depth-1,depth-1,min,max,move_count)

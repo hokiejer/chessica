@@ -111,7 +111,7 @@ mod tests {
         assert!(!a.profile_iterative_keep_depth_ab());
         assert!(!a.profile_iterative_keep_depth_ab_promote());
 
-        let arr = ["chessica","--profile","in_place_ab"];
+        let arr = ["chessica","--profile","in-place-ab"];
         let vec = convert_to_strings(&arr);
         let a = process_args(vec);
         assert_eq!(a.profile,true);
@@ -124,7 +124,7 @@ mod tests {
         assert!(!a.profile_iterative_keep_depth_ab());
         assert!(!a.profile_iterative_keep_depth_ab_promote());
 
-        let arr = ["chessica","--profile","keep_depth_ab"];
+        let arr = ["chessica","--profile","keep-depth-ab"];
         let vec = convert_to_strings(&arr);
         let a = process_args(vec);
         assert_eq!(a.profile,true);
@@ -137,7 +137,7 @@ mod tests {
         assert!(!a.profile_iterative_keep_depth_ab());
         assert!(!a.profile_iterative_keep_depth_ab_promote());
 
-        let arr = ["chessica","--profile","iterative_keep_depth_ab"];
+        let arr = ["chessica","--profile","iterative-keep-depth-ab"];
         let vec = convert_to_strings(&arr);
         let a = process_args(vec);
         assert_eq!(a.profile,true);
@@ -150,7 +150,7 @@ mod tests {
         assert!(a.profile_iterative_keep_depth_ab());
         assert!(!a.profile_iterative_keep_depth_ab_promote());
 
-        let arr = ["chessica","--profile","iterative_keep_depth_ab_promote"];
+        let arr = ["chessica","--profile","iterative-keep-depth-ab-promote"];
         let vec = convert_to_strings(&arr);
         let a = process_args(vec);
         assert_eq!(a.profile,true);

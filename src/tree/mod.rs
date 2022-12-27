@@ -88,6 +88,18 @@ impl Tree {
         }
     }
 
+    pub fn print_children(&mut self) -> bool {
+        if self.children.len() > 0 {
+            self.reset.print_board_big();
+            for c in 0..self.children.len() {
+                let mut child = &mut self.children[c];
+                child.reset.print();
+            }
+            return true
+        }
+        false
+    }
+
     //pub fn add_child_first(&mut self, child: Tree) {
 
         //let child = crate::tree::new();

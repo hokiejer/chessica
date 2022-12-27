@@ -1,6 +1,61 @@
 use crate::reset::Reset;
 use crate::reset::PieceType;
 
+pub fn clone_from(source: &mut Reset) -> Reset {
+    Reset {
+        b_all: source.b_all,
+        b_white: source.b_white,
+        b_pawns: source.b_pawns,
+        b_knights: source.b_knights,
+        b_bishops: source.b_bishops,
+        b_rooks: source.b_rooks,
+        b_kings: source.b_kings,
+        reserved_01: source.reserved_01,
+        material: source.material,
+        halfmove_clock: source.halfmove_clock,
+        fullmove_number: source.fullmove_number,
+        white_king_square: source.white_king_square,
+        black_king_square: source.black_king_square,
+        castle_bits: source.castle_bits,
+        reserved_02: source.reserved_02,
+        reserved_03: source.reserved_03,
+        reserved_04: source.reserved_04,
+        reserved_05: source.reserved_05,
+        reserved_06: source.reserved_06,
+        reserved_07: source.reserved_07,
+        reserved_08: source.reserved_08,
+        reserved_09: source.reserved_09,
+        reserved_10: source.reserved_10,
+        reserved_11: source.reserved_11,
+
+        b_current_piece: source.b_current_piece,
+        b_en_passant: source.b_en_passant,
+        score: source.score,
+        move_id: source.move_id,
+        to_move: source.to_move,
+        capture: source.capture,
+        in_check: source.in_check,
+        promotion: source.promotion,
+        king_castled: source.king_castled,
+        game_over: source.game_over,
+
+        b_from: source.b_from,
+        b_to: source.b_to,
+        hash_value: source.hash_value,
+        min: source.min,
+        max: source.max,
+        bi_from: source.bi_from,
+        bi_to: source.bi_to,
+        score_depth: source.score_depth,
+        hash_count: source.hash_count,
+        times_seen: source.times_seen,
+        must_check_safety: source.must_check_safety,
+        bi_current_piece: source.bi_current_piece,
+        pin_dimension: source.pin_dimension,
+        current_piece_type: source.current_piece_type,
+    }
+}
+
 impl Reset {
 
     /// Clone this Reset
@@ -26,6 +81,16 @@ impl Reset {
         clone.b_rooks = self.b_rooks;
         clone.b_kings = self.b_kings;
         clone.reserved_01 = self.reserved_01;
+        clone.b_current_piece = self.b_current_piece;
+        clone.b_en_passant = self.b_en_passant;
+        clone.b_from = self.b_from;
+        clone.b_to = self.b_to;
+
+        clone.score = self.score;
+        clone.hash_value = self.hash_value;
+        clone.min = self.min;
+        clone.max = self.max;
+
         clone.material = self.material;
         clone.halfmove_clock = self.halfmove_clock;
         clone.fullmove_number = self.fullmove_number;
@@ -43,9 +108,6 @@ impl Reset {
         clone.reserved_10 = self.reserved_10;
         clone.reserved_11 = self.reserved_11;
 
-        clone.b_current_piece = self.b_current_piece;
-        clone.b_en_passant = self.b_en_passant;
-        clone.score = self.score;
         clone.move_id = self.move_id;
         clone.to_move = self.to_move;
         clone.capture = self.capture;
@@ -54,11 +116,6 @@ impl Reset {
         clone.king_castled = self.king_castled;
         clone.game_over = self.game_over;
 
-        clone.b_from = self.b_from;
-        clone.b_to = self.b_to;
-        clone.hash_value = self.hash_value;
-        clone.min = self.min;
-        clone.max = self.max;
         clone.bi_from = self.bi_from;
         clone.bi_to = self.bi_to;
         clone.score_depth = self.score_depth;
@@ -75,6 +132,7 @@ impl Reset {
 mod tests {
     use crate::reset;
     use crate::reset::PieceType;
+
     #[test]
     fn reset_clone_to_fen() {
         let mut r = reset::new();
@@ -82,6 +140,16 @@ mod tests {
         r.init_from_fen(fen.to_string());
         let mut child = reset::new();
         r.clone_to(&mut child);
+        let result = child.to_fen();
+        assert_eq!(result,fen.to_string().to_string());
+    }
+
+    #[test]
+    fn reset_clone_from_fen() {
+        let mut r = reset::new();
+        let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        r.init_from_fen(fen.to_string());
+        let mut child = reset::clone::clone_from(&mut r);
         let result = child.to_fen();
         assert_eq!(result,fen.to_string().to_string());
     }

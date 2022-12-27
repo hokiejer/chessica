@@ -98,7 +98,6 @@ pub enum PieceType {
 /// | reserved_09        | u8   | copy   |  125   | Reserved |
 /// | reserved_10        | u8   | copy   |  126   | Reserved |
 /// | reserved_11        | u8   | copy   |  127   | Reserved |
-/// | field              | type | child? | offset | description |
 /// | move_id            | u8   | clear  |  128   | ID of tne next move to be considered for a given piece type |
 /// | to_move            | u8   | clear  |  129   | `0` if it is white's move, `1` if it is black's move |
 /// | capture            | u8   | clear  |  130   | `1` if the last move was a capture, `0` otherwise |

@@ -1,8 +1,10 @@
+use std::cmp;
 use crate::reset::Reset;
 use crate::tree::Tree;
 use crate::reset::r#const::SCORE_STALEMATE;
 use crate::reset::r#const::SCORE_BLACK_CHECKMATE;
 use crate::reset::r#const::SCORE_WHITE_CHECKMATE;
+use crate::tree::r#const::MAX_CHILDREN_KEPT;
 
 impl Tree {
 
@@ -35,23 +37,19 @@ impl Tree {
             *move_count += 1;
             self.reset.score()
         } else {
-            self.reset.conditionally_complete_move_initialization();
             'outer: loop {
                 for c in 0..self.children.len() {
                     let mut child = &mut self.children[c];
                     moves_generated = true;
-                    let temp_score: i32 = if keep_depth == 1 {
-                        child.reset.initialize_move_generation();
-                        child.alpha_beta_in_place(depth-1,min,max,move_count)
-                    } else {
-                        child.alpha_beta_keep_depth(keep_depth-1,depth-1,min,max,move_count)
-                    };
+                    let temp_score: i32 = child.alpha_beta_keep_depth(keep_depth-1,depth-1,min,max,move_count);
                     if self.reset.white_to_move() {
                         if temp_score > max {
+                            self.promote_last_child_to_first(c);
                             max = temp_score;
                         }
                     } else {
                         if temp_score < min {
+                            self.promote_last_child_to_first(c);
                             min = temp_score;
                         }
                     }
@@ -59,29 +57,29 @@ impl Tree {
                         break 'outer;
                     }
                 }
+                self.reset.conditionally_complete_move_initialization();
+                self.reset.initialize_move_generation();
                 let mut i = self.children.len();
                 while self.add_next_child() {
                     moves_generated = true;
                     let mut child = &mut self.children[i];
-                    let temp_score: i32 = if keep_depth == 1 {
-                        // Child move generation will already be initialized because it was just created
-                        child.alpha_beta_in_place(depth-1,min,max,move_count)
-                    } else {
-                        child.alpha_beta_keep_depth(keep_depth-1,depth-1,min,max,move_count)
-                    };
+                    let temp_score: i32 = child.alpha_beta_keep_depth(keep_depth-1,depth-1,min,max,move_count);
                     if self.reset.white_to_move() {
                         if temp_score > max {
+                            self.promote_last_child_to_first(i);
                             max = temp_score;
                         }
                     } else {
                         if temp_score < min {
+                            self.promote_last_child_to_first(i);
                             min = temp_score;
                         }
                     }
+                    self.children.truncate(MAX_CHILDREN_KEPT);
                     if min <= max {
                         break 'outer;
                     }
-                    i += 1;
+                    i = cmp::min(i+1,MAX_CHILDREN_KEPT);
                 }
                 break 'outer;
             }

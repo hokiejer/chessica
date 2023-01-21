@@ -41,7 +41,7 @@ impl Tree {
                 for c in 0..self.children.len() {
                     let mut child = &mut self.children[c];
                     moves_generated = true;
-                    let temp_score: i32 = child.alpha_beta_keep_depth(keep_depth-1,depth-1,min,max,move_count);
+                    let temp_score: i32 = child.alpha_beta_keep_depth(0,depth-1,min,max,move_count);
                     if self.reset.white_to_move() {
                         if temp_score > max {
                             self.promote_last_child_to_first(c);
@@ -63,7 +63,7 @@ impl Tree {
                 while self.add_next_child() {
                     moves_generated = true;
                     let mut child = &mut self.children[i];
-                    let temp_score: i32 = child.alpha_beta_keep_depth(keep_depth-1,depth-1,min,max,move_count);
+                    let temp_score: i32 = child.alpha_beta_keep_depth(0,depth-1,min,max,move_count);
                     if self.reset.white_to_move() {
                         if temp_score > max {
                             self.promote_last_child_to_first(i);

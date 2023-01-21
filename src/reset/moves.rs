@@ -156,10 +156,10 @@ impl Reset {
             if child.b_to & self.b_kings != 0 {
                 println!("King was captured!?!?!");
                 println!("Self:");
-                self.print();
+                self.print_all();
                 println!("Child:");
-                child.print();
-                process::abort();
+                child.print_all();
+                //process::abort();
             }
             self.capture_processing(child);
         }

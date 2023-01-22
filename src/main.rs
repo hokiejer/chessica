@@ -17,6 +17,7 @@ fn main() {
     use crate::args::process_args;
     use crate::args::usage;
     use std::env;
+    use num_format::{Locale,ToFormattedString};
     let args: Vec<String> = env::args().collect();
 
     let argdata: ArgStruct = process_args(args);
@@ -43,7 +44,7 @@ fn main() {
         } else if argdata.profile_tree() {
             println!("Running profile script for trees...");
             t.simple_move_tree(4, &mut move_count);
-            println!("Move count = {}",move_count);
+            println!("Move count = {}",move_count.to_formatted_string(&Locale::en));
 
         } else if argdata.profile_in_place_ab() {
             println!("Running profile script for In Place Alpha-Beta...");
@@ -54,7 +55,7 @@ fn main() {
                 SCORE_MIN, 
                 &mut move_count
             );
-            println!("Score == {}  Move count == {}",score,move_count);
+            println!("Score == {}  Move count == {}",score,move_count.to_formatted_string(&Locale::en));
 
         } else if argdata.profile_keep_depth_ab() {
             println!("Running profile script for Keep Depth Alpha-Beta...");
@@ -66,7 +67,7 @@ fn main() {
                 SCORE_MIN, 
                 &mut move_count
             );
-            println!("Score == {}  Move count == {}",score,move_count);
+            println!("Score == {}  Move count == {}",score,move_count.to_formatted_string(&Locale::en));
 
         } else if argdata.profile_iterative_keep_depth_ab() {
             println!("Running profile script for Iterative Keep Depth Alpha-Beta...");

@@ -33,6 +33,7 @@ impl Tree {
     /// 9. O O O <= search in memory and discard
     pub fn alpha_beta_keep_depth(&mut self, keep_depth: u8, depth: u8, mut min: i32, mut max: i32, move_count: &mut u64) -> i32 {
         let mut moves_generated: bool = false;
+        let mut boards_seen: Vec<u64> = Vec::new();
         if depth == 0 {
             *move_count += 1;
             self.reset.score()
@@ -41,6 +42,7 @@ impl Tree {
                 for c in 0..self.children.len() {
                     let mut child = &mut self.children[c];
                     moves_generated = true;
+                    boards_seen.push(child.reset.b_all().clone());
                     let temp_score: i32 = child.alpha_beta_keep_depth(0,depth-1,min,max,move_count);
                     if self.reset.white_to_move() {
                         if temp_score > max {
@@ -59,22 +61,25 @@ impl Tree {
                 }
                 self.reset.initialize_move_generation();
                 self.reset.complete_move_initialization();
-                let mut i = self.children.len();
+                let mut match_count = 0;
+                let mut matches: Vec<Reset> = Vec::new();
                 while self.add_next_child() {
-                    //println!("Added a child!");
-                    //self.reset.print_all();
-                    //println!("==");
-                    moves_generated = true;
-                    let mut child = &mut self.children[i];
+                    let mut child = self.children.last_mut().unwrap();
+                    if boards_seen.contains(&child.reset.b_all()) {
+                        self.children.truncate(MAX_CHILDREN_KEPT);
+                        continue;
+                    } else {
+                        moves_generated = true;
+                    }
                     let temp_score: i32 = child.alpha_beta_keep_depth(0,depth-1,min,max,move_count);
                     if self.reset.white_to_move() {
                         if temp_score > max {
-                            self.promote_last_child_to_first(i);
+                            self.promote_last_child_to_first(self.children.len()-1);
                             max = temp_score;
                         }
                     } else {
                         if temp_score < min {
-                            self.promote_last_child_to_first(i);
+                            self.promote_last_child_to_first(self.children.len()-1);
                             min = temp_score;
                         }
                     }
@@ -82,7 +87,7 @@ impl Tree {
                     if min <= max {
                         break 'outer;
                     }
-                    i = cmp::min(i+1,MAX_CHILDREN_KEPT);
+                    //i = cmp::min(self.children.len(),MAX_CHILDREN_KEPT);
                 }
                 break 'outer;
             }

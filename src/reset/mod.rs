@@ -233,71 +233,66 @@ pub fn new() -> Reset {
     }
 }
 
-/// Bitstring of all black pieces
-///
-/// This dynamically replaces `b_black` that used to be a Reset field
 impl Reset {
+
+    /// Bitsring of all pieces
+    pub fn b_all(&self) -> u64 {
+        self.b_all
+    }
+
+    /// Bitstring of all black pieces
+    ///
+    /// This dynamically replaces `b_black` that used to be a Reset field
     pub fn b_black(&self) -> u64 {
         self.b_all & !self.b_white
     }
-}
 
-/// Bitstring of all queen locations
-///
-/// This dynamically replaces `b_queens` that used to be a Reset field
-impl Reset {
+    /// Bitstring of all queen locations
+    ///
+    /// This dynamically replaces `b_queens` that used to be a Reset field
     pub fn b_queens(&self) -> u64 {
         self.b_all & !(self.b_pawns | self.b_knights | self.b_bishops | self.b_rooks | self.b_kings)
     }
-}
 
-/// White Castle Kingside is available?
-///
-/// This dynamically replaces `b_queens` that used to be a Reset field
-impl Reset {
+    /// White Castle Kingside is available?
+    ///
+    /// This dynamically replaces `b_queens` that used to be a Reset field
     pub fn white_castle_k(&self) -> bool {
         use crate::bitops::r#const::U8_BIT1;
         self.castle_bits & U8_BIT1 != 0
     }
-}
 
-/// White Castle Queenside is available?
-///
-/// This dynamically replaces `b_queens` that used to be a Reset field
-impl Reset {
+    /// White Castle Queenside is available?
+    ///
+    /// This dynamically replaces `b_queens` that used to be a Reset field
     pub fn white_castle_q(&self) -> bool {
         use crate::bitops::r#const::U8_BIT2;
         self.castle_bits & U8_BIT2 != 0
     }
-}
 
-/// Black Castle Kingside is available?
-///
-/// This dynamically replaces `b_queens` that used to be a Reset field
-impl Reset {
+    /// Black Castle Kingside is available?
+    ///
+    /// This dynamically replaces `b_queens` that used to be a Reset field
     pub fn black_castle_k(&self) -> bool {
         use crate::bitops::r#const::U8_BIT3;
         self.castle_bits & U8_BIT3 != 0
     }
-}
 
-/// Black Castle Queenside is available?
-///
-/// This dynamically replaces `b_queens` that used to be a Reset field
-impl Reset {
+    /// Black Castle Queenside is available?
+    ///
+    /// This dynamically replaces `b_queens` that used to be a Reset field
     pub fn black_castle_q(&self) -> bool {
         use crate::bitops::r#const::U8_BIT4;
         self.castle_bits & U8_BIT4 != 0
     }
-}
 
-/// Is the moving side currently in check?
-///
-/// This dynamically replaces `b_queens` that used to be a Reset field
-impl Reset {
+    /// Is the moving side currently in check?
+    ///
+    /// This dynamically replaces `b_queens` that used to be a Reset field
     pub fn in_check(&self) -> bool {
         self.in_check != 0
     }
+
 }
 
 #[cfg(test)]

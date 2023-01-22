@@ -80,3 +80,178 @@ cargo asm chessica::reset::new | wc -l
 8  -999134   (311010746)
 9   999592  (1069958508)
 10 -999259 (25679699729)
+
+Running profile script for Iterative Keep Depth Alpha-Beta...
+Search Depth == 9, Keep Depth == 4
+i == 1
+Score == 975
+Move count == 20
+i == 2
+Score == -586
+Move count == 154
+i == 3
+Score == 880
+Move count == 2081
+i == 4
+Score == -794
+Move count == 28216
+i == 5
+Score == 999021
+Move count == 122433
+i == 6
+Score == -999033
+Move count == 3422085
+i == 7
+Score == 999410
+Move count == 7522085
+i == 8
+Score == -999134
+Move count == 324410163
+i == 9
+Score == 999592
+Move count == 985531719
+Score == 999592
+
+hokiejer ➜ /workspaces/rustica (iterative_ab_fix) $ target/release/chessica --profile keep-depth-ab --ab-search-depth 1
+Running profile script for Keep Depth Alpha-Beta...
+Search Depth == 1, Keep Depth == 4
+Score == 975  Move count == 20
+@hokiejer ➜ /workspaces/rustica (iterative_ab_fix) $ target/release/chessica --profile keep-depth-ab --ab-search-depth 2
+Running profile script for Keep Depth Alpha-Beta...
+Search Depth == 2, Keep Depth == 4
+Score == -586  Move count == 114
+@hokiejer ➜ /workspaces/rustica (iterative_ab_fix) $ target/release/chessica --profile keep-depth-ab --ab-search-depth 3
+Running profile script for Keep Depth Alpha-Beta...
+Search Depth == 3, Keep Depth == 4
+Score == 880  Move count == 1862
+@hokiejer ➜ /workspaces/rustica (iterative_ab_fix) $ target/release/chessica --profile keep-depth-ab --ab-search-depth 4
+Running profile script for Keep Depth Alpha-Beta...
+Search Depth == 4, Keep Depth == 4
+Score == -794  Move count == 25469
+@hokiejer ➜ /workspaces/rustica (iterative_ab_fix) $ target/release/chessica --profile keep-depth-ab --ab-search-depth 5
+Running profile script for Keep Depth Alpha-Beta...
+Search Depth == 5, Keep Depth == 4
+Score == 999021  Move count == 208296
+@hokiejer ➜ /workspaces/rustica (iterative_ab_fix) $ target/release/chessica --profile keep-depth-ab --ab-search-depth 6
+Running profile script for Keep Depth Alpha-Beta...
+Search Depth == 6, Keep Depth == 4
+Score == -999033  Move count == 3259958
+@hokiejer ➜ /workspaces/rustica (iterative_ab_fix) $ target/release/chessica --profile keep-depth-ab --ab-search-depth 7
+Running profile script for Keep Depth Alpha-Beta...
+Search Depth == 7, Keep Depth == 4
+Score == 999410  Move count == 14527329
+@hokiejer ➜ /workspaces/rustica (iterative_ab_fix) $ target/release/chessica --profile keep-depth-ab --ab-search-depth 8
+Running profile script for Keep Depth Alpha-Beta...
+Search Depth == 8, Keep Depth == 4
+Score == -999134  Move count == 309484605
+@hokiejer ➜ /workspaces/rustica (iterative_ab_fix) $ target/release/chessica --profile keep-depth-ab --ab-search-depth 9
+Running profile script for Keep Depth Alpha-Beta...
+Search Depth == 9, Keep Depth == 4
+Score == 999592  Move count == 1048953201
+
+Running profile script for Iterative Keep Depth Alpha-Beta... [2]
+Search Depth == 9, Keep Depth == 4
+i == 1
+Score == 975
+Move count == 20
+i == 2
+Score == -586
+Move count == 142
+i == 3
+Score == 880
+Move count == 1,924
+i == 4
+Score == -794
+Move count == 24,600
+i == 5
+Score == 999021
+Move count == 102,764
+i == 6
+Score == -999033
+Move count == 3,047,700
+i == 7
+Score == 999410
+Move count == 5,944,423
+i == 8
+Score == -999134
+Move count == 251,387,978
+i == 9
+Score == 999592
+Move count == 731,532,077
+Score == 999592
+
+real    3m4.638s
+user    3m1.457s
+sys     0m0.530s
+
+Running profile script for Iterative Keep Depth Alpha-Beta... [3]
+Search Depth == 9, Keep Depth == 4
+i == 1
+Score == 975
+Move count == 20
+i == 2
+Score == -586
+Move count == 142
+i == 3
+Score == 880
+Move count == 1,813
+i == 4
+Score == -794
+Move count == 24,735
+i == 5
+Score == 999021
+Move count == 103,229
+i == 6
+Score == -999033
+Move count == 2,769,730
+i == 7
+Score == 999410
+Move count == 4,940,425
+i == 8
+Score == -999134
+Move count == 240,057,010
+i == 9
+Score == 999592
+Move count == 713,319,857
+Score == 999592
+
+real    3m7.114s
+user    2m57.115s
+sys     0m6.929s
+
+
+Running profile script for Iterative Keep Depth Alpha-Beta... [4]
+Search Depth == 9, Keep Depth == 4
+i == 1
+Score == 975
+Move count == 20
+i == 2
+Score == -586
+Move count == 142
+i == 3
+Score == 880
+Move count == 1,774
+i == 4
+Score == -794
+Move count == 24,843
+i == 5
+Score == 999021
+Move count == 102,262
+i == 6
+Score == -999033
+Move count == 2,764,617
+i == 7
+Score == 999410
+Move count == 4,922,761
+i == 8
+Score == -999134
+Move count == 238,854,045
+i == 9
+Score == 999592
+Move count == 658,076,467
+Score == 999592
+
+real    3m26.776s
+user    2m58.747s
+sys     0m25.097s
+

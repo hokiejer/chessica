@@ -1,6 +1,5 @@
 #[cfg(test)]
 mod tests {
-    use crate::reset;
     use crate::reset::Reset;
     use crate::utils;
 

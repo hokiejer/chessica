@@ -38,7 +38,6 @@ impl Reset {
 mod tests {
     use crate::reset;
     use crate::reset::Reset;
-    use crate::utils;
     use crate::reset::r#const::SCORE_STALEMATE;
     use crate::reset::r#const::SCORE_WHITE_CHECKMATE;
     use crate::reset::r#const::SCORE_BLACK_CHECKMATE;

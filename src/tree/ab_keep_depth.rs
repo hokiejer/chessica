@@ -33,7 +33,7 @@ impl Tree {
     /// 9. O O O <= search in memory and discard
     pub fn alpha_beta_keep_depth(&mut self, keep_depth: u8, depth: u8, mut min: i32, mut max: i32, move_count: &mut u64) -> i32 {
         let mut moves_generated: bool = false;
-        let mut boards_seen: Vec<u128> = Vec::new();
+        let mut boards_seen: Vec<u32> = Vec::new();
         if depth == 0 {
             *move_count += 1;
             self.reset.score()

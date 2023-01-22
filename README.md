@@ -171,18 +171,18 @@ Score == -999033
 Move count == 3,047,700
 i == 7
 Score == 999410
-Move count == 5,944,423
+Move count == 5,944,444
 i == 8
 Score == -999134
-Move count == 251,387,978
+Move count == 251,388,010
 i == 9
 Score == 999592
-Move count == 731,532,077
+Move count == 731,532,118
 Score == 999592
 
-real    3m4.638s
-user    3m1.457s
-sys     0m0.530s
+real    3m4.214s
+user    2m59.779s
+sys     0m0.569s
 
 Running profile script for Iterative Keep Depth Alpha-Beta... [3]
 Search Depth == 9, Keep Depth == 4
@@ -203,21 +203,21 @@ Score == 999021
 Move count == 103,229
 i == 6
 Score == -999033
-Move count == 2,769,730
+Move count == 2,769,731
 i == 7
 Score == 999410
-Move count == 4,940,425
+Move count == 4,940,457
 i == 8
 Score == -999134
-Move count == 240,057,010
+Move count == 240,057,167
 i == 9
 Score == 999592
-Move count == 713,319,857
+Move count == 713,320,125
 Score == 999592
 
-real    3m7.114s
-user    2m57.115s
-sys     0m6.929s
+real    3m15.402s
+user    3m2.852s
+sys     0m6.911s
 
 
 Running profile script for Iterative Keep Depth Alpha-Beta... [4]

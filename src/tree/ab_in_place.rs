@@ -1,4 +1,3 @@
-use crate::reset::Reset;
 use crate::tree::Tree;
 use crate::reset::r#const::SCORE_STALEMATE;
 use crate::reset::r#const::SCORE_BLACK_CHECKMATE;
@@ -16,7 +15,7 @@ impl Tree {
             self.reset.conditionally_complete_move_initialization();
             while self.reset.generate_next_move(&mut child.reset) {
                 moves_generated = true;
-                let mut temp_score: i32 = child.alpha_beta_in_place(depth-1,min,max,move_count);
+                let temp_score: i32 = child.alpha_beta_in_place(depth-1,min,max,move_count);
                 if self.reset.white_to_move() {
                     if temp_score > max {
                         max = temp_score;
@@ -58,10 +57,7 @@ impl Tree {
 
 #[cfg(test)]
 mod tests {
-    use crate::reset;
-    use crate::reset::Reset;
     use crate::tree::Tree;
-    use crate::utils;
     use crate::reset::r#const::SCORE_MIN;
     use crate::reset::r#const::SCORE_MAX;
     use crate::reset::r#const::SCORE_STALEMATE;

@@ -1,9 +1,6 @@
-use std::process;
 use crate::reset::Reset;
-use enum_map::{enum_map,Enum,EnumMap};
 use std::collections::HashMap;
 
-use crate::reset::r#const::BLACK;
 use crate::reset::r#const::WHITE;
 
 use crate::reset::r#const::B_NOT_N_EDGE;
@@ -322,7 +319,6 @@ impl Reset {
     /// Someday, king_square won't be needed by this method, but for now it's there for performance
     /// reasons.
     pub fn is_safe_from_revealed_check(&mut self, king_square: u8, from_square: u8, king_color: u8) -> bool {
-        use crate::reset::safe_revealed::RevealedCheckSearchType;
 
         let search_type = &REVEALED_CHECK_ROUTES[king_square as usize][from_square as usize];
         if matches!(search_type,RevealedCheckSearchType::DoNotSearch) {
@@ -402,19 +398,12 @@ impl Reset {
             },
             RevealedCheckSearchType::DoNotSearch => {
                 // Can't get here
+                return false;
             }
         }
-        #[cfg(debug_assertions)]
-        {
-            println!("Did not expect to get here in revealed check router?!?!");
-            println!("Self:");
-            self.print();
-            process::abort();
-        }
-        false // Shouldn't get here, but just in case
+        // Shouldn't get here
     }
 
-        
 }
 
 #[cfg(test)]
@@ -434,6 +423,7 @@ mod tests {
         r
     }
 
+    #[test]
     fn search_type_index_1() {
         use crate::reset::safe_revealed::SEARCH_TYPE_INDEX;
         assert_eq!(SEARCH_TYPE_INDEX[&RevealedCheckSearchType::DoNotSearch],0);
@@ -673,7 +663,6 @@ mod tests {
     fn revealed_check_bitmaps() {
         // Trusts revealed_check_bitmapper, this just ensures that the matrix matches the function
         use crate::reset::safe_revealed::revealed_check_bitmapper;
-        use crate::reset::safe_revealed::SEARCH_TYPE_INDEX;
         use crate::reset::safe_revealed::REVEALED_CHECK_BITMAPS;
         for king in 1..65 {
             assert_eq!(REVEALED_CHECK_BITMAPS[king][0],revealed_check_bitmapper(king as u8,RevealedCheckSearchType::DoNotSearch));

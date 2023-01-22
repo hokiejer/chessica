@@ -1,5 +1,3 @@
-use std::cmp;
-use crate::reset::Reset;
 use crate::tree::Tree;
 use crate::reset::r#const::SCORE_STALEMATE;
 use crate::reset::r#const::SCORE_BLACK_CHECKMATE;
@@ -40,7 +38,7 @@ impl Tree {
         } else {
             'outer: loop {
                 for c in 0..self.children.len() {
-                    let mut child = &mut self.children[c];
+                    let child = &mut self.children[c];
                     moves_generated = true;
                     boards_seen.push(child.reset.child_hash());
                     let temp_score: i32 = child.alpha_beta_keep_depth(0,depth-1,min,max,move_count);
@@ -61,10 +59,8 @@ impl Tree {
                 }
                 self.reset.initialize_move_generation();
                 self.reset.complete_move_initialization();
-                let mut match_count = 0;
-                let mut matches: Vec<Reset> = Vec::new();
                 while self.add_next_child() {
-                    let mut child = self.children.last_mut().unwrap();
+                    let child = self.children.last_mut().unwrap();
                     if boards_seen.contains(&child.reset.child_hash()) {
                         self.children.truncate(MAX_CHILDREN_KEPT);
                         continue;
@@ -119,10 +115,7 @@ impl Tree {
 
 #[cfg(test)]
 mod tests {
-    use crate::reset;
-    use crate::reset::Reset;
     use crate::tree::Tree;
-    use crate::utils;
     use crate::reset::r#const::SCORE_MIN;
     use crate::reset::r#const::SCORE_MAX;
     use crate::reset::r#const::SCORE_STALEMATE;

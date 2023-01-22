@@ -9,10 +9,8 @@ pub mod tree; //include "tree/mod.rs";
 pub mod args; //include "args/mod.rs";
 
 fn main() {
-    use std::mem;
-    use crate::reset::Reset;
+    //use std::mem;
     use crate::tree::Tree;
-    use crate::args::profile::ProfileType;
     use crate::args::ArgStruct;
     use crate::args::process_args;
     use crate::args::usage;
@@ -38,7 +36,6 @@ fn main() {
 
         if argdata.profile_reset() {
             println!("Running profile script for resets...");
-            use crate::reset::profiling;
             crate::reset::profiling::burn();
 
         } else if argdata.profile_tree() {

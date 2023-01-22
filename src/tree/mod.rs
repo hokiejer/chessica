@@ -7,7 +7,6 @@ pub mod ab_iterative_keep_depth;
 pub mod ab_iterative_keep_depth_promote;
 
 use crate::reset::Reset;
-use std::cell::RefCell;
 //use std::sync::Arc;
 use std::rc::{Weak};
 
@@ -52,7 +51,7 @@ impl Tree {
 
     // The child I specify shall be first and the first shall be last
     pub fn promote_last_child_to_first(&mut self, last_child_index: usize) {
-        let mut my_slice = &mut self.children[..=last_child_index];
+        let my_slice = &mut self.children[..=last_child_index];
         my_slice.rotate_right(1);
     }
 
@@ -74,7 +73,7 @@ impl Tree {
         }
         node_count[level as usize] += self.children.len() as u64;
         for c in 0..self.children.len() {
-            let mut child = &mut self.children[c];
+            let child = &mut self.children[c];
             child.count_tree_nodes(level+1, node_count);
         }
     }
@@ -92,7 +91,7 @@ impl Tree {
         if self.children.len() > 0 {
             self.reset.print_board_big();
             for c in 0..self.children.len() {
-                let mut child = &mut self.children[c];
+                let child = &mut self.children[c];
                 child.reset.print();
             }
             return true
@@ -115,7 +114,6 @@ impl Tree {
 
 #[cfg(test)]
 mod tests {
-    use crate::reset::Reset;
     use crate::tree::Tree;
 
     #[test]

@@ -1,4 +1,4 @@
-use std::process;
+//use std::process;
 use crate::reset::Reset;
 use crate::reset::safe_revealed::RevealedCheckSearchType;
 use crate::reset::safe_revealed::REVEALED_CHECK_BITMAPS;
@@ -57,7 +57,7 @@ impl Reset {
         }
 
         let b_attacks: u64;
-        let mut index: u8;
+        let index: u8;
         let b_others: u64 = self.b_pawns | self.b_knights | self.b_kings;
         match search_type {
             RevealedCheckSearchType::DoNotSearch => {
@@ -115,8 +115,6 @@ mod tests {
     use crate::reset;
     use crate::reset::Reset;
     use crate::utils;
-    use crate::reset::safe_revealed::revealed_check_router;
-    use crate::reset::safe_revealed::RevealedCheckSearchType;
 
     use crate::reset::pinned::PIN_DIMENSION_NONE;
     use crate::reset::pinned::PIN_DIMENSION_NS;

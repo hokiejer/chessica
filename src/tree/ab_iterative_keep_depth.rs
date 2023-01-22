@@ -1,13 +1,9 @@
-use crate::reset::Reset;
 use crate::tree::Tree;
-use crate::reset::r#const::SCORE_STALEMATE;
-use crate::reset::r#const::SCORE_BLACK_CHECKMATE;
-use crate::reset::r#const::SCORE_WHITE_CHECKMATE;
 use num_format::{Locale,ToFormattedString};
 
 impl Tree {
 
-    pub fn iterative_alpha_beta_keep_depth(&mut self, keep_depth: u8, depth: u8, mut min: i32, mut max: i32) -> i32 {
+    pub fn iterative_alpha_beta_keep_depth(&mut self, keep_depth: u8, depth: u8, min: i32, max: i32) -> i32 {
         let mut temp_score: i32 = 0;
         self.reset.conditionally_complete_move_initialization();
         for i in 1..(depth+1) {
@@ -26,10 +22,7 @@ impl Tree {
 
 #[cfg(test)]
 mod tests {
-    use crate::reset;
-    use crate::reset::Reset;
     use crate::tree::Tree;
-    use crate::utils;
     use crate::reset::r#const::SCORE_MIN;
     use crate::reset::r#const::SCORE_MAX;
     use crate::reset::r#const::SCORE_STALEMATE;

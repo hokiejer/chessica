@@ -15,7 +15,7 @@ pub fn args_ab_search_depth(arg: &str, response: &mut ArgStruct) {
         Ok(n) => {
             response.ab_search_depth = n;
         },
-        Err(e) => {
+        Err(_e) => {
             response.error = true;
             println!("Unexpected ab-search-depth: \"{}\"!",arg);
         },
@@ -27,7 +27,7 @@ pub fn args_ab_keep_depth(arg: &str, response: &mut ArgStruct) {
         Ok(n) => {
             response.ab_keep_depth = n;
         },
-        Err(e) => {
+        Err(_e) => {
             response.error = true;
             println!("Unexpected ab-keep-depth: \"{}\"!",arg);
         },
@@ -37,12 +37,11 @@ pub fn args_ab_keep_depth(arg: &str, response: &mut ArgStruct) {
 #[cfg(test)]
 mod tests {
     use crate::args::process_args;
-    use crate::args::ArgStruct;
 
     fn convert_to_strings(arr: &[&str]) -> Vec<String> {
         let mut vec = Vec::new();
         for item in arr.into_iter().enumerate() {
-            let (i, x): (usize, &&str) = item;
+            let (_i, x): (usize, &&str) = item;
             vec.push(x.to_string());
         }
         vec

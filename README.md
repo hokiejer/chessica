@@ -1,14 +1,18 @@
 # rustica
+
 Chessica in Rust
 
 ## Performance Notes
+
 To allow non-root users to temporarily run `perf`, run this command:
-```
+
+```bash
 sudo sh -c 'echo -1 >/proc/sys/kernel/perf_event_paranoid'
 ```
 
 Then run:
-```
+
+```bash
 cargo build --profile burn
 perf record --call-graph=dwarf ./target/burn/chessica
 perf report --hierarchy -M intel
@@ -18,36 +22,13 @@ perf report --hierarchy -M intel
 
 I am using `cargo asm` to view generated assembly.
 
-## Latest Profiling Data
-```
-thread 'main' panicked at 'assertion failed: `(left == right)`
-  left: `3195903271`,
- right: `3195901860`', src/reset/profiling.rs:12:5
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-
-real	2m36.864s
-user	2m36.760s
-sys	0m0.016s
-```
-
-## Profiling using only `is_safe`
-```
-thread 'main' panicked at 'assertion failed: `(left == right)`
-  left: `3195902959`,
- right: `3195901860`', src/reset/profiling.rs:12:5
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-
-real	2m53.113s
-user	2m53.108s
-sys	0m0.000s
-```
-
 ## Processor
 
 My processor = 8th Generation Intel Core i7-8 700 6-Core Processor (12MB Cache, up to 4.6 GHz)
 
 To take advantage of native CPU optimizations, add the following to `~/.profile`:
-```
+
+```bash
 # Use native CPU optimizations in Rust compilation
 export RUSTFLAGS='-C target-cpu native'
 ```
@@ -55,13 +36,14 @@ export RUSTFLAGS='-C target-cpu native'
 ## Integration Tests
 
 To run the full integration test suite, run:
-```
+
+```bash
 cargo test -- --include-ignored
 ```
 
 ## Notes for performance testing Reset Initialization
 
-```
+```bash
 cargo asm 'chessica::reset::child::<impl chessica::reset::Reset>::init_child'
 cargo asm 'chessica::reset::child::<impl chessica::reset::Reset>::init_child' | wc -l
 cargo asm chessica::reset::new
@@ -69,6 +51,7 @@ cargo asm chessica::reset::new | wc -l
 ```
 
 ## Score Data
+
 (From In Place Alpha Beta)
 1      975          (20)
 2     -586         (114)
@@ -219,7 +202,6 @@ real    3m15.402s
 user    3m2.852s
 sys     0m6.911s
 
-
 Running profile script for Iterative Keep Depth Alpha-Beta... [4]
 Search Depth == 9, Keep Depth == 4
 i == 1
@@ -254,4 +236,3 @@ Score == 999592
 real    3m26.776s
 user    2m58.747s
 sys     0m25.097s
-

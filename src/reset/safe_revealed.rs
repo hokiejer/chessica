@@ -1,4 +1,3 @@
-use std::process;
 use crate::reset::Reset;
 use std::collections::HashMap;
 
@@ -399,14 +398,8 @@ impl Reset {
             },
             RevealedCheckSearchType::DoNotSearch => {
                 // Can't get here
+                return false;
             }
-        }
-        #[cfg(debug_assertions)]
-        {
-            println!("Did not expect to get here in revealed check router?!?!");
-            println!("Self:");
-            self.print();
-            process::abort();
         }
         // Shouldn't get here
     }

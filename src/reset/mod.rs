@@ -236,11 +236,6 @@ pub fn new() -> Reset {
 
 impl Reset {
 
-    /// Bitsring of all pieces
-    pub fn b_all(&self) -> u64 {
-        self.b_all
-    }
-
     /// Bitstring of all black pieces
     ///
     /// This dynamically replaces `b_black` that used to be a Reset field

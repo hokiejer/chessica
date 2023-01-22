@@ -10,6 +10,7 @@ use crate::reset::r#const::B_NOT_SW_EDGE;
 use crate::reset::r#const::B_NOT_SE_EDGE;
 use crate::reset::r#const::B_RANK_2;
 use crate::reset::r#const::B_RANK_7;
+use crate::reset::PieceType;
 
 impl Reset {
 
@@ -25,20 +26,24 @@ impl Reset {
             0 => { // Promote to knight
                 child.b_knights |= child.b_to;
                 child.material += 2 * multiplier;
+                child.promotion_piece = PieceType::Knight;
                 self.move_id = move_base + 1;
             },
             1 => { // Promote to bishop
                 child.b_bishops |= child.b_to;
                 child.material += 2 * multiplier;
+                child.promotion_piece = PieceType::Bishop;
                 self.move_id = move_base + 2;
             },
             2 => { // Promote to rook
                 child.b_rooks |= child.b_to;
                 child.material += 4 * multiplier;
+                child.promotion_piece = PieceType::Rook;
                 self.move_id = move_base + 3;
             },
             3 => { // Promote to queen
                 child.material += 8 * multiplier;
+                child.promotion_piece = PieceType::Queen;
                 self.move_id = move_base + 10;
             },
             _ => panic!("Shouldn't get here!"),

@@ -47,7 +47,7 @@ pub fn clone_from(source: &mut Reset) -> Reset {
         bi_from: source.bi_from,
         bi_to: source.bi_to,
         score_depth: source.score_depth,
-        hash_count: source.hash_count,
+        promotion_piece: source.promotion_piece,
         times_seen: source.times_seen,
         must_check_safety: source.must_check_safety,
         bi_current_piece: source.bi_current_piece,
@@ -119,7 +119,7 @@ impl Reset {
         clone.bi_from = self.bi_from;
         clone.bi_to = self.bi_to;
         clone.score_depth = self.score_depth;
-        clone.hash_count = self.hash_count;
+        clone.promotion_piece = self.promotion_piece;
         clone.times_seen = self.times_seen;
         clone.must_check_safety = self.must_check_safety;
         clone.bi_current_piece = self.bi_current_piece;

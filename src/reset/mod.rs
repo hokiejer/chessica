@@ -19,6 +19,7 @@ pub mod pinned;
 pub mod profiling;
 pub mod test_helpers;
 pub mod score;
+pub mod hash;
 
 use crate::reset::pinned::PIN_DIMENSION_UNSET;
 
@@ -108,7 +109,7 @@ pub enum PieceType {
 /// | bi_from            | u8   | whatev |  135   | Bit index of the move's originating square |
 /// | bi_to              | u8   | whatev |  136   | Bit index of the move's destination square |
 /// | score_depth        | u8   | whatev |  137   | Search depth from which score was obtained |
-/// | hash_count         | u8   | whatev |  138   | Number of times this reset was saved to the hash table |
+/// | promotion_piece    | u8   | whatev |  138   | `PieceType` of the new piece if promoted |
 /// | times_seen         | u8   | whatev |  139   | Number of times this reset has been seen in the current game |
 /// | must_check_safety  | u8   | whatev |  140   | 1 if we must check king safety after this move, 0 otherwise.  I believe this is used for odd moves, like EP captures, castling, and promotions. |
 /// | bi_current_piece   | u8   | whatev |  141   | Bit index for b_current_piece |
@@ -162,7 +163,7 @@ pub struct Reset {
     bi_from: u8,
     bi_to: u8,
     score_depth: u8,
-    hash_count: u8,
+    promotion_piece: PieceType,
     times_seen: u8,
     must_check_safety: u8,
     bi_current_piece: u8,
@@ -224,7 +225,7 @@ pub fn new() -> Reset {
         bi_from: 0,
         bi_to: 0,
         score_depth: 0,
-        hash_count: 0,
+        promotion_piece: PieceType::Unknown,
         times_seen: 0,
         must_check_safety: 0,
         bi_current_piece: 0,

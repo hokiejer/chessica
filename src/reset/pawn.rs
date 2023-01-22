@@ -10,6 +10,7 @@ use crate::reset::r#const::B_NOT_SW_EDGE;
 use crate::reset::r#const::B_NOT_SE_EDGE;
 use crate::reset::r#const::B_RANK_2;
 use crate::reset::r#const::B_RANK_7;
+use crate::reset::PieceType;
 
 impl Reset {
 
@@ -25,20 +26,24 @@ impl Reset {
             0 => { // Promote to knight
                 child.b_knights |= child.b_to;
                 child.material += 2 * multiplier;
+                child.promotion_piece = PieceType::Knight;
                 self.move_id = move_base + 1;
             },
             1 => { // Promote to bishop
                 child.b_bishops |= child.b_to;
                 child.material += 2 * multiplier;
+                child.promotion_piece = PieceType::Bishop;
                 self.move_id = move_base + 2;
             },
             2 => { // Promote to rook
                 child.b_rooks |= child.b_to;
                 child.material += 4 * multiplier;
+                child.promotion_piece = PieceType::Rook;
                 self.move_id = move_base + 3;
             },
             3 => { // Promote to queen
                 child.material += 8 * multiplier;
+                child.promotion_piece = PieceType::Queen;
                 self.move_id = move_base + 10;
             },
             _ => panic!("Shouldn't get here!"),
@@ -190,7 +195,7 @@ impl Reset {
             b_destination = self.b_current_piece >> 8;
             if self.b_current_piece & B_NOT_S_EDGE != 0 &&
                 (b_destination & self.b_all == 0) &&
-                self.add_move_if_valid(child, b_destination,PIN_MATCH_NS) 
+                self.add_move_if_valid(child, b_destination,PIN_MATCH_NS)
             {
                 if b_destination & B_NOT_S_EDGE != 0 {
                     self.move_id = 20;
@@ -201,7 +206,7 @@ impl Reset {
                 return true;
             }
         }
-                
+
         // Forward two (South)
         if self.move_id < 30 {
             self.move_id = 30;
@@ -222,9 +227,9 @@ impl Reset {
         // Capture Left (Southeast)
         if self.move_id < 40 {
             b_destination = self.b_current_piece >> 9;
-            if (self.b_current_piece & B_NOT_SE_EDGE != 0) && 
+            if (self.b_current_piece & B_NOT_SE_EDGE != 0) &&
                 (b_destination & self.b_white != 0) &&
-                self.add_move_if_valid(child, b_destination, PIN_MATCH_SENW) 
+                self.add_move_if_valid(child, b_destination, PIN_MATCH_SENW)
             {
                 if b_destination & B_NOT_S_EDGE != 0 {
                     self.move_id = 40;
@@ -239,9 +244,9 @@ impl Reset {
         // Capture Right (Southwest)
         if self.move_id < 50 {
             b_destination = self.b_current_piece >> 7;
-            if (self.b_current_piece & B_NOT_SW_EDGE != 0) && 
+            if (self.b_current_piece & B_NOT_SW_EDGE != 0) &&
                 (b_destination & self.b_white != 0) &&
-                self.add_move_if_valid(child, b_destination, PIN_MATCH_NESW) 
+                self.add_move_if_valid(child, b_destination, PIN_MATCH_NESW)
             {
                 if b_destination & B_NOT_S_EDGE != 0 {
                     self.move_id = 50;
@@ -293,6 +298,7 @@ mod tests {
     use crate::reset;
     use crate::reset::Reset;
     use crate::utils;
+    use crate::reset::PieceType;
 
     fn prep_board(fen: &str) -> Reset {
         let mut r = reset::new();
@@ -882,6 +888,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("h7".to_string()));
         assert_eq!(r.move_id,11);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Knight);
         assert_eq!(child.capture,0);
         assert_eq!(child.material,0);
         assert_eq!(child.in_check,0);
@@ -893,6 +901,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("h7".to_string()));
         assert_eq!(r.move_id,12);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Bishop);
         assert_eq!(child.capture,0);
         assert_eq!(child.material,0);
         assert_eq!(child.in_check,0);
@@ -904,6 +914,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("h7".to_string()));
         assert_eq!(r.move_id,13);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Rook);
         assert_eq!(child.capture,0);
         assert_eq!(child.material,2);
         assert_eq!(child.in_check,0);
@@ -915,6 +927,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("h7".to_string()));
         assert_eq!(r.move_id,20);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Queen);
         assert_eq!(child.capture,0);
         assert_eq!(child.material,6);
         assert_eq!(child.in_check,0);
@@ -932,6 +946,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e7".to_string()));
         assert_eq!(r.move_id,11);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Knight);
         assert_eq!(child.capture,0);
         assert_eq!(child.material,0);
         assert_eq!(child.in_check,0);
@@ -943,6 +959,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e7".to_string()));
         assert_eq!(r.move_id,12);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Bishop);
         assert_eq!(child.capture,0);
         assert_eq!(child.material,0);
         assert_eq!(child.in_check,0);
@@ -954,6 +972,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e7".to_string()));
         assert_eq!(r.move_id,13);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Rook);
         assert_eq!(child.capture,0);
         assert_eq!(child.material,2);
         assert_eq!(child.in_check,0);
@@ -965,6 +985,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e7".to_string()));
         assert_eq!(r.move_id,20);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Queen);
         assert_eq!(child.capture,0);
         assert_eq!(child.material,6);
         assert_eq!(child.in_check,0);
@@ -976,6 +998,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e7".to_string()));
         assert_eq!(r.move_id,31);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Knight);
         assert_eq!(child.capture,1);
         assert_eq!(child.material,5);
         assert_eq!(child.in_check,0);
@@ -987,6 +1011,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e7".to_string()));
         assert_eq!(r.move_id,32);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Bishop);
         assert_eq!(child.capture,1);
         assert_eq!(child.material,5);
         assert_eq!(child.in_check,0);
@@ -998,6 +1024,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e7".to_string()));
         assert_eq!(r.move_id,33);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Rook);
         assert_eq!(child.capture,1);
         assert_eq!(child.material,7);
         assert_eq!(child.in_check,1);
@@ -1009,6 +1037,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("e7".to_string()));
         assert_eq!(r.move_id,40);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Queen);
         assert_eq!(child.capture,1);
         assert_eq!(child.material,11);
         assert_eq!(child.in_check,1);
@@ -1026,6 +1056,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c7".to_string()));
         assert_eq!(r.move_id,11);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Knight);
         assert_eq!(child.capture,0);
         assert_eq!(child.material,0);
         assert_eq!(child.in_check,0);
@@ -1037,6 +1069,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c7".to_string()));
         assert_eq!(r.move_id,12);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Bishop);
         assert_eq!(child.capture,0);
         assert_eq!(child.material,0);
         assert_eq!(child.in_check,0);
@@ -1048,6 +1082,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c7".to_string()));
         assert_eq!(r.move_id,13);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Rook);
         assert_eq!(child.capture,0);
         assert_eq!(child.material,2);
         assert_eq!(child.in_check,1);
@@ -1059,6 +1095,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c7".to_string()));
         assert_eq!(r.move_id,20);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Queen);
         assert_eq!(child.capture,0);
         assert_eq!(child.material,6);
         assert_eq!(child.in_check,1);
@@ -1070,6 +1108,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c7".to_string()));
         assert_eq!(r.move_id,41);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Knight);
         assert_eq!(child.capture,1);
         assert_eq!(child.material,5);
         assert_eq!(child.in_check,0);
@@ -1081,6 +1121,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c7".to_string()));
         assert_eq!(r.move_id,42);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Bishop);
         assert_eq!(child.capture,1);
         assert_eq!(child.material,5);
         assert_eq!(child.in_check,0);
@@ -1092,6 +1134,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c7".to_string()));
         assert_eq!(r.move_id,43);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Rook);
         assert_eq!(child.capture,1);
         assert_eq!(child.material,7);
         assert_eq!(child.in_check,1);
@@ -1103,6 +1147,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("c7".to_string()));
         assert_eq!(r.move_id,50);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Queen);
         assert_eq!(child.capture,1);
         assert_eq!(child.material,11);
         assert_eq!(child.in_check,1);
@@ -1127,6 +1173,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("f2".to_string()));
         assert_eq!(r.move_id,11);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Knight);
         assert_eq!(child.capture,0);
         assert_eq!(child.material,0);
         assert_eq!(child.in_check,0);
@@ -1138,6 +1186,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("f2".to_string()));
         assert_eq!(r.move_id,12);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Bishop);
         assert_eq!(child.capture,0);
         assert_eq!(child.material,0);
         assert_eq!(child.in_check,0);
@@ -1149,6 +1199,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("f2".to_string()));
         assert_eq!(r.move_id,13);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Rook);
         assert_eq!(child.capture,0);
         assert_eq!(child.material,-2);
         assert_eq!(child.in_check,1);
@@ -1160,6 +1212,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("f2".to_string()));
         assert_eq!(r.move_id,20);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Queen);
         assert_eq!(child.capture,0);
         assert_eq!(child.material,-6);
         assert_eq!(child.in_check,1);
@@ -1171,6 +1225,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("f2".to_string()));
         assert_eq!(r.move_id,41);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Knight);
         assert_eq!(child.capture,1);
         assert_eq!(child.material,-5);
         assert_eq!(child.in_check,0);
@@ -1182,6 +1238,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("f2".to_string()));
         assert_eq!(r.move_id,42);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Bishop);
         assert_eq!(child.capture,1);
         assert_eq!(child.material,-5);
         assert_eq!(child.in_check,0);
@@ -1193,6 +1251,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("f2".to_string()));
         assert_eq!(r.move_id,43);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Rook);
         assert_eq!(child.capture,1);
         assert_eq!(child.material,-7);
         assert_eq!(child.in_check,1);
@@ -1204,6 +1264,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("f2".to_string()));
         assert_eq!(r.move_id,50);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Queen);
         assert_eq!(child.capture,1);
         assert_eq!(child.material,-11);
         assert_eq!(child.in_check,1);
@@ -1221,6 +1283,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d2".to_string()));
         assert_eq!(r.move_id,11);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Knight);
         assert_eq!(child.capture,0);
         assert_eq!(child.material,0);
         assert_eq!(child.in_check,0);
@@ -1232,6 +1296,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d2".to_string()));
         assert_eq!(r.move_id,12);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Bishop);
         assert_eq!(child.capture,0);
         assert_eq!(child.material,0);
         assert_eq!(child.in_check,0);
@@ -1243,6 +1309,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d2".to_string()));
         assert_eq!(r.move_id,13);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Rook);
         assert_eq!(child.capture,0);
         assert_eq!(child.material,-2);
         assert_eq!(child.in_check,0);
@@ -1254,6 +1322,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d2".to_string()));
         assert_eq!(r.move_id,20);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Queen);
         assert_eq!(child.capture,0);
         assert_eq!(child.material,-6);
         assert_eq!(child.in_check,0);
@@ -1265,6 +1335,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d2".to_string()));
         assert_eq!(r.move_id,31);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Knight);
         assert_eq!(child.capture,1);
         assert_eq!(child.material,-5);
         assert_eq!(child.in_check,0);
@@ -1276,6 +1348,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d2".to_string()));
         assert_eq!(r.move_id,32);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Bishop);
         assert_eq!(child.capture,1);
         assert_eq!(child.material,-5);
         assert_eq!(child.in_check,0);
@@ -1287,6 +1361,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d2".to_string()));
         assert_eq!(r.move_id,33);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Rook);
         assert_eq!(child.capture,1);
         assert_eq!(child.material,-7);
         assert_eq!(child.in_check,1);
@@ -1298,6 +1374,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("d2".to_string()));
         assert_eq!(r.move_id,40);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Queen);
         assert_eq!(child.capture,1);
         assert_eq!(child.material,-11);
         assert_eq!(child.in_check,1);
@@ -1315,6 +1393,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("a2".to_string()));
         assert_eq!(r.move_id,11);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Knight);
         assert_eq!(child.capture,0);
         assert_eq!(child.material,0);
         assert_eq!(child.in_check,0);
@@ -1326,6 +1406,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("a2".to_string()));
         assert_eq!(r.move_id,12);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Bishop);
         assert_eq!(child.capture,0);
         assert_eq!(child.material,0);
         assert_eq!(child.in_check,0);
@@ -1337,6 +1419,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("a2".to_string()));
         assert_eq!(r.move_id,13);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Rook);
         assert_eq!(child.capture,0);
         assert_eq!(child.material,-2);
         assert_eq!(child.in_check,0);
@@ -1348,6 +1432,8 @@ mod tests {
         assert_eq!(child.to_fen(),fen);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("a2".to_string()));
         assert_eq!(r.move_id,20);
+        assert_eq!(child.promotion,1);
+        assert_eq!(child.promotion_piece,PieceType::Queen);
         assert_eq!(child.capture,0);
         assert_eq!(child.material,-6);
         assert_eq!(child.in_check,0);

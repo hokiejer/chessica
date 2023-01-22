@@ -61,7 +61,7 @@ impl Reset {
         child.bi_from = 0;
         child.bi_to = 0;
         child.score_depth = 0;
-        child.hash_count = 0;
+        child.promotion_piece = PieceType::Unknown;
         child.times_seen = 0;
         child.must_check_safety = 0;
         child.bi_current_piece = 0;

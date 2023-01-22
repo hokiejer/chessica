@@ -3,6 +3,7 @@ use crate::tree::Tree;
 use crate::reset::r#const::SCORE_STALEMATE;
 use crate::reset::r#const::SCORE_BLACK_CHECKMATE;
 use crate::reset::r#const::SCORE_WHITE_CHECKMATE;
+use num_format::{Locale,ToFormattedString};
 
 impl Tree {
 
@@ -14,7 +15,7 @@ impl Tree {
             println!("i == {}",i);
             temp_score = self.alpha_beta_keep_depth(keep_depth,i,min,max,&mut move_count);
             println!("Score == {}",temp_score);
-            println!("Move count == {}",move_count);
+            println!("Move count == {}",move_count.to_formatted_string(&Locale::en));
             //self.print_diagnostics();
         }
         temp_score

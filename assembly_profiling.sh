@@ -49,3 +49,11 @@ echo "================================================================"
 VALUE=`cargo asm 'chessica::reset::new' | wc -l`
 echo "chessica::reset::new $VALUE"
 
+VALUE=`cargo asm 'chessica::reset::clone::<impl chessica::reset::Reset>::clone_to' | wc -l`
+echo "chessica::reset::clone_to $VALUE"
+
+VALUE=`cargo asm 'chessica::reset::clone::clone_from' | wc -l`
+echo "chessica::reset::clone::clone_from $VALUE"
+
+VALUE=`cargo asm 'chessica::reset::score::<impl chessica::reset::Reset>::score' | wc -l`
+echo "chessica::reset::score::score $VALUE"

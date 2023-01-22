@@ -19,6 +19,7 @@ pub mod pinned;
 pub mod profiling;
 pub mod test_helpers;
 pub mod score;
+pub mod hash;
 
 use crate::reset::pinned::PIN_DIMENSION_UNSET;
 
@@ -98,7 +99,6 @@ pub enum PieceType {
 /// | reserved_09        | u8   | copy   |  125   | Reserved |
 /// | reserved_10        | u8   | copy   |  126   | Reserved |
 /// | reserved_11        | u8   | copy   |  127   | Reserved |
-/// | field              | type | child? | offset | description |
 /// | move_id            | u8   | clear  |  128   | ID of tne next move to be considered for a given piece type |
 /// | to_move            | u8   | clear  |  129   | `0` if it is white's move, `1` if it is black's move |
 /// | capture            | u8   | clear  |  130   | `1` if the last move was a capture, `0` otherwise |
@@ -109,7 +109,7 @@ pub enum PieceType {
 /// | bi_from            | u8   | whatev |  135   | Bit index of the move's originating square |
 /// | bi_to              | u8   | whatev |  136   | Bit index of the move's destination square |
 /// | score_depth        | u8   | whatev |  137   | Search depth from which score was obtained |
-/// | hash_count         | u8   | whatev |  138   | Number of times this reset was saved to the hash table |
+/// | promotion_piece    | u8   | whatev |  138   | `PieceType` of the new piece if promoted |
 /// | times_seen         | u8   | whatev |  139   | Number of times this reset has been seen in the current game |
 /// | must_check_safety  | u8   | whatev |  140   | 1 if we must check king safety after this move, 0 otherwise.  I believe this is used for odd moves, like EP captures, castling, and promotions. |
 /// | bi_current_piece   | u8   | whatev |  141   | Bit index for b_current_piece |
@@ -163,7 +163,7 @@ pub struct Reset {
     bi_from: u8,
     bi_to: u8,
     score_depth: u8,
-    hash_count: u8,
+    promotion_piece: PieceType,
     times_seen: u8,
     must_check_safety: u8,
     bi_current_piece: u8,
@@ -225,7 +225,7 @@ pub fn new() -> Reset {
         bi_from: 0,
         bi_to: 0,
         score_depth: 0,
-        hash_count: 0,
+        promotion_piece: PieceType::Unknown,
         times_seen: 0,
         must_check_safety: 0,
         bi_current_piece: 0,
@@ -234,71 +234,61 @@ pub fn new() -> Reset {
     }
 }
 
-/// Bitstring of all black pieces
-///
-/// This dynamically replaces `b_black` that used to be a Reset field
 impl Reset {
+
+    /// Bitstring of all black pieces
+    ///
+    /// This dynamically replaces `b_black` that used to be a Reset field
     pub fn b_black(&self) -> u64 {
         self.b_all & !self.b_white
     }
-}
 
-/// Bitstring of all queen locations
-///
-/// This dynamically replaces `b_queens` that used to be a Reset field
-impl Reset {
+    /// Bitstring of all queen locations
+    ///
+    /// This dynamically replaces `b_queens` that used to be a Reset field
     pub fn b_queens(&self) -> u64 {
         self.b_all & !(self.b_pawns | self.b_knights | self.b_bishops | self.b_rooks | self.b_kings)
     }
-}
 
-/// White Castle Kingside is available?
-///
-/// This dynamically replaces `b_queens` that used to be a Reset field
-impl Reset {
+    /// White Castle Kingside is available?
+    ///
+    /// This dynamically replaces `b_queens` that used to be a Reset field
     pub fn white_castle_k(&self) -> bool {
         use crate::bitops::r#const::U8_BIT1;
         self.castle_bits & U8_BIT1 != 0
     }
-}
 
-/// White Castle Queenside is available?
-///
-/// This dynamically replaces `b_queens` that used to be a Reset field
-impl Reset {
+    /// White Castle Queenside is available?
+    ///
+    /// This dynamically replaces `b_queens` that used to be a Reset field
     pub fn white_castle_q(&self) -> bool {
         use crate::bitops::r#const::U8_BIT2;
         self.castle_bits & U8_BIT2 != 0
     }
-}
 
-/// Black Castle Kingside is available?
-///
-/// This dynamically replaces `b_queens` that used to be a Reset field
-impl Reset {
+    /// Black Castle Kingside is available?
+    ///
+    /// This dynamically replaces `b_queens` that used to be a Reset field
     pub fn black_castle_k(&self) -> bool {
         use crate::bitops::r#const::U8_BIT3;
         self.castle_bits & U8_BIT3 != 0
     }
-}
 
-/// Black Castle Queenside is available?
-///
-/// This dynamically replaces `b_queens` that used to be a Reset field
-impl Reset {
+    /// Black Castle Queenside is available?
+    ///
+    /// This dynamically replaces `b_queens` that used to be a Reset field
     pub fn black_castle_q(&self) -> bool {
         use crate::bitops::r#const::U8_BIT4;
         self.castle_bits & U8_BIT4 != 0
     }
-}
 
-/// Is the moving side currently in check?
-///
-/// This dynamically replaces `b_queens` that used to be a Reset field
-impl Reset {
+    /// Is the moving side currently in check?
+    ///
+    /// This dynamically replaces `b_queens` that used to be a Reset field
     pub fn in_check(&self) -> bool {
         self.in_check != 0
     }
+
 }
 
 #[cfg(test)]

@@ -1,36 +1,57 @@
+use std::cmp;
 use crate::reset::Reset;
 use crate::tree::Tree;
 use crate::reset::r#const::SCORE_STALEMATE;
 use crate::reset::r#const::SCORE_BLACK_CHECKMATE;
 use crate::reset::r#const::SCORE_WHITE_CHECKMATE;
+use crate::tree::r#const::MAX_CHILDREN_KEPT;
 
 impl Tree {
 
+    /// Use Alpha-Beta search to build a pruned tree to a specified depth (working in memory beyond
+    /// that depth)
+    ///
+    /// For example, with (depth,keep_depth) = (9,5) here's what we expect:
+    /// 0.   O   <= root (9,5)
+    ///     /|\
+    /// 1. O O O <= keep (8,4)
+    ///     /|\
+    /// 2. O O O <= keep (7,3)
+    ///     /|\
+    /// 3. O O O <= keep (6,2)
+    ///     /|\
+    /// 4. O O O <= keep (5,1)
+    ///     /|\
+    /// 5. O O O <= keep (4,0)
+    ///     /|\
+    /// 6. O O O <= search in memory and discard
+    ///     /|\
+    /// 7. O O O <= search in memory and discard
+    ///     /|\ 
+    /// 8. O O O <= search in memory and discard
+    ///     /|\
+    /// 9. O O O <= search in memory and discard
     pub fn alpha_beta_keep_depth(&mut self, keep_depth: u8, depth: u8, mut min: i32, mut max: i32, move_count: &mut u64) -> i32 {
         let mut moves_generated: bool = false;
+        let mut boards_seen: Vec<u32> = Vec::new();
         if depth == 0 {
             *move_count += 1;
             self.reset.score()
         } else {
-            self.reset.conditionally_complete_move_initialization();
             'outer: loop {
                 for c in 0..self.children.len() {
                     let mut child = &mut self.children[c];
                     moves_generated = true;
-                    let temp_score: i32 = if keep_depth == 1 {
-                        if child.number_of_children() == 0 {
-                            child.reset.initialize_move_generation();
-                        }
-                        child.alpha_beta_in_place(depth-1,min,max,move_count)
-                    } else {
-                        child.alpha_beta_keep_depth(keep_depth-1,depth-1,min,max,move_count)
-                    };
+                    boards_seen.push(child.reset.child_hash());
+                    let temp_score: i32 = child.alpha_beta_keep_depth(0,depth-1,min,max,move_count);
                     if self.reset.white_to_move() {
                         if temp_score > max {
+                            self.promote_last_child_to_first(c);
                             max = temp_score;
                         }
                     } else {
                         if temp_score < min {
+                            self.promote_last_child_to_first(c);
                             min = temp_score;
                         }
                     }
@@ -38,28 +59,35 @@ impl Tree {
                         break 'outer;
                     }
                 }
-                let mut i = self.children.len();
+                self.reset.initialize_move_generation();
+                self.reset.complete_move_initialization();
+                let mut match_count = 0;
+                let mut matches: Vec<Reset> = Vec::new();
                 while self.add_next_child() {
-                    moves_generated = true;
-                    let mut child = &mut self.children[i];
-                    let temp_score: i32 = if keep_depth == 1 {
-                        child.alpha_beta_in_place(depth-1,min,max,move_count)
+                    let mut child = self.children.last_mut().unwrap();
+                    if boards_seen.contains(&child.reset.child_hash()) {
+                        self.children.truncate(MAX_CHILDREN_KEPT);
+                        continue;
                     } else {
-                        child.alpha_beta_keep_depth(keep_depth-1,depth-1,min,max,move_count)
-                    };
+                        moves_generated = true;
+                    }
+                    let temp_score: i32 = child.alpha_beta_keep_depth(0,depth-1,min,max,move_count);
                     if self.reset.white_to_move() {
                         if temp_score > max {
+                            self.promote_last_child_to_first(self.children.len()-1);
                             max = temp_score;
                         }
                     } else {
                         if temp_score < min {
+                            self.promote_last_child_to_first(self.children.len()-1);
                             min = temp_score;
                         }
                     }
+                    self.children.truncate(MAX_CHILDREN_KEPT);
                     if min <= max {
                         break 'outer;
                     }
-                    i += 1;
+                    //i = cmp::min(self.children.len(),MAX_CHILDREN_KEPT);
                 }
                 break 'outer;
             }

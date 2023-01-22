@@ -1,6 +1,29 @@
 use crate::reset::Reset;
 use crate::utils::convert_bitstring_to_square;
 
+trait BitString {
+    fn print_board(&self);
+}
+
+impl BitString for u64 {
+    fn print_board(&self) {
+        let mut current_bit: u64 = 0x8000000000000000;
+        for column in 0..8 {
+            let mut row_string: String = "".to_owned();
+            for row in 0..8 {
+                if self & current_bit > 0 {
+                    row_string.push('1');
+                } else {
+                    row_string.push('0');
+                }
+                current_bit >>= 1;
+            }
+            println!("{}",row_string);
+        }
+    }
+}
+
+
 /// Prints a Reset
 /// 
 impl Reset {
@@ -42,7 +65,7 @@ impl Reset {
         };
         let from_text = convert_bitstring_to_square(self.b_from);
         let to_text = convert_bitstring_to_square(self.b_to);
-        println!("{}:{}-{} => {}",piece_text,from_text,to_text,self.to_fen());
+        println!("{}:{}-{} => {} [{}]",piece_text,from_text,to_text,self.to_fen(),self.score());
         self.to_fen()
     }
 
@@ -189,6 +212,47 @@ impl Reset {
         }
     }
 
+    pub fn print_all(&mut self) {
+        self.print_board_big();
+        println!("==");
+        if self.b_pawns > 0 {
+            println!("Pawns:");
+            self.b_pawns.print_board();
+            println!("");
+        } else {
+            println!("No Pawns");
+        }
+        if self.b_knights > 0 {
+            println!("Knights:");
+            self.b_knights.print_board();
+            println!("");
+        } else {
+            println!("No Knights");
+        }
+        if self.b_bishops > 0 {
+            println!("Bishops:");
+            self.b_bishops.print_board();
+            println!("");
+        } else {
+            println!("No Bishops");
+        }
+        if self.b_rooks > 0 {
+            println!("Rooks:");
+            self.b_rooks.print_board();
+            println!("");
+        } else {
+            println!("No Rooks");
+        }
+        if self.b_queens() > 0 {
+            println!("Queens:");
+            self.b_queens().print_board();
+            println!("");
+        } else {
+            println!("No Queens");
+        }
+        println!("Kings:");
+        self.b_kings.print_board();
+    }
 }
 
 #[cfg(test)]

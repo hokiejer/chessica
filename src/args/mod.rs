@@ -1,7 +1,6 @@
 pub mod profile;
 pub mod ab;
 use crate::args::profile::ProfileType;
-use std::process;
 
 pub struct ArgStruct {
     pub profile: bool,
@@ -16,7 +15,6 @@ pub fn usage() {
 }
 
 pub fn process_args(args: Vec<String>) -> ArgStruct {
-    use std::env;
     use crate::args::profile::args_profile;
     use crate::args::ab::args_ab;
 
@@ -75,8 +73,6 @@ impl ArgStruct {
 #[cfg(test)]
 mod tests {
     use crate::args::process_args;
-    use crate::args::ArgStruct;
-    use crate::args::ProfileType;
 
     fn convert_to_strings(arr: &[&str]) -> Vec<String> {
         let mut vec = Vec::new();

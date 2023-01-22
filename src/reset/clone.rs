@@ -1,5 +1,4 @@
 use crate::reset::Reset;
-use crate::reset::PieceType;
 
 pub fn clone_from(source: &mut Reset) -> Reset {
     Reset {

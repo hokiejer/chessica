@@ -1,6 +1,4 @@
 use crate::reset::Reset;
-use crate::reset::PieceType;
-use std::collections::HashMap;
 
 pub fn perft(fen: &str, depth: u8) {
     use crate::utils::convert_bitstring_to_square;
@@ -47,15 +45,15 @@ pub fn burn() {
     //After omitting pinned moves 1: 7m55.888s
     //After omitting pinned moves 2: 7m56.040s
     //After omitting pinned moves 3: 7m54.592s
-    
+
     //After valid_move work shift and improved ordering of Reset fields 1: 7m37.862s
     //After valid_move work shift and improved ordering of Reset fields 2: 7m41.491s
     //After valid_move work shift and improved ordering of Reset fields 3: 7m46.781s
- 
+
     //After castle_bits and forced reset ordering 1: 7m49.908s
     //After castle_bits and forced reset ordering 2: 7m45.630s
     //After castle_bits and forced reset ordering 3: 7m46.438s
-    
+
     //After King square tracking improvements 1: 7m58.442s
     //After King square tracking improvements 2: 7m58.142s
 
@@ -81,30 +79,14 @@ impl Reset {
 
 
     pub fn in_place_move_tree(&mut self, depth: u8, move_count: &mut u64) {
-        use crate::utils::hit_enter_to_continue;
-        let mut search_flag: bool = true;
         if depth == 0 {
             *move_count += 1;
-            //println!("LEAF {}",*move_count);
-            //self.print_board_big();
-            //println!("");
-            //hit_enter_to_continue();
             return
         }
         let mut child = crate::reset::new();
-
-        if depth == 1 {
-            //println!("****************************PARENT****************************");
-            //self.print_board_big();
-            //println!("");
-            //hit_enter_to_continue();
-        }
-        if search_flag {
-            self.conditionally_complete_move_initialization();
-            while self.generate_next_move(&mut child) {
-                //let old: u64 = *move_count;
-                child.in_place_move_tree(depth - 1, move_count);
-            }
+        self.conditionally_complete_move_initialization();
+        while self.generate_next_move(&mut child) {
+            child.in_place_move_tree(depth - 1, move_count);
         }
     }
 

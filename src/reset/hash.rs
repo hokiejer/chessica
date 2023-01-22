@@ -1,5 +1,4 @@
 use crate::reset::Reset;
-use crate::reset::PieceType;
 
 impl Reset {
     /// Return a unique hash value for this child reset

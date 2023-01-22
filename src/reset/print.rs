@@ -8,9 +8,9 @@ trait BitString {
 impl BitString for u64 {
     fn print_board(&self) {
         let mut current_bit: u64 = 0x8000000000000000;
-        for column in 0..8 {
+        for _column in 0..8 {
             let mut row_string: String = "".to_owned();
-            for row in 0..8 {
+            for _row in 0..8 {
                 if self & current_bit > 0 {
                     row_string.push('1');
                 } else {

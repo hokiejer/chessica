@@ -1,4 +1,4 @@
-use std::process;
+//use std::process;
 use crate::reset::Reset;
 use crate::reset::PieceType;
 use crate::bitops;
@@ -672,10 +672,8 @@ mod tests {
 
     #[test]
     fn set_current_piece_type_initial_board() {
-        use crate::utils;
         use crate::reset::PieceType;
         let mut r = reset::new();
-        let mut child: Reset = reset::new();
         let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         r.init_from_fen(fen.to_string());
         r.current_piece_init("a1");

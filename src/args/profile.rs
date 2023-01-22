@@ -71,13 +71,12 @@ impl ArgStruct {
 #[cfg(test)]
 mod tests {
     use crate::args::process_args;
-    use crate::args::ArgStruct;
     use crate::args::ProfileType;
 
     fn convert_to_strings(arr: &[&str]) -> Vec<String> {
         let mut vec = Vec::new();
         for item in arr.into_iter().enumerate() {
-            let (i, x): (usize, &&str) = item;
+            let (_i, x): (usize, &&str) = item;
             vec.push(x.to_string());
         }
         vec

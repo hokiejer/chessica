@@ -26,11 +26,11 @@ pub fn new() -> Orchestrator {
 
 impl Orchestrator {
 
-    /// Launch Chessica's Operator
+    /// Run Chessica's Orchestrator
     ///
-    /// This will, in turn, launch the Orchestrator to ensure that the search engine does it's thing
-    pub fn launch(&self) {
-
+    /// This will launch and manage Cogitator threads as appropriate
+    pub fn run(&self) {
+            println!("I am the orchestrator and I'm running.  WHEEEEEE!");
     }
 
 

@@ -51,8 +51,7 @@ impl Operator {
         // Spawn the Orchestrator thread
         let orchestrator_join_handle = thread::spawn(|| {
             let orchestrator = orchestrator::new();
-            println!("Spawning the orchestrator!");
-            orchestrator.launch();
+            orchestrator.run();
         });
 
 

@@ -7,6 +7,9 @@ pub mod reset; //include "reset/mod.rs"
 pub mod bitops; //include "bitops/mod.rs";
 pub mod tree; //include "tree/mod.rs";
 pub mod args; //include "args/mod.rs";
+pub mod operator; //include "operator/mod.rs"
+pub mod orchestrator; //include "operator/mod.rs"
+pub mod cogitator; //include "operator/mod.rs"
 
 fn main() {
     //use std::mem;
@@ -82,6 +85,11 @@ fn main() {
             let score = t.iterative_alpha_beta_keep_depth_promote(argdata.ab_keep_depth, argdata.ab_search_depth, SCORE_MAX, SCORE_MIN);
             println!("Score == {}",score);
         }
+    } else {
+        // Game Time!
+        // Build game object
+        // Spawn Orchestrator thread
+        // Launch Operator method
     }
 
 }

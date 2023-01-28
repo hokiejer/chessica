@@ -86,6 +86,8 @@ fn main() {
             println!("Score == {}",score);
         }
     } else {
+        let mut operator = operator::new();
+        operator.launch();
         // Game Time!
         // Build game object
         // Spawn Orchestrator thread

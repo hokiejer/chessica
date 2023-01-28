@@ -87,7 +87,7 @@ fn main() {
         }
     } else {
         let mut operator = operator::new();
-        operator.launch();
+        operator.run();
         // Game Time!
         // Build game object
         // Spawn Orchestrator thread

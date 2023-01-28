@@ -39,10 +39,13 @@ pub fn new() -> Operator {
 
 impl Operator {
 
-    /// Launch Chessica's Operator
+    /// Run Chessica's Operator
     ///
-    /// This will, in turn, launch the Orchestrator to ensure that the search engine does it's thing
-    pub fn launch(&mut self) {
+    /// This will first launch the Orchestrator thread, whose job it is to orchestrate the chess engine
+    /// search.  Then it will interact with the chess board via the selected protocol.  Once done
+    /// interacting, the program is done running, so it'll wait for the Orchestrator to die and then
+    /// exit.
+    pub fn run(&mut self) {
         use crate::orchestrator;
 
         // Spawn the Orchestrator thread

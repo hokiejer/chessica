@@ -21,6 +21,7 @@
 				"ms-azuretools.vscode-docker", // Docker integration and linting
 				"shardulm94.trailing-spaces", // Show trailing spaces
 				"Gruntfuggly.todo-tree", // Highlights TODO comments
+				"vscodevim.vim", //Vim emulation for VSCode
 				// "bierner.emojisense", // Emoji sense for markdown
 				"stkb.rewrap", // rewrap comments after n characters on one line
 				"vscode-icons-team.vscode-icons", // Better file extension icons

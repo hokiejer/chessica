@@ -25,8 +25,8 @@ pub fn new() -> Cogitator {
 
 impl Cogitator {
 
-    /// Launch Chessica's Cogitator
-    pub fn launch(&self) {
+    /// Run Chessica's Cogitator
+    pub fn run(&self) {
 
     }
 

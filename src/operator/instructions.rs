@@ -14,7 +14,8 @@ impl Operator {
             };
             self.orchestrator_transmit_channel.as_ref().unwrap().send(message).unwrap();
     
-            
+        } else if instruction == "protover 2" {
+            println!("feature done=1")
         } else {
             let mut message = OperatorMessage {
                 instruction: Instruction1,

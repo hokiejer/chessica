@@ -8,7 +8,7 @@ use crate::operator::message::OperatorMessage;
 /// runs in its own thread.
 ///
 pub struct Orchestrator {
-    receiver_channel: Receiver<OperatorMessage>,
+    operator_receive_channel: Receiver<OperatorMessage>,
 }
 
 /// Constructs a new Orchestrator
@@ -23,7 +23,7 @@ pub struct Orchestrator {
 /// ```
 pub fn new(receiver: Receiver<OperatorMessage>) -> Orchestrator {
     Orchestrator {
-        receiver_channel: receiver,
+        operator_receive_channel: receiver,
     }
 }
 
@@ -32,9 +32,9 @@ impl Orchestrator {
     /// Run Chessica's Orchestrator
     ///
     /// This will launch and manage Cogitator threads as appropriate
-    pub fn run(&self) {
+    pub fn run(&mut self) {
             println!("I am the orchestrator and I'm running.  WHEEEEEE!");
-            let received_value = self.receiver_channel.recv().unwrap();
+            let received_value = self.operator_receive_channel.recv().unwrap();
             println!("received value = {:?}",received_value);
     }
 

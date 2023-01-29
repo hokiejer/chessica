@@ -2,6 +2,7 @@
 pub enum OperatorInstruction {
     Instruction1,
     Instruction2,
+    ExitProgram,
 }
 
 #[derive(PartialEq,Eq,Copy,Clone,Hash,Debug)]

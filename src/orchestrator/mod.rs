@@ -1,3 +1,4 @@
+use std::sync::mpsc::Receiver;
 
 /// Data necessary the Orchestrator functionality to run successfully
 ///
@@ -6,7 +7,7 @@
 /// runs in its own thread.
 ///
 pub struct Orchestrator {
-    x: u32,
+    receiver_channel: Receiver<u32>,
 }
 
 /// Constructs a new Orchestrator
@@ -15,12 +16,13 @@ pub struct Orchestrator {
 ///
 /// ```
 /// use chessica::orchestrator::Orchestrator;
-
-/// let mut my_orchestrator = chessica::orchestrator::new();
+/// use std::sync::mpsc;
+/// let (_tx, rx) =  mpsc::channel();
+/// let mut my_orchestrator = chessica::orchestrator::new(rx);
 /// ```
-pub fn new() -> Orchestrator {
+pub fn new(receiver: Receiver<u32>) -> Orchestrator {
     Orchestrator {
-        x: 0,
+        receiver_channel: receiver,
     }
 }
 
@@ -31,6 +33,8 @@ impl Orchestrator {
     /// This will launch and manage Cogitator threads as appropriate
     pub fn run(&self) {
             println!("I am the orchestrator and I'm running.  WHEEEEEE!");
+            let received_value = self.receiver_channel.recv().unwrap();
+            println!("received value = {:x}",received_value);
     }
 
 
@@ -42,8 +46,10 @@ mod tests {
 
     #[test]
     fn new_orchestrator() {
-        let o = orchestrator::new();
-        assert_eq!(o.x,0);
+        use std::sync::mpsc;
+        let (_t,r) = mpsc::channel();
+        let o = orchestrator::new(r);
+        // Can't assert Receiver<>
     }
 
 }

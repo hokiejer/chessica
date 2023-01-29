@@ -1,11 +1,11 @@
 use std::thread;
+use std::sync::mpsc;
 
 #[derive(PartialEq,Eq,Copy,Clone,Hash,Debug)]
 pub enum CommunicationProtocol {
     UCI,
     ChessEngineCommunicationProtocol,
 }
-
 
 /// Data necessary the Operator functionality to run successfully
 ///
@@ -37,6 +37,16 @@ pub fn new() -> Operator {
     }
 }
 
+#[derive(PartialEq,Eq,Copy,Clone,Hash,Debug)]
+pub enum OperatorInstruction {
+    Instruction1,
+    Instruction2,
+}
+
+pub struct OperatorMessageBody {
+    instruction: OperatorInstruction,
+}
+
 impl Operator {
 
     /// Run Chessica's Operator
@@ -48,14 +58,18 @@ impl Operator {
     pub fn run(&mut self) {
         use crate::orchestrator;
 
+        let (tx, rx) = mpsc::channel();
+
         // Spawn the Orchestrator thread
         let orchestrator_join_handle = thread::spawn(|| {
-            let orchestrator = orchestrator::new();
+            let orchestrator = orchestrator::new(rx);
             orchestrator.run();
         });
 
 
         println!("Spawned!");
+        tx.send(0x123).unwrap();
+
         // Now we need to do all the Operator things
 
         // Wait for the Orchestrator thread to end

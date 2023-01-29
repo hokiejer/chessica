@@ -1,5 +1,6 @@
 use std::sync::mpsc::Receiver;
 use crate::operator::message::OperatorMessage;
+use crate::operator::message::OperatorInstruction::ExitProgram;
 
 /// Data necessary the Orchestrator functionality to run successfully
 ///
@@ -32,10 +33,16 @@ impl Orchestrator {
     /// Run Chessica's Orchestrator
     ///
     /// This will launch and manage Cogitator threads as appropriate
-    pub fn run(&mut self) {
-            println!("I am the orchestrator and I'm running.  WHEEEEEE!");
+    pub fn run(&mut self) {   
+        println!("I am the orchestrator and I'm running.  WHEEEEEE!");
+        loop {
             let received_value = self.operator_receive_channel.recv().unwrap();
             println!("received value = {:?}",received_value);
+            if received_value.instruction == ExitProgram {
+                println!("Oh crap, I need to quit.  See ya!");
+                break;
+            }
+        };
     }
 
 

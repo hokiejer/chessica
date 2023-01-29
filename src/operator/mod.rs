@@ -55,7 +55,6 @@ impl Operator {
     pub fn run(&mut self) {
         use std::io;
         use crate::orchestrator;
-        use crate::operator::message::OperatorMessage;
         use crate::operator::message::OperatorInstruction::Instruction1;
 
         let (tx, rx) = mpsc::channel();
@@ -69,12 +68,8 @@ impl Operator {
 
 
         println!("Spawned!");
-        let mut message = OperatorMessage {
-            instruction: Instruction1
-        };
-        self.orchestrator_transmit_channel.as_ref().unwrap().send(message).unwrap();
-
         // Now we need to do all the Operator things
+        
         loop {
             let mut input = "".to_string();
             io::stdin().read_line(&mut input).unwrap();

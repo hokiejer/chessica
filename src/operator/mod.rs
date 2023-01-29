@@ -55,7 +55,6 @@ impl Operator {
     pub fn run(&mut self) {
         use std::io;
         use crate::orchestrator;
-        use crate::operator::message::OperatorInstruction::Instruction1;
 
         let (tx, rx) = mpsc::channel();
         self.orchestrator_transmit_channel = Some(tx);

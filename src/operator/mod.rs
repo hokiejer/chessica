@@ -1,3 +1,5 @@
+pub mod message;
+
 use std::thread;
 use std::sync::mpsc;
 
@@ -37,16 +39,6 @@ pub fn new() -> Operator {
     }
 }
 
-#[derive(PartialEq,Eq,Copy,Clone,Hash,Debug)]
-pub enum OperatorInstruction {
-    Instruction1,
-    Instruction2,
-}
-
-pub struct OperatorMessageBody {
-    instruction: OperatorInstruction,
-}
-
 impl Operator {
 
     /// Run Chessica's Operator
@@ -57,6 +49,8 @@ impl Operator {
     /// exit.
     pub fn run(&mut self) {
         use crate::orchestrator;
+        use crate::operator::message::OperatorMessage;
+        use crate::operator::message::OperatorInstruction::Instruction1;
 
         let (tx, rx) = mpsc::channel();
 
@@ -68,7 +62,10 @@ impl Operator {
 
 
         println!("Spawned!");
-        tx.send(0x123).unwrap();
+        let message = OperatorMessage {
+            instruction: Instruction1
+        };
+        tx.send(message).unwrap();
 
         // Now we need to do all the Operator things
 

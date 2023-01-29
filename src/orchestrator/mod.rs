@@ -1,4 +1,5 @@
 use std::sync::mpsc::Receiver;
+use crate::operator::message::OperatorMessage;
 
 /// Data necessary the Orchestrator functionality to run successfully
 ///
@@ -7,7 +8,7 @@ use std::sync::mpsc::Receiver;
 /// runs in its own thread.
 ///
 pub struct Orchestrator {
-    receiver_channel: Receiver<u32>,
+    receiver_channel: Receiver<OperatorMessage>,
 }
 
 /// Constructs a new Orchestrator
@@ -20,7 +21,7 @@ pub struct Orchestrator {
 /// let (_tx, rx) =  mpsc::channel();
 /// let mut my_orchestrator = chessica::orchestrator::new(rx);
 /// ```
-pub fn new(receiver: Receiver<u32>) -> Orchestrator {
+pub fn new(receiver: Receiver<OperatorMessage>) -> Orchestrator {
     Orchestrator {
         receiver_channel: receiver,
     }
@@ -34,7 +35,7 @@ impl Orchestrator {
     pub fn run(&self) {
             println!("I am the orchestrator and I'm running.  WHEEEEEE!");
             let received_value = self.receiver_channel.recv().unwrap();
-            println!("received value = {:x}",received_value);
+            println!("received value = {:?}",received_value);
     }
 
 

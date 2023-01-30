@@ -5,7 +5,7 @@ impl Operator {
 
     // Process an instruction, communicating with the Orchestrator as appropriate.
     pub fn process_instruction(&mut self, instruction: &String) {
-        println!("Input == {}",instruction);
+        println!("Board Input == \"{}\"",instruction);
         let mut message = message::new();
         match instruction.as_str() {
             "quit" => {

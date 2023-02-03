@@ -16,6 +16,7 @@ impl Tree {
             self.reset.score()
         } else {
             self.reset.conditionally_complete_move_initialization();
+            #[allow(clippy::never_loop)]
             'outer: loop {
                 for c in 0..self.children.len() {
                     let child = &mut self.children[c];

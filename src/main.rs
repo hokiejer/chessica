@@ -50,9 +50,9 @@ fn main() {
             println!("Running profile script for In Place Alpha-Beta...");
             println!("Search Depth == {}",argdata.ab_search_depth);
             let score = t.alpha_beta_in_place(
-                argdata.ab_search_depth, 
-                SCORE_MAX, 
-                SCORE_MIN, 
+                argdata.ab_search_depth,
+                SCORE_MAX,
+                SCORE_MIN,
                 &mut move_count
             );
             println!("Score == {}  Move count == {}",score,move_count.to_formatted_string(&Locale::en));
@@ -61,10 +61,10 @@ fn main() {
             println!("Running profile script for Keep Depth Alpha-Beta...");
             println!("Search Depth == {}, Keep Depth == {}",argdata.ab_search_depth,argdata.ab_keep_depth);
             let score = t.alpha_beta_keep_depth(
-                4, 
-                argdata.ab_search_depth, 
-                SCORE_MAX, 
-                SCORE_MIN, 
+                0,
+                argdata.ab_search_depth,
+                SCORE_MAX,
+                SCORE_MIN,
                 &mut move_count
             );
             println!("Score == {}  Move count == {}",score,move_count.to_formatted_string(&Locale::en));
@@ -73,9 +73,8 @@ fn main() {
             println!("Running profile script for Iterative Keep Depth Alpha-Beta...");
             println!("Search Depth == {}, Keep Depth == {}",argdata.ab_search_depth,argdata.ab_keep_depth);
             let score = t.iterative_alpha_beta_keep_depth(
-                argdata.ab_keep_depth, 
-                argdata.ab_search_depth, 
-                SCORE_MAX, 
+                argdata.ab_search_depth,
+                SCORE_MAX,
                 SCORE_MIN
             );
             println!("Score == {}",score);

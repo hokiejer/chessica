@@ -57,7 +57,7 @@ fn main() {
             );
             println!("Score == {}  Move count == {}",score,move_count.to_formatted_string(&Locale::en));
 
-        } else if argdata.profile_keep_depth_ab() {
+        } else if argdata.profile_promote_prune_ab() {
             println!("Running profile script for Keep Depth Alpha-Beta...");
             println!("Search Depth == {}, Keep Depth == {}",argdata.ab_search_depth,argdata.ab_keep_depth);
             let score = t.alpha_beta_promote_prune(
@@ -69,7 +69,7 @@ fn main() {
             );
             println!("Score == {}  Move count == {}",score,move_count.to_formatted_string(&Locale::en));
 
-        } else if argdata.profile_iterative_keep_depth_ab() {
+        } else if argdata.profile_iterative_promote_prune_ab() {
             println!("Running profile script for Iterative Keep Depth Alpha-Beta...");
             println!("Search Depth == {}, Keep Depth == {}",argdata.ab_search_depth,argdata.ab_keep_depth);
             let score = t.iterative_alpha_beta_promote_prune(

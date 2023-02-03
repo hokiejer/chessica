@@ -6,11 +6,10 @@ pub enum ProfileType {
     Reset,
     Tree,
     InPlaceAB,
-    KeepDepthAB,
-    IterativeKeepDepthAB,
-    IterativeKeepDepthABSwap,
+    PromotePruneAB,
+    IterativePromotePruneAB,
 }
-    
+
 pub fn args_profile(arg: &str, response: &mut ArgStruct) {
     match arg {
         "reset" => {
@@ -22,14 +21,11 @@ pub fn args_profile(arg: &str, response: &mut ArgStruct) {
         "in-place-ab" => {
             response.profile_type = ProfileType::InPlaceAB;
         },
-        "keep-depth-ab" => {
-            response.profile_type = ProfileType::KeepDepthAB;
+        "promote-prune-ab" => {
+            response.profile_type = ProfileType::PromotePruneAB;
         },
-        "iterative-keep-depth-ab" => {
-            response.profile_type = ProfileType::IterativeKeepDepthAB;
-        },
-        "iterative-keep-depth-ab-promote" => {
-            response.profile_type = ProfileType::IterativeKeepDepthABSwap;
+        "iterative-promote-prune-ab" => {
+            response.profile_type = ProfileType::IterativePromotePruneAB;
         },
         "" => {
             response.error = true;
@@ -55,17 +51,14 @@ impl ArgStruct {
         self.profile & (self.profile_type == ProfileType::InPlaceAB)
     }
 
-    pub fn profile_keep_depth_ab(&self) -> bool {
-        self.profile & (self.profile_type == ProfileType::KeepDepthAB)
+    pub fn profile_promote_prune_ab(&self) -> bool {
+        self.profile & (self.profile_type == ProfileType::PromotePruneAB)
     }
 
-    pub fn profile_iterative_keep_depth_ab(&self) -> bool {
-        self.profile & (self.profile_type == ProfileType::IterativeKeepDepthAB)
+    pub fn profile_iterative_promote_prune_ab(&self) -> bool {
+        self.profile & (self.profile_type == ProfileType::IterativePromotePruneAB)
     }
 
-    pub fn profile_iterative_keep_depth_ab_promote(&self) -> bool {
-        self.profile & (self.profile_type == ProfileType::IterativeKeepDepthABSwap)
-    }
 }
 
 #[cfg(test)]
@@ -93,9 +86,8 @@ mod tests {
         assert!(a.profile_reset());
         assert!(!a.profile_tree());
         assert!(!a.profile_in_place_ab());
-        assert!(!a.profile_keep_depth_ab());
-        assert!(!a.profile_iterative_keep_depth_ab());
-        assert!(!a.profile_iterative_keep_depth_ab_promote());
+        assert!(!a.profile_promote_prune_ab());
+        assert!(!a.profile_iterative_promote_prune_ab());
 
         let arr = ["chessica","--profile","tree"];
         let vec = convert_to_strings(&arr);
@@ -106,9 +98,9 @@ mod tests {
         assert!(a.profile_tree());
         assert!(!a.profile_reset());
         assert!(!a.profile_in_place_ab());
-        assert!(!a.profile_keep_depth_ab());
-        assert!(!a.profile_iterative_keep_depth_ab());
-        assert!(!a.profile_iterative_keep_depth_ab_promote());
+        assert!(!a.profile_promote_prune_ab());
+        assert!(!a.profile_iterative_promote_prune_ab());
+
 
         let arr = ["chessica","--profile","in-place-ab"];
         let vec = convert_to_strings(&arr);
@@ -119,48 +111,32 @@ mod tests {
         assert!(!a.profile_tree());
         assert!(!a.profile_reset());
         assert!(a.profile_in_place_ab());
-        assert!(!a.profile_keep_depth_ab());
-        assert!(!a.profile_iterative_keep_depth_ab());
-        assert!(!a.profile_iterative_keep_depth_ab_promote());
+        assert!(!a.profile_promote_prune_ab());
+        assert!(!a.profile_iterative_promote_prune_ab());
 
-        let arr = ["chessica","--profile","keep-depth-ab"];
+        let arr = ["chessica","--profile","promote-prune-ab"];
         let vec = convert_to_strings(&arr);
         let a = process_args(vec);
         assert_eq!(a.profile,true);
-        assert_eq!(a.profile_type,ProfileType::KeepDepthAB);
+        assert_eq!(a.profile_type,ProfileType::PromotePruneAB);
         assert_eq!(a.error,false);
         assert!(!a.profile_tree());
         assert!(!a.profile_reset());
         assert!(!a.profile_in_place_ab());
-        assert!(a.profile_keep_depth_ab());
-        assert!(!a.profile_iterative_keep_depth_ab());
-        assert!(!a.profile_iterative_keep_depth_ab_promote());
+        assert!(a.profile_promote_prune_ab());
+        assert!(!a.profile_iterative_promote_prune_ab());
 
-        let arr = ["chessica","--profile","iterative-keep-depth-ab"];
+        let arr = ["chessica","--profile","iterative-promote-prune-ab"];
         let vec = convert_to_strings(&arr);
         let a = process_args(vec);
         assert_eq!(a.profile,true);
-        assert_eq!(a.profile_type,ProfileType::IterativeKeepDepthAB);
+        assert_eq!(a.profile_type,ProfileType::IterativePromotePruneAB);
         assert_eq!(a.error,false);
         assert!(!a.profile_tree());
         assert!(!a.profile_reset());
         assert!(!a.profile_in_place_ab());
-        assert!(!a.profile_keep_depth_ab());
-        assert!(a.profile_iterative_keep_depth_ab());
-        assert!(!a.profile_iterative_keep_depth_ab_promote());
-
-        let arr = ["chessica","--profile","iterative-keep-depth-ab-promote"];
-        let vec = convert_to_strings(&arr);
-        let a = process_args(vec);
-        assert_eq!(a.profile,true);
-        assert_eq!(a.profile_type,ProfileType::IterativeKeepDepthABSwap);
-        assert_eq!(a.error,false);
-        assert!(!a.profile_tree());
-        assert!(!a.profile_reset());
-        assert!(!a.profile_in_place_ab());
-        assert!(!a.profile_keep_depth_ab());
-        assert!(!a.profile_iterative_keep_depth_ab());
-        assert!(a.profile_iterative_keep_depth_ab_promote());
+        assert!(!a.profile_promote_prune_ab());
+        assert!(a.profile_iterative_promote_prune_ab());
 
         let arr = ["chessica","--profile","noclue"];
         let vec = convert_to_strings(&arr);

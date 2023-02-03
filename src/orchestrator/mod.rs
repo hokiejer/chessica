@@ -33,7 +33,7 @@ impl Orchestrator {
     /// Run Chessica's Orchestrator
     ///
     /// This will launch and manage Cogitator threads as appropriate
-    pub fn run(&mut self) {   
+    pub fn run(&mut self) {
         println!("I am the orchestrator and I'm running.  WHEEEEEE!");
         loop {
             let received_value = self.operator_receive_channel.recv().unwrap();

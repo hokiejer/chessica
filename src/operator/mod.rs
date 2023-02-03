@@ -68,7 +68,7 @@ impl Operator {
 
         println!("Spawned!");
         // Now we need to do all the Operator things
-        
+
         loop {
             let mut input = "".to_string();
             io::stdin().read_line(&mut input).unwrap();

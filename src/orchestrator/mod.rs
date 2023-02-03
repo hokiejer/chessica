@@ -56,7 +56,7 @@ mod tests {
     fn new_orchestrator() {
         use std::sync::mpsc;
         let (_t,r) = mpsc::channel();
-        let o = orchestrator::new(r);
+        let _o = orchestrator::new(r);
         // Can't assert Receiver<>
     }
 

@@ -94,8 +94,8 @@ mod tests {
     #[test]
     fn new_operator() {
         let o = operator::new();
-        assert_eq!(o.white_is_engine,false);
-        assert_eq!(o.black_is_engine,false);
+        assert!(!o.white_is_engine);
+        assert!(!o.black_is_engine);
         assert_eq!(o.game_fen,"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1".to_string());
         assert_eq!(o.communication_protocol,ChessEngineCommunicationProtocol);
     }

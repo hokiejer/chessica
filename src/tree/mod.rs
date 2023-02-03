@@ -2,9 +2,7 @@ pub mod r#const;
 pub mod moves;
 pub mod ab_in_place;
 pub mod ab_promote_prune;
-pub mod ab_keep_depth_promote;
 pub mod ab_iterative_promote_prune;
-pub mod ab_iterative_keep_depth_promote;
 
 use crate::reset::Reset;
 //use std::sync::Arc;

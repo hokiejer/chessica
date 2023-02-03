@@ -78,11 +78,6 @@ fn main() {
                 SCORE_MIN
             );
             println!("Score == {}",score);
-        } else if argdata.profile_iterative_keep_depth_ab_promote() {
-            println!("Running profile script for Iterative Keep Depth Alpha-Beta with Swap...");
-            println!("Search Depth == {}, Keep Depth == {}",argdata.ab_search_depth,argdata.ab_keep_depth);
-            let score = t.iterative_alpha_beta_keep_depth_promote(argdata.ab_keep_depth, argdata.ab_search_depth, SCORE_MAX, SCORE_MIN);
-            println!("Score == {}",score);
         }
     } else {
         let mut operator = operator::new();

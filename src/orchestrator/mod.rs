@@ -1,3 +1,6 @@
+use std::sync::mpsc::Receiver;
+use crate::operator::message::OperatorMessage;
+use crate::operator::message::OperatorInstruction::ExitProgram;
 
 /// Data necessary the Orchestrator functionality to run successfully
 ///
@@ -6,7 +9,7 @@
 /// runs in its own thread.
 ///
 pub struct Orchestrator {
-    x: u32,
+    operator_receive_channel: Receiver<OperatorMessage>,
 }
 
 /// Constructs a new Orchestrator
@@ -15,12 +18,13 @@ pub struct Orchestrator {
 ///
 /// ```
 /// use chessica::orchestrator::Orchestrator;
-
-/// let mut my_orchestrator = chessica::orchestrator::new();
+/// use std::sync::mpsc;
+/// let (_tx, rx) =  mpsc::channel();
+/// let mut my_orchestrator = chessica::orchestrator::new(rx);
 /// ```
-pub fn new() -> Orchestrator {
+pub fn new(receiver: Receiver<OperatorMessage>) -> Orchestrator {
     Orchestrator {
-        x: 0,
+        operator_receive_channel: receiver,
     }
 }
 
@@ -29,8 +33,16 @@ impl Orchestrator {
     /// Run Chessica's Orchestrator
     ///
     /// This will launch and manage Cogitator threads as appropriate
-    pub fn run(&self) {
-            println!("I am the orchestrator and I'm running.  WHEEEEEE!");
+    pub fn run(&mut self) {
+        println!("I am the orchestrator and I'm running.  WHEEEEEE!");
+        loop {
+            let received_value = self.operator_receive_channel.recv().unwrap();
+            println!("received value = {:?}",received_value);
+            if received_value.instruction == ExitProgram {
+                println!("Oh crap, I need to quit.  See ya!");
+                break;
+            }
+        };
     }
 
 
@@ -42,8 +54,10 @@ mod tests {
 
     #[test]
     fn new_orchestrator() {
-        let o = orchestrator::new();
-        assert_eq!(o.x,0);
+        use std::sync::mpsc;
+        let (_t,r) = mpsc::channel();
+        let _o = orchestrator::new(r);
+        // Can't assert Receiver<>
     }
 
 }

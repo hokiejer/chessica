@@ -50,39 +50,33 @@ fn main() {
             println!("Running profile script for In Place Alpha-Beta...");
             println!("Search Depth == {}",argdata.ab_search_depth);
             let score = t.alpha_beta_in_place(
-                argdata.ab_search_depth, 
-                SCORE_MAX, 
-                SCORE_MIN, 
+                argdata.ab_search_depth,
+                SCORE_MAX,
+                SCORE_MIN,
                 &mut move_count
             );
             println!("Score == {}  Move count == {}",score,move_count.to_formatted_string(&Locale::en));
 
-        } else if argdata.profile_keep_depth_ab() {
-            println!("Running profile script for Keep Depth Alpha-Beta...");
-            println!("Search Depth == {}, Keep Depth == {}",argdata.ab_search_depth,argdata.ab_keep_depth);
-            let score = t.alpha_beta_keep_depth(
-                4, 
-                argdata.ab_search_depth, 
-                SCORE_MAX, 
-                SCORE_MIN, 
+        } else if argdata.profile_promote_prune_ab() {
+            println!("Running profile script for Promote Prune Alpha-Beta...");
+            println!("Search Depth == {}",argdata.ab_search_depth);
+            let score = t.alpha_beta_promote_prune(
+                0,
+                argdata.ab_search_depth,
+                SCORE_MAX,
+                SCORE_MIN,
                 &mut move_count
             );
             println!("Score == {}  Move count == {}",score,move_count.to_formatted_string(&Locale::en));
 
-        } else if argdata.profile_iterative_keep_depth_ab() {
-            println!("Running profile script for Iterative Keep Depth Alpha-Beta...");
-            println!("Search Depth == {}, Keep Depth == {}",argdata.ab_search_depth,argdata.ab_keep_depth);
-            let score = t.iterative_alpha_beta_keep_depth(
-                argdata.ab_keep_depth, 
-                argdata.ab_search_depth, 
-                SCORE_MAX, 
+        } else if argdata.profile_iterative_promote_prune_ab() {
+            println!("Running profile script for Iterative Promote Prune Alpha-Beta...");
+            println!("Search Depth == {}",argdata.ab_search_depth);
+            let score = t.iterative_alpha_beta_promote_prune(
+                argdata.ab_search_depth,
+                SCORE_MAX,
                 SCORE_MIN
             );
-            println!("Score == {}",score);
-        } else if argdata.profile_iterative_keep_depth_ab_promote() {
-            println!("Running profile script for Iterative Keep Depth Alpha-Beta with Swap...");
-            println!("Search Depth == {}, Keep Depth == {}",argdata.ab_search_depth,argdata.ab_keep_depth);
-            let score = t.iterative_alpha_beta_keep_depth_promote(argdata.ab_keep_depth, argdata.ab_search_depth, SCORE_MAX, SCORE_MIN);
             println!("Score == {}",score);
         }
     } else {

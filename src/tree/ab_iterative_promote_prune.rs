@@ -9,7 +9,7 @@ impl Tree {
         for i in 1..(max_depth+1) {
             let mut move_count: u64 = 0;
             println!("i == {}",i);
-            temp_score = self.alpha_beta_promote_prune(0,max_depth,min,max,&mut move_count);
+            temp_score = self.alpha_beta_promote_prune(0,i,min,max,&mut move_count);
             println!("Score == {}",temp_score);
             println!("Move count == {}",move_count.to_formatted_string(&Locale::en));
             //self.print_diagnostics();

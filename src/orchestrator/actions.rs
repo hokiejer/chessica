@@ -45,14 +45,24 @@ mod tests {
     use crate::operator::message;
 
     #[test]
-    fn initialize_new_board () {
+    fn exit_program() {
+        use std::sync::mpsc;
+        let (_t,r) = mpsc::channel();
+        let mut o = orchestrator::new(r);
+        let mut message = message::new();
+        message.exit_program();
+        assert!(o.process_command(message)); //returns `true` indicating "quit"
+    }
+
+    #[test]
+    fn initialize_new_board() {
         use std::sync::mpsc;
         let (_t,r) = mpsc::channel();
         let mut o = orchestrator::new(r);
         let mut message = message::new();
         let fen = String::from("k7/p7/P7/8/8/6Bp/7P/7K w - - 0 1");
         message.new_board(fen);
-        o.process_command(message);
+        assert!(!o.process_command(message)); //returns `false` to go on
         assert_eq!(o.tree_children.len(),9);
     }
 }

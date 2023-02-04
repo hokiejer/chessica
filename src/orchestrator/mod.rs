@@ -1,7 +1,7 @@
 pub mod actions;
 pub mod r#const;
 
-use std::sync::mpsc::Receiver;
+use std::sync::mpsc::{Sender, Receiver};
 use crate::operator::message::OperatorMessage;
 use crate::tree;
 use tree::Tree;
@@ -15,7 +15,8 @@ use std::thread;
 /// runs in its own thread.
 ///
 pub struct Orchestrator {
-    operator_receive_channel: Receiver<OperatorMessage>,
+    pub operator_receive_channel: Option<Receiver<OperatorMessage>>,
+    pub cogitator_transmit_channel: Option<Sender<Arc<Mutex<Tree>>>>,
     tree_root: Tree,
     tree_children: Vec<Arc<Mutex<Tree>>>,
 }
@@ -28,12 +29,14 @@ pub struct Orchestrator {
 /// use chessica::orchestrator::Orchestrator;
 /// use std::sync::mpsc;
 /// let (_tx, rx) =  mpsc::channel();
-/// let mut my_orchestrator = chessica::orchestrator::new(rx);
+/// let mut my_orchestrator = chessica::orchestrator::new();
+/// my_orchestrator.operator_receive_channel = Some(rx);
 /// ```
-pub fn new(receiver: Receiver<OperatorMessage>) -> Orchestrator {
+pub fn new() -> Orchestrator {
     let starting_fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     Orchestrator {
-        operator_receive_channel: receiver,
+        operator_receive_channel: None,
+        cogitator_transmit_channel: None,
         tree_root: tree::from_fen(starting_fen),
         tree_children: Vec::new(),
     }
@@ -47,7 +50,7 @@ impl Orchestrator {
     pub fn run(&mut self) {
         println!("I am the orchestrator and I'm running.  WHEEEEEE!");
         loop {
-            let received_message = self.operator_receive_channel.recv().unwrap();
+            let received_message = self.operator_receive_channel.as_ref().unwrap().recv().unwrap();
             println!("received message = {:?}",received_message);
             //returns true if instructed to exit
             if self.process_command(received_message) {
@@ -67,8 +70,7 @@ mod tests {
     #[test]
     fn new_orchestrator() {
         use std::sync::mpsc;
-        let (_t,r) = mpsc::channel();
-        let _o = orchestrator::new(r);
+        let _o = orchestrator::new();
         // Can't assert Receiver<>
     }
 

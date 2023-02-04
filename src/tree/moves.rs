@@ -12,6 +12,10 @@ impl Tree {
         }
     }
 
+    pub fn get_next_child(&mut self, child: &mut Tree) -> bool {
+        self.reset.generate_next_move(&mut child.reset)
+    }
+
     pub fn simple_move_tree(&mut self, depth: i32, move_count: &mut u64) {
         if depth == 0 {
             *move_count += 1;
@@ -49,5 +53,14 @@ mod tests {
         assert_eq!(count,20);
     }
 
+    #[test]
+    fn get_next_child() {
+        let fen = String::from("rnbqkb1r/ppppp2p/7n/5ppQ/4P3/2P5/PP1P1PPP/RNB1KBNR b KQkq - 0 1");
+        let mut t: Tree = crate::tree::from_fen(fen);
+        let mut child = crate::tree::new();
+        assert!(t.get_next_child(&mut child));
+        assert_eq!(child.reset.to_fen(),"rnbqkb1r/pppppn1p/8/5ppQ/4P3/2P5/PP1P1PPP/RNB1KBNR w KQkq - 1 2");
+        assert!(!t.get_next_child(&mut child));
+    }
 }
 

@@ -5,6 +5,7 @@ use crate::operator::message::OperatorInstruction::MoveTaken;
 use crate::operator::message::OperatorInstruction::PlayerStatusChange;
 use crate::operator::message::OperatorInstruction::ExitProgram;
 use crate::tree;
+use std::sync::{Arc, Mutex, mpsc};
 
 impl Orchestrator {
 
@@ -14,7 +15,18 @@ impl Orchestrator {
                 },
                 NewBoard => {
                     self.tree_root = tree::from_fen(received_message.data_string);
+                    //Do I need to initialize move generation??
+                    loop {
+                        let mut child = crate::tree::new();
+                        if self.tree_root.get_next_child(&mut child) {
+                            let mut serialized_child = Arc::new(Mutex::new(child));
+                            self.tree_children.push(serialized_child);
+                        } else {
+                            break;
+                        }
+                    }
                     let mut m: u64 = 0;
+
                     self.tree_root.simple_move_tree(1,&mut m);
                 },
                 ExitProgram => {
@@ -29,9 +41,18 @@ impl Orchestrator {
 
 #[cfg(test)]
 mod tests {
+    use crate::orchestrator;
+    use crate::operator::message;
 
     #[test]
-    fn test_something () {
-
+    fn initialize_new_board () {
+        use std::sync::mpsc;
+        let (_t,r) = mpsc::channel();
+        let mut o = orchestrator::new(r);
+        let mut message = message::new();
+        let fen = String::from("k7/p7/P7/8/8/6Bp/7P/7K w - - 0 1");
+        message.new_board(fen);
+        o.process_command(message);
+        assert_eq!(o.tree_children.len(),9);
     }
 }

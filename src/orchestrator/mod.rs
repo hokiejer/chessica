@@ -1,9 +1,12 @@
 pub mod actions;
+pub mod r#const;
 
 use std::sync::mpsc::Receiver;
 use crate::operator::message::OperatorMessage;
 use crate::tree;
 use tree::Tree;
+use std::sync::{Arc, Mutex, mpsc};
+use std::thread;
 
 /// Data necessary the Orchestrator functionality to run successfully
 ///
@@ -14,6 +17,7 @@ use tree::Tree;
 pub struct Orchestrator {
     operator_receive_channel: Receiver<OperatorMessage>,
     tree_root: Tree,
+    tree_children: Vec<Arc<Mutex<Tree>>>,
 }
 
 /// Constructs a new Orchestrator
@@ -31,6 +35,7 @@ pub fn new(receiver: Receiver<OperatorMessage>) -> Orchestrator {
     Orchestrator {
         operator_receive_channel: receiver,
         tree_root: tree::from_fen(starting_fen),
+        tree_children: Vec::new(),
     }
 }
 

@@ -1,6 +1,11 @@
 use std::sync::mpsc::Receiver;
 use crate::operator::message::OperatorMessage;
+use crate::operator::message::OperatorInstruction::NewBoard;
+use crate::operator::message::OperatorInstruction::MoveTaken;
+use crate::operator::message::OperatorInstruction::PlayerStatusChange;
 use crate::operator::message::OperatorInstruction::ExitProgram;
+use crate::tree;
+use tree::Tree;
 
 /// Data necessary the Orchestrator functionality to run successfully
 ///
@@ -10,6 +15,7 @@ use crate::operator::message::OperatorInstruction::ExitProgram;
 ///
 pub struct Orchestrator {
     operator_receive_channel: Receiver<OperatorMessage>,
+    tree_root: Tree,
 }
 
 /// Constructs a new Orchestrator
@@ -23,8 +29,10 @@ pub struct Orchestrator {
 /// let mut my_orchestrator = chessica::orchestrator::new(rx);
 /// ```
 pub fn new(receiver: Receiver<OperatorMessage>) -> Orchestrator {
+    let starting_fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     Orchestrator {
         operator_receive_channel: receiver,
+        tree_root: tree::from_fen(starting_fen),
     }
 }
 
@@ -38,9 +46,20 @@ impl Orchestrator {
         loop {
             let received_value = self.operator_receive_channel.recv().unwrap();
             println!("received value = {:?}",received_value);
-            if received_value.instruction == ExitProgram {
-                println!("Oh crap, I need to quit.  See ya!");
-                break;
+            match received_value.instruction {
+                MoveTaken => {
+                },
+                NewBoard => {
+                    self.tree_root = tree::from_fen(received_value.data_string);
+                    self.tree_root.reset.print();
+                },
+                PlayerStatusChange => {
+                },
+                ExitProgram => {
+                    println!("Oh crap, I need to quit.  See ya!");
+                    break;
+                },
+                _ => {},
             }
         };
     }

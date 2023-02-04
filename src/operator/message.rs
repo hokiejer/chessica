@@ -9,6 +9,7 @@ pub enum OperatorInstruction {
 
 use crate::operator::message::OperatorInstruction::PlaceHolder;
 use crate::operator::message::OperatorInstruction::NewBoard;
+use crate::operator::message::OperatorInstruction::MoveTaken;
 use crate::operator::message::OperatorInstruction::PlayerStatusChange;
 use crate::operator::message::OperatorInstruction::ExitProgram;
 
@@ -36,7 +37,7 @@ impl OperatorMessage {
     }
 
     pub fn move_taken(&mut self) {
-        self.instruction = ExitProgram;
+        self.instruction = MoveTaken;
     }
 
     pub fn player_status_change(&mut self, computer_white: bool, computer_black: bool) {

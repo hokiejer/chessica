@@ -51,7 +51,9 @@ impl Orchestrator {
                 },
                 NewBoard => {
                     self.tree_root = tree::from_fen(received_value.data_string);
-                    self.tree_root.reset.print();
+                    let mut m: u64 = 0;
+                    self.tree_root.simple_move_tree(1,&mut m);
+                    println!("Tree has {} children",m);
                 },
                 PlayerStatusChange => {
                 },

@@ -1,9 +1,7 @@
+pub mod actions;
+
 use std::sync::mpsc::Receiver;
 use crate::operator::message::OperatorMessage;
-use crate::operator::message::OperatorInstruction::NewBoard;
-use crate::operator::message::OperatorInstruction::MoveTaken;
-use crate::operator::message::OperatorInstruction::PlayerStatusChange;
-use crate::operator::message::OperatorInstruction::ExitProgram;
 use crate::tree;
 use tree::Tree;
 
@@ -44,24 +42,12 @@ impl Orchestrator {
     pub fn run(&mut self) {
         println!("I am the orchestrator and I'm running.  WHEEEEEE!");
         loop {
-            let received_value = self.operator_receive_channel.recv().unwrap();
-            println!("received value = {:?}",received_value);
-            match received_value.instruction {
-                MoveTaken => {
-                },
-                NewBoard => {
-                    self.tree_root = tree::from_fen(received_value.data_string);
-                    let mut m: u64 = 0;
-                    self.tree_root.simple_move_tree(1,&mut m);
-                    println!("Tree has {} children",m);
-                },
-                PlayerStatusChange => {
-                },
-                ExitProgram => {
-                    println!("Oh crap, I need to quit.  See ya!");
-                    break;
-                },
-                _ => {},
+            let received_message = self.operator_receive_channel.recv().unwrap();
+            println!("received message = {:?}",received_message);
+            //returns true if instructed to exit
+            if self.process_command(received_message) {
+                println!("Oh crap, I need to quit.  See ya!");
+                break;
             }
         };
     }

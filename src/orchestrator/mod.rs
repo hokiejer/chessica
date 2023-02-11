@@ -5,8 +5,7 @@ use std::sync::mpsc::{Sender, Receiver};
 use crate::operator::message::OperatorMessage;
 use crate::tree;
 use tree::Tree;
-use std::sync::{Arc, Mutex, mpsc};
-use std::thread;
+use std::sync::{Arc, Mutex};
 
 /// Data necessary the Orchestrator functionality to run successfully
 ///
@@ -19,6 +18,7 @@ pub struct Orchestrator {
     pub cogitator_transmit_channel: Option<Sender<Arc<Mutex<Tree>>>>,
     tree_root: Tree,
     tree_children: Vec<Arc<Mutex<Tree>>>,
+    cogitator_thread_count: u8,
 }
 
 /// Constructs a new Orchestrator
@@ -39,6 +39,7 @@ pub fn new() -> Orchestrator {
         cogitator_transmit_channel: None,
         tree_root: tree::from_fen(starting_fen),
         tree_children: Vec::new(),
+        cogitator_thread_count: 2,
     }
 }
 
@@ -71,7 +72,10 @@ mod tests {
     fn new_orchestrator() {
         use std::sync::mpsc;
         let _o = orchestrator::new();
-        // Can't assert Receiver<>
+        //assert_eq!(o.operator_receive_channel,None);
+        //assert_eq!(o.cogitator_transmit_channel,None);
+        //assert_eq!(tree.children.len(),0);
+        //assert_eq!(tree.cogitator_thread_count,2);
     }
 
 }

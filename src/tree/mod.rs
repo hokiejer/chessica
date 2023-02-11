@@ -12,9 +12,10 @@ use std::rc::{Weak};
 pub struct Tree
 {
     pub reset: Reset,
-    pub parent: Option<Weak<Tree>>,
     pub children: Vec<Tree>,
 }
+
+unsafe impl Send for Tree {}
 
 pub fn new() -> Tree {
 
@@ -22,7 +23,6 @@ pub fn new() -> Tree {
     let emptyvec = Vec::with_capacity(MAX_EXPECTED_CHILD_MOVES);
     Tree {
         reset: crate::reset::new(),
-        parent: None,
         children: emptyvec,
     }
 }

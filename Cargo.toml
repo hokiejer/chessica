@@ -13,6 +13,7 @@ lazy_static = "1.4.0"
 enum-map = "2.4.1"
 ansi_term = "0.12.1"
 num-format = "0.4.4"
+rayon = "1.6.1"
 
 [profile.dev]
 opt-level = 3

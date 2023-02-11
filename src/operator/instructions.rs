@@ -9,6 +9,10 @@ impl Operator {
         println!("Board Input == \"{}\"",instruction);
         let mut message = message::new();
         match instruction.as_str() {
+            "e2e4" => {
+                message.move_taken();
+                self.send(&message);
+            }
             "quit" => {
                 message.exit_program();
                 self.send(&message);

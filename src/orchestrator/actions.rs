@@ -9,8 +9,8 @@ use crate::tree;
 use std::thread;
 use std::sync::{Arc, Mutex};
 //use crossbeam_channel::unbounded;
-//use crate::reset::r#const::SCORE_MIN;
-//use crate::reset::r#const::SCORE_MAX;
+use crate::reset::r#const::SCORE_MIN;
+use crate::reset::r#const::SCORE_MAX;
 
 impl Orchestrator {
 
@@ -57,6 +57,15 @@ impl Orchestrator {
                     for tree in &children {
                         if let Ok(mut tree) = tree.try_lock() {
                             tree.reset.print();
+                            let mut move_count: u64 = 0;
+                            let score = tree.alpha_beta_promote_prune(
+                                0,
+                                6,
+                                SCORE_MAX,
+                                SCORE_MIN,
+                                &mut move_count
+                            );
+                            println!("Score == {} ({})",score,move_count);
                         }
                     }
                     //let r: crossbeam_channel::Receiver<Arc<Mutex<Tree>>> = r.clone();

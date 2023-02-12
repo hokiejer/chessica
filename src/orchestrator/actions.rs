@@ -55,8 +55,9 @@ impl Orchestrator {
                 let children = self.tree_children.clone();
                 let handle = thread::spawn(move || {
                     for tree in &children {
-                        let mut tree = tree.lock().unwrap();
-                        tree.reset.print();
+                        if let Ok(mut tree) = tree.try_lock() {
+                            tree.reset.print();
+                        }
                     }
                     //let r: crossbeam_channel::Receiver<Arc<Mutex<Tree>>> = r.clone();
                     //for serialized_child in self.tree_children.iter_mut() {

@@ -39,7 +39,7 @@ pub fn new() -> Orchestrator {
         cogitator_transmit_channel: None,
         tree_root: tree::from_fen(starting_fen),
         tree_children: Vec::new(),
-        cogitator_thread_count: 2,
+        cogitator_thread_count: 3,
     }
 }
 

@@ -3,6 +3,7 @@ pub mod moves;
 pub mod ab_in_place;
 pub mod ab_promote_prune;
 pub mod ab_iterative_promote_prune;
+pub mod ab_promote_prune_parallel;
 
 use crate::reset::Reset;
 

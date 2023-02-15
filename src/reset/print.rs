@@ -212,6 +212,15 @@ impl Reset {
         }
     }
 
+    pub fn move_text(&mut self) -> String {
+        let from_text = convert_bitstring_to_square(self.b_from);
+        let to_text = convert_bitstring_to_square(self.b_to);
+        let mut return_string =  String::new();
+        return_string.push_str(&from_text);
+        return_string.push_str(&to_text);
+        return_string
+    }
+
     pub fn print_all(&mut self) {
         self.print_board_big();
         println!("==");

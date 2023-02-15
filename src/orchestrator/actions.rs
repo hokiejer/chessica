@@ -7,7 +7,7 @@ use crate::operator::message::OperatorInstruction::ExitProgram;
 use crate::tree;
 //use tree::Tree;
 use std::thread;
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Barrier, Mutex};
 //use crossbeam_channel::unbounded;
 use crate::reset::r#const::SCORE_MIN;
 use crate::reset::r#const::SCORE_MAX;
@@ -51,12 +51,14 @@ impl Orchestrator {
         //self.tree_children.iter_mut().for_each(|child| {
             //let (s, r) = unbounded(); //mpsc::channel::<Arc<Mutex<Tree>>>();
             let mut handles = vec![];
-            for _ in 0..self.cogitator_thread_count {
+            let barrier = Arc::new(Barrier::new(self.cogitator_thread_count.into()));
+            for thread_id in 0..self.cogitator_thread_count {
+                let b = Arc::clone(&barrier);
                 let children = self.tree_children.clone();
                 let handle = thread::spawn(move || {
+                    let mut locked_trees = Vec::new();
                     for tree in &children {
                         if let Ok(mut tree) = tree.try_lock() {
-                            tree.reset.print();
                             let mut move_count: u64 = 0;
                             let score = tree.alpha_beta_promote_prune(
                                 0,
@@ -65,35 +67,14 @@ impl Orchestrator {
                                 SCORE_MIN,
                                 &mut move_count
                             );
-                            println!("Score == {} ({})",score,move_count);
+                            println!("Move = {}, Thread = {}]",tree.reset.move_text(),thread_id);
+                            locked_trees.push(tree);
                         }
                     }
-                    //let r: crossbeam_channel::Receiver<Arc<Mutex<Tree>>> = r.clone();
-                    //for serialized_child in self.tree_children.iter_mut() {
-
-                        //let serialized_tree = (*serialized_child).try_lock();
-                        //let serialized_tree = (*serialized_child).lock();
-
-/*
-                        if let Ok(my_subtree) = serialized_tree {
-                            // Lock is held in this scope
-                            let shared_tree = Arc::new(my_subtree.unwrap());
-                            let tree = shared_tree.clone();
-                            //let tree = serialized_tree.unwrap();
-
-                            tree.reset.print();
-                            let mut move_count: u64 = 0;
-                            let score = tree.alpha_beta_promote_prune(
-                                0,
-                                6,
-                                SCORE_MAX,
-                                SCORE_MIN,
-                                &mut move_count
-                            );
-                            println!("Score == {} ({})",score,move_count)
-                        }*/
-                    //}
-                });
+                    println!("Thread {} waiting on barrier",thread_id);
+                    b.wait();
+                    println!("Thread {} beyond barrier",thread_id);
+                 });
                 handles.push(handle);
             }
             for handle in handles {

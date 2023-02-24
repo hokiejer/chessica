@@ -79,13 +79,13 @@ impl Orchestrator {
                         );
                         if white_move {
                             while score > my_max.load(Ordering::SeqCst) {
-                                // TODO This needs to use compare_exchange
-                                my_max.store(score, Ordering::SeqCst);
+                                let temp = my_max.load(Ordering::SeqCst);
+                                let _r = my_max.compare_exchange(temp,score,Ordering::Acquire,Ordering::SeqCst);
                             }
                         } else {
                             while score < my_min.load(Ordering::SeqCst) {
-                                // TODO This needs to use compare_exchange
-                                my_min.store(score, Ordering::SeqCst);
+                                let temp = my_min.load(Ordering::SeqCst);
+                                let _r = my_min.compare_exchange(temp,score,Ordering::Acquire,Ordering::SeqCst);
                             }
                         }
                         println!("Move = {}, Thread = {}, Score == {} [{}] {}",tree.reset.move_text(),thread_id,score,move_count,success);
@@ -93,7 +93,7 @@ impl Orchestrator {
                     }
                 }
                 b.wait();
-                });
+            });
             handles.push(handle);
         }
 

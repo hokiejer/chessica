@@ -70,7 +70,7 @@ impl Orchestrator {
                 for tree in &children {
                     if let Ok(mut tree) = tree.try_lock() {
                         let mut move_count: u64 = 0;
-                        let score = tree.alpha_beta_promote_prune_parallel(
+                        let (success, score) = tree.alpha_beta_promote_prune_parallel(
                             0,
                             6,
                             &my_min,
@@ -78,15 +78,17 @@ impl Orchestrator {
                             &mut move_count
                         );
                         if white_move {
-                            if score > my_max.load(Ordering::SeqCst) {
+                            while score > my_max.load(Ordering::SeqCst) {
+                                // TODO This needs to use compare_exchange
                                 my_max.store(score, Ordering::SeqCst);
                             }
                         } else {
-                            if score < my_min.load(Ordering::SeqCst) {
+                            while score < my_min.load(Ordering::SeqCst) {
+                                // TODO This needs to use compare_exchange
                                 my_min.store(score, Ordering::SeqCst);
                             }
                         }
-                        println!("Move = {}, Thread = {}, Score == {} [{}]",tree.reset.move_text(),thread_id,score,move_count);
+                        println!("Move = {}, Thread = {}, Score == {} [{}] {}",tree.reset.move_text(),thread_id,score,move_count,success);
                         locked_trees.push(tree);
                     }
                 }

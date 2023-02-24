@@ -17,16 +17,17 @@ impl Tree {
         max_depth: u8,
         min: &AtomicI32,
         max: &AtomicI32,
-        move_count: &mut u64) -> i32
+        move_count: &mut u64) -> (bool,i32)
     {
         let mut local_min = min.load(Ordering::SeqCst);
         let mut local_max = max.load(Ordering::SeqCst);
-        println!("=====ABPPP was called with [{},{}]",local_min,local_max);
+        //println!("=====ABPPP was called with [{},{}]",local_min,local_max);
         let mut moves_generated: bool = false;
         let mut boards_seen: Vec<u32> = Vec::new();
+        let mut successful_search: bool = true;
         if depth == max_depth {
             *move_count += 1;
-            self.reset.score()
+            (true, self.reset.score())
         } else {
             'outer: loop {
                 for c in 0..self.children.len() {
@@ -34,8 +35,6 @@ impl Tree {
                     moves_generated = true;
                     boards_seen.push(child.reset.child_hash());
 
-                    local_min = min.load(Ordering::SeqCst);
-                    local_max = max.load(Ordering::SeqCst);
                     let temp_score: i32 = child.alpha_beta_promote_prune(depth+1,max_depth,local_min,local_max,move_count);
                     if self.reset.white_to_move() {
                         local_max = max.load(Ordering::SeqCst);
@@ -51,6 +50,7 @@ impl Tree {
                         }
                     }
                     if local_min <= local_max {
+                        successful_search = false;
                         break 'outer;
                     }
                 }
@@ -79,8 +79,9 @@ impl Tree {
                         }
                     }
                     self.children.truncate(MAX_CHILDREN_KEPT);
-                    println!("Temp Score == {} [{},{}]",temp_score,local_min,local_max);
+                    //println!("Temp Score == {} [{},{}]",temp_score,local_min,local_max);
                     if local_min <= local_max {
+                        successful_search = false;
                         break 'outer;
                     }
                 }
@@ -88,18 +89,18 @@ impl Tree {
             }
             if moves_generated {
                 if self.reset.white_to_move() {
-                    local_max
+                    (successful_search, local_max)
                 } else {
-                    local_min
+                    (successful_search, local_min)
                 }
             } else if self.reset.in_check() {
                 if self.reset.white_to_move() {
-                    SCORE_BLACK_CHECKMATE
+                    (true, SCORE_BLACK_CHECKMATE)
                 } else {
-                    SCORE_WHITE_CHECKMATE
+                    (true, SCORE_WHITE_CHECKMATE)
                 }
             } else {
-                SCORE_STALEMATE
+                (true, SCORE_STALEMATE)
             }
         }
     }
@@ -127,13 +128,15 @@ mod tests {
         let fen = String::from("8/8/8/8/8/3K4/3B4/3k4 b - - 0 1");
         let mut t: Tree = crate::tree::from_fen(fen);
         let mut move_count: u64 = 0;
-        let score = t.alpha_beta_promote_prune_parallel(0, 8, &search_min, &search_max, &mut move_count);
+        let (success, score) = t.alpha_beta_promote_prune_parallel(0, 8, &search_min, &search_max, &mut move_count);
+        assert!(success);
         assert_eq!(score,SCORE_STALEMATE);
 
         let fen = String::from("7K/5k2/p4n2/Pp2b3/1P6/8/8/8 w - - 0 1");
         let mut t: Tree = crate::tree::from_fen(fen);
         let mut move_count: u64 = 0;
-        let score = t.alpha_beta_promote_prune_parallel(0, 8, &search_min, &search_max, &mut move_count);
+        let (success, score) = t.alpha_beta_promote_prune_parallel(0, 8, &search_min, &search_max, &mut move_count);
+        assert!(success);
         assert_eq!(score,SCORE_STALEMATE);
     }
 
@@ -145,13 +148,15 @@ mod tests {
         let fen = String::from("r1bqkbnr/pppp1Qpp/8/4p3/2BnP3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 1");
         let mut t: Tree = crate::tree::from_fen(fen);
         let mut move_count: u64 = 0;
-        let score = t.alpha_beta_promote_prune_parallel(0, 8, &search_min, &search_max, &mut move_count);
+        let (success, score) = t.alpha_beta_promote_prune_parallel(0, 8, &search_min, &search_max, &mut move_count);
+        assert!(success);
         assert_eq!(score,SCORE_WHITE_CHECKMATE);
 
         let fen = String::from("8/7P/5n2/1P6/2P2p2/4k3/8/r3K3 w - - 0 1");
         let mut t: Tree = crate::tree::from_fen(fen);
         let mut move_count: u64 = 0;
-        let score = t.alpha_beta_promote_prune_parallel(0, 8, &search_min, &search_max, &mut move_count);
+        let (success, score) = t.alpha_beta_promote_prune_parallel(0, 8, &search_min, &search_max, &mut move_count);
+        assert!(success);
         assert_eq!(score,SCORE_BLACK_CHECKMATE);
     }
 }

@@ -11,6 +11,7 @@ use std::sync::{Arc, Barrier, Mutex};
 //use crossbeam_channel::unbounded;
 use crate::reset::r#const::SCORE_MIN;
 use crate::reset::r#const::SCORE_MAX;
+use std::sync::atomic::{AtomicI32,AtomicBool};
 
 impl Orchestrator {
 
@@ -52,16 +53,15 @@ impl Orchestrator {
 
         //Shared variables
         let barrier = Arc::new(Barrier::new(self.cogitator_thread_count.into()));
-        let search_min = Arc::new(SCORE_MAX);
-        let search_max = Arc::new(SCORE_MIN);
-        let search_trigger = Arc::new(false);
+        let search_min = Arc::new(AtomicI32::new(SCORE_MAX));
+        let search_max = Arc::new(AtomicI32::new(SCORE_MIN));
+        let search_trigger = AtomicBool::new(false);
 
         for thread_id in 0..self.cogitator_thread_count {
             //Clone the shared variables
             let b = Arc::clone(&barrier);
-            let min = Arc::clone(&search_min);
-            let max = Arc::clone(&search_max);
-            let trigger = Arc::clone(&search_trigger);
+            let my_min = Arc::clone(&search_min);
+            let my_max = Arc::clone(&search_max);
 
             let children = self.tree_children.clone();
             let handle = thread::spawn(move || {
@@ -69,14 +69,15 @@ impl Orchestrator {
                 for tree in &children {
                     if let Ok(mut tree) = tree.try_lock() {
                         let mut move_count: u64 = 0;
-                        let score = tree.alpha_beta_promote_prune(
+                        let score = tree.alpha_beta_promote_prune_parallel(
                             0,
-                            6,
-                            SCORE_MAX,
-                            SCORE_MIN,
+                            1,
+                            &my_min,
+                            &my_max,
                             &mut move_count
                         );
-                        println!("Move = {}, Thread = {}, Score == {}]",tree.reset.move_text(),thread_id,score);
+                        m.store(temp_score, Ordering::SeqCst);
+                        println!("Move = {}, Thread = {}, Score == {} [{}]",tree.reset.move_text(),thread_id,score,move_count);
                         locked_trees.push(tree);
                     }
                 }

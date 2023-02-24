@@ -4,6 +4,7 @@ use crate::reset::r#const::SCORE_BLACK_CHECKMATE;
 use crate::reset::r#const::SCORE_WHITE_CHECKMATE;
 use crate::tree::r#const::MAX_CHILDREN_KEPT;
 use std::sync::atomic::{AtomicI32, Ordering};
+use std::cmp;
 
 #[allow(clippy::never_loop)]
 impl Tree {
@@ -18,6 +19,9 @@ impl Tree {
         max: &AtomicI32,
         move_count: &mut u64) -> i32
     {
+        let mut local_min = min.load(Ordering::SeqCst);
+        let mut local_max = max.load(Ordering::SeqCst);
+        println!("=====ABPPP was called with [{},{}]",local_min,local_max);
         let mut moves_generated: bool = false;
         let mut boards_seen: Vec<u32> = Vec::new();
         if depth == max_depth {
@@ -29,17 +33,24 @@ impl Tree {
                     let child = &mut self.children[c];
                     moves_generated = true;
                     boards_seen.push(child.reset.child_hash());
-                    let temp_score: i32 = child.alpha_beta_promote_prune(depth+1,max_depth,min.load(Ordering::SeqCst),max.load(Ordering::SeqCst),move_count);
+
+                    local_min = min.load(Ordering::SeqCst);
+                    local_max = max.load(Ordering::SeqCst);
+                    let temp_score: i32 = child.alpha_beta_promote_prune(depth+1,max_depth,local_min,local_max,move_count);
                     if self.reset.white_to_move() {
-                        if temp_score > max.load(Ordering::SeqCst) {
+                        local_max = max.load(Ordering::SeqCst);
+                        if temp_score > local_max {
                             self.promote_last_child_to_first(c);
-                            max.store(temp_score,Ordering::SeqCst);
+                            local_max = temp_score;
                         }
-                    } else if temp_score < min.load(Ordering::SeqCst) {
-                        self.promote_last_child_to_first(c);
-                        min.store(temp_score,Ordering::SeqCst);
+                    } else {
+                        local_min = min.load(Ordering::SeqCst);
+                        if temp_score < local_min {
+                            self.promote_last_child_to_first(c);
+                            local_min = temp_score;
+                        }
                     }
-                    if min.load(Ordering::SeqCst) <= max.load(Ordering::SeqCst) {
+                    if local_min <= local_max {
                         break 'outer;
                     }
                 }
@@ -53,19 +64,23 @@ impl Tree {
                     } else {
                         moves_generated = true;
                     }
-                    let temp_score: i32 = child.alpha_beta_promote_prune(depth+1,max_depth,min.load(Ordering::SeqCst),max.load(Ordering::SeqCst),move_count);
-                    println!("Temp Score == {}",temp_score);
+                    let temp_score: i32 = child.alpha_beta_promote_prune(depth+1,max_depth,local_min,local_max,move_count);
                     if self.reset.white_to_move() {
-                        if temp_score > max.load(Ordering::SeqCst) {
+                        local_max = max.load(Ordering::SeqCst);
+                        if temp_score > local_max {
                             self.promote_last_child_to_first(self.children.len()-1);
-                            max.store(temp_score,Ordering::SeqCst);
+                            local_max = temp_score;
                         }
-                    } else if temp_score < min.load(Ordering::SeqCst) {
-                        self.promote_last_child_to_first(self.children.len()-1);
-                        min.store(temp_score, Ordering::SeqCst);
+                    } else {
+                        local_min = min.load(Ordering::SeqCst);
+                        if temp_score < local_min {
+                            self.promote_last_child_to_first(self.children.len()-1);
+                            local_min = temp_score;
+                        }
                     }
                     self.children.truncate(MAX_CHILDREN_KEPT);
-                    if min.load(Ordering::SeqCst) <= max.load(Ordering::SeqCst) {
+                    println!("Temp Score == {} [{},{}]",temp_score,local_min,local_max);
+                    if local_min <= local_max {
                         break 'outer;
                     }
                 }
@@ -73,9 +88,9 @@ impl Tree {
             }
             if moves_generated {
                 if self.reset.white_to_move() {
-                    max.load(Ordering::SeqCst)
+                    local_max
                 } else {
-                    min.load(Ordering::SeqCst)
+                    local_min
                 }
             } else if self.reset.in_check() {
                 if self.reset.white_to_move() {

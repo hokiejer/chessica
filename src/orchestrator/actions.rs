@@ -11,7 +11,7 @@ use std::sync::{Arc, Barrier, Mutex};
 //use crossbeam_channel::unbounded;
 use crate::reset::r#const::SCORE_MIN;
 use crate::reset::r#const::SCORE_MAX;
-use std::sync::atomic::{AtomicI32,AtomicBool};
+use std::sync::atomic::{AtomicI32,AtomicBool,Ordering};
 
 impl Orchestrator {
 
@@ -56,6 +56,7 @@ impl Orchestrator {
         let search_min = Arc::new(AtomicI32::new(SCORE_MAX));
         let search_max = Arc::new(AtomicI32::new(SCORE_MIN));
         let search_trigger = AtomicBool::new(false);
+        let white_move: bool = self.tree_root.reset.white_to_move();
 
         for thread_id in 0..self.cogitator_thread_count {
             //Clone the shared variables
@@ -71,12 +72,20 @@ impl Orchestrator {
                         let mut move_count: u64 = 0;
                         let score = tree.alpha_beta_promote_prune_parallel(
                             0,
-                            1,
+                            6,
                             &my_min,
                             &my_max,
                             &mut move_count
                         );
-                        m.store(temp_score, Ordering::SeqCst);
+                        if white_move {
+                            if score > my_max.load(Ordering::SeqCst) {
+                                my_max.store(score, Ordering::SeqCst);
+                            }
+                        } else {
+                            if score < my_min.load(Ordering::SeqCst) {
+                                my_min.store(score, Ordering::SeqCst);
+                            }
+                        }
                         println!("Move = {}, Thread = {}, Score == {} [{}]",tree.reset.move_text(),thread_id,score,move_count);
                         locked_trees.push(tree);
                     }

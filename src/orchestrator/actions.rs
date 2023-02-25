@@ -63,7 +63,7 @@ impl Orchestrator {
 
         for thread_id in 0..self.cogitator_thread_count {
 
-            let cogitator = cogitator::new(
+            let mut cogitator = cogitator::new(
                 thread_id,
                 Arc::clone(&barrier),
                 Arc::clone(&search_min),
@@ -71,18 +71,19 @@ impl Orchestrator {
                 white_move
             );
 
+            cogitator.set_child_list(self.tree_children.clone());
 
+            /*
             //Clone the shared variables
             let b = Arc::clone(&barrier);
             let my_min = Arc::clone(&search_min);
             let my_max = Arc::clone(&search_max);
-
             let children = self.tree_children.clone();
+            */
             let handle = thread::spawn(move || {
 
-
-
-
+                cogitator.run();
+                /* 
 
                 let mut locked_trees = Vec::new();
                 for tree in &children {
@@ -111,6 +112,7 @@ impl Orchestrator {
                     }
                 }
                 b.wait();
+                */
             });
             handles.push(handle);
         }

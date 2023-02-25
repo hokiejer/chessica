@@ -44,6 +44,11 @@ pub fn new(id: u8, barrier: Arc<Barrier>, global_min: Arc<AtomicI32>, global_max
 
 impl Cogitator {
 
+    /// Set the child list for the Cogitators to go after
+    pub fn set_child_list(&mut self, child_list: Vec<Arc<Mutex<Tree>>>) {
+        self.children = child_list;
+    }
+
     /// Run Chessica's Cogitator
     pub fn run(&self) {
         let mut locked_trees = Vec::new();

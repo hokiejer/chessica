@@ -3,7 +3,7 @@ use crate::reset::r#const::SCORE_STALEMATE;
 use crate::reset::r#const::SCORE_BLACK_CHECKMATE;
 use crate::reset::r#const::SCORE_WHITE_CHECKMATE;
 use crate::tree::r#const::MAX_CHILDREN_KEPT;
-use std::sync::atomic::{AtomicI32, Ordering};
+use std::sync::atomic::{AtomicI32, AtomicBool, Ordering};
 use std::cmp;
 
 #[allow(clippy::never_loop)]
@@ -17,6 +17,7 @@ impl Tree {
         max_depth: u8,
         min: &AtomicI32,
         max: &AtomicI32,
+        red_light: &AtomicBool,
         move_count: &mut u64) -> (bool,i32)
     {
         let mut local_min = min.load(Ordering::SeqCst);
@@ -117,25 +118,26 @@ mod tests {
     use crate::reset::r#const::SCORE_WHITE_CHECKMATE;
     use crate::reset::r#const::SCORE_BLACK_CHECKMATE;
     use std::sync::Arc;
-    use std::sync::atomic::{AtomicI32};
+    use std::sync::atomic::{AtomicBool,AtomicI32};
 
 
     #[test]
     fn ab_keep_depth_stalemate_test() {
         let search_min = Arc::new(AtomicI32::new(SCORE_MAX));
         let search_max = Arc::new(AtomicI32::new(SCORE_MIN));
+        let red_light = Arc::new(AtomicBool::new(false));
 
         let fen = String::from("8/8/8/8/8/3K4/3B4/3k4 b - - 0 1");
         let mut t: Tree = crate::tree::from_fen(fen);
         let mut move_count: u64 = 0;
-        let (success, score) = t.alpha_beta_promote_prune_parallel(0, 8, &search_min, &search_max, &mut move_count);
+        let (success, score) = t.alpha_beta_promote_prune_parallel(0, 8, &search_min, &search_max, &red_light, &mut move_count);
         assert!(success);
         assert_eq!(score,SCORE_STALEMATE);
 
         let fen = String::from("7K/5k2/p4n2/Pp2b3/1P6/8/8/8 w - - 0 1");
         let mut t: Tree = crate::tree::from_fen(fen);
         let mut move_count: u64 = 0;
-        let (success, score) = t.alpha_beta_promote_prune_parallel(0, 8, &search_min, &search_max, &mut move_count);
+        let (success, score) = t.alpha_beta_promote_prune_parallel(0, 8, &search_min, &search_max, &red_light, &mut move_count);
         assert!(success);
         assert_eq!(score,SCORE_STALEMATE);
     }
@@ -144,18 +146,19 @@ mod tests {
     fn ab_keep_depth_checkmate_test() {
         let search_min = Arc::new(AtomicI32::new(SCORE_MAX));
         let search_max = Arc::new(AtomicI32::new(SCORE_MIN));
+        let red_light = Arc::new(AtomicBool::new(false));
 
         let fen = String::from("r1bqkbnr/pppp1Qpp/8/4p3/2BnP3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 1");
         let mut t: Tree = crate::tree::from_fen(fen);
         let mut move_count: u64 = 0;
-        let (success, score) = t.alpha_beta_promote_prune_parallel(0, 8, &search_min, &search_max, &mut move_count);
+        let (success, score) = t.alpha_beta_promote_prune_parallel(0, 8, &search_min, &search_max, &red_light, &mut move_count);
         assert!(success);
         assert_eq!(score,SCORE_WHITE_CHECKMATE);
 
         let fen = String::from("8/7P/5n2/1P6/2P2p2/4k3/8/r3K3 w - - 0 1");
         let mut t: Tree = crate::tree::from_fen(fen);
         let mut move_count: u64 = 0;
-        let (success, score) = t.alpha_beta_promote_prune_parallel(0, 8, &search_min, &search_max, &mut move_count);
+        let (success, score) = t.alpha_beta_promote_prune_parallel(0, 8, &search_min, &search_max, &red_light, &mut move_count);
         assert!(success);
         assert_eq!(score,SCORE_BLACK_CHECKMATE);
     }

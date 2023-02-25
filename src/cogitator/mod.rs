@@ -67,6 +67,7 @@ impl Cogitator {
                     6,
                     &(self.global_min),
                     &(self.global_max),
+                    &(self.red_light),
                     &mut move_count
                 );
                 if self.white_move {

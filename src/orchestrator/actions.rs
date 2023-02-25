@@ -12,6 +12,8 @@ use std::sync::{Arc, Barrier, Mutex};
 use crate::reset::r#const::SCORE_MIN;
 use crate::reset::r#const::SCORE_MAX;
 use std::sync::atomic::{AtomicI32,AtomicBool,Ordering};
+use crate::cogitator;
+use crate::cogitator::Cogitator;
 
 impl Orchestrator {
 
@@ -49,6 +51,7 @@ impl Orchestrator {
     }
 
     pub fn launch_cogitators(&mut self) {
+        let mut cogitators: Vec<Cogitator> = vec![];
         let mut handles = vec![];
 
         //Shared variables
@@ -59,6 +62,16 @@ impl Orchestrator {
         let white_move: bool = self.tree_root.reset.white_to_move();
 
         for thread_id in 0..self.cogitator_thread_count {
+
+            let cogitator = cogitator::new(
+                thread_id,
+                Arc::clone(&barrier),
+                Arc::clone(&search_min),
+                Arc::clone(&search_max),
+                white_move
+            );
+
+
             //Clone the shared variables
             let b = Arc::clone(&barrier);
             let my_min = Arc::clone(&search_min);
@@ -66,6 +79,11 @@ impl Orchestrator {
 
             let children = self.tree_children.clone();
             let handle = thread::spawn(move || {
+
+
+
+
+
                 let mut locked_trees = Vec::new();
                 for tree in &children {
                     if let Ok(mut tree) = tree.try_lock() {

@@ -57,7 +57,6 @@ impl Orchestrator {
         let barrier = Arc::new(Barrier::new(self.cogitator_thread_count.into()));
         let search_min = Arc::new(AtomicI32::new(SCORE_MAX));
         let search_max = Arc::new(AtomicI32::new(SCORE_MIN));
-        let red_light = Arc::new(AtomicBool::new(true));
         let white_move: bool = self.tree_root.reset.white_to_move();
 
         for thread_id in 0..self.cogitator_thread_count {
@@ -68,7 +67,7 @@ impl Orchestrator {
                 Arc::clone(&search_min),
                 Arc::clone(&search_max),
                 white_move,
-                Arc::clone(&red_light),
+                Arc::clone(&self.red_light),
             );
 
             cogitator.set_child_list(self.tree_children.clone());

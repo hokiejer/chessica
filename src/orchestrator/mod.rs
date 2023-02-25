@@ -7,6 +7,7 @@ use crate::tree;
 use tree::Tree;
 use std::sync::{Arc, Mutex};
 use std::thread::JoinHandle;
+use std::sync::atomic::{AtomicBool};
 
 /// Data necessary the Orchestrator functionality to run successfully
 ///
@@ -21,6 +22,7 @@ pub struct Orchestrator {
     tree_children: Vec<Arc<Mutex<Tree>>>,
     cogitator_thread_count: u8,
     cogitator_handles:  Vec<JoinHandle<()>>,
+    red_light: Arc<AtomicBool>,
 }
 
 /// Constructs a new Orchestrator
@@ -43,6 +45,7 @@ pub fn new() -> Orchestrator {
         tree_children: Vec::new(),
         cogitator_thread_count: 2,
         cogitator_handles: Vec::new(),
+        red_light: Arc::new(AtomicBool::new(false)),
     }
 }
 

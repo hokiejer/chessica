@@ -52,13 +52,12 @@ impl Orchestrator {
 
     pub fn launch_cogitators(&mut self) {
         let mut cogitators: Vec<Cogitator> = vec![];
-        let mut handles = vec![];
 
         //Shared variables
         let barrier = Arc::new(Barrier::new(self.cogitator_thread_count.into()));
         let search_min = Arc::new(AtomicI32::new(SCORE_MAX));
         let search_max = Arc::new(AtomicI32::new(SCORE_MIN));
-        let search_trigger = AtomicBool::new(false);
+        let red_light = Arc::new(AtomicBool::new(true));
         let white_move: bool = self.tree_root.reset.white_to_move();
 
         for thread_id in 0..self.cogitator_thread_count {
@@ -68,56 +67,25 @@ impl Orchestrator {
                 Arc::clone(&barrier),
                 Arc::clone(&search_min),
                 Arc::clone(&search_max),
-                white_move
+                white_move,
+                Arc::clone(&red_light),
             );
 
             cogitator.set_child_list(self.tree_children.clone());
 
-            /*
-            //Clone the shared variables
-            let b = Arc::clone(&barrier);
-            let my_min = Arc::clone(&search_min);
-            let my_max = Arc::clone(&search_max);
-            let children = self.tree_children.clone();
-            */
             let handle = thread::spawn(move || {
-
                 cogitator.run();
-                /* 
-
-                let mut locked_trees = Vec::new();
-                for tree in &children {
-                    if let Ok(mut tree) = tree.try_lock() {
-                        let mut move_count: u64 = 0;
-                        let (success, score) = tree.alpha_beta_promote_prune_parallel(
-                            0,
-                            6,
-                            &my_min,
-                            &my_max,
-                            &mut move_count
-                        );
-                        if white_move {
-                            while score > my_max.load(Ordering::SeqCst) {
-                                let temp = my_max.load(Ordering::SeqCst);
-                                let _r = my_max.compare_exchange(temp,score,Ordering::Acquire,Ordering::SeqCst);
-                            }
-                        } else {
-                            while score < my_min.load(Ordering::SeqCst) {
-                                let temp = my_min.load(Ordering::SeqCst);
-                                let _r = my_min.compare_exchange(temp,score,Ordering::Acquire,Ordering::SeqCst);
-                            }
-                        }
-                        println!("Move = {}, Thread = {}, Score == {} [{}] {}",tree.reset.move_text(),thread_id,score,move_count,success);
-                        locked_trees.push(tree);
-                    }
-                }
-                b.wait();
-                */
             });
-            handles.push(handle);
+            self.cogitator_handles.push(handle);
         }
 
-        for handle in handles {
+        self.close_cogitators();
+    }
+
+
+    pub fn close_cogitators(&mut self) {
+        while self.cogitator_handles.len() > 0 {
+            let handle = self.cogitator_handles.pop().unwrap();
             handle.join().unwrap();
         }
     }

@@ -18,6 +18,7 @@ pub struct Cogitator {
     pub global_max: Arc<AtomicI32>,
     pub white_move: bool,
     pub children: Vec<Arc<Mutex<Tree>>>,
+    pub red_light: Arc<AtomicBool>,
 }
 
 
@@ -30,7 +31,7 @@ pub struct Cogitator {
 
 /// let mut my_cogitator = chessica::cogitator::new();
 /// ```
-pub fn new(id: u8, barrier: Arc<Barrier>, global_min: Arc<AtomicI32>, global_max: Arc<AtomicI32>, white_move: bool) -> Cogitator {
+pub fn new(id: u8, barrier: Arc<Barrier>, global_min: Arc<AtomicI32>, global_max: Arc<AtomicI32>, white_move: bool, red_light: Arc<AtomicBool>) -> Cogitator {
     Cogitator {
         id: id,
         barrier: barrier,
@@ -38,6 +39,7 @@ pub fn new(id: u8, barrier: Arc<Barrier>, global_min: Arc<AtomicI32>, global_max
         global_max: global_max,
         white_move: white_move,
         children: vec![],
+        red_light: red_light,
     }
 }
 
@@ -51,6 +53,11 @@ impl Cogitator {
 
     /// Run Chessica's Cogitator
     pub fn run(&self) {
+        self.search();
+    }
+
+    pub fn search(&self) {
+
         let mut locked_trees = Vec::new();
         for tree in &(self.children) {
             if let Ok(mut tree) = tree.try_lock() {

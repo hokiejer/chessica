@@ -6,6 +6,7 @@ use crate::operator::message::OperatorMessage;
 use crate::tree;
 use tree::Tree;
 use std::sync::{Arc, Mutex};
+use std::thread::JoinHandle;
 
 /// Data necessary the Orchestrator functionality to run successfully
 ///
@@ -19,6 +20,7 @@ pub struct Orchestrator {
     tree_root: Tree,
     tree_children: Vec<Arc<Mutex<Tree>>>,
     cogitator_thread_count: u8,
+    cogitator_handles:  Vec<JoinHandle<()>>,
 }
 
 /// Constructs a new Orchestrator
@@ -40,6 +42,7 @@ pub fn new() -> Orchestrator {
         tree_root: tree::from_fen(starting_fen),
         tree_children: Vec::new(),
         cogitator_thread_count: 2,
+        cogitator_handles: Vec::new(),
     }
 }
 

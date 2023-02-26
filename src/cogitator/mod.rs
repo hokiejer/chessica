@@ -19,6 +19,7 @@ pub struct Cogitator {
     pub white_move: bool,
     pub children: Vec<Arc<Mutex<Tree>>>,
     pub red_light: Arc<AtomicBool>,
+    pub exit_signal: Arc<AtomicBool>,
 }
 
 
@@ -31,7 +32,15 @@ pub struct Cogitator {
 
 /// let mut my_cogitator = chessica::cogitator::new();
 /// ```
-pub fn new(id: u8, barrier: Arc<Barrier>, global_min: Arc<AtomicI32>, global_max: Arc<AtomicI32>, white_move: bool, red_light: Arc<AtomicBool>) -> Cogitator {
+pub fn new(
+    id: u8,
+    barrier: Arc<Barrier>,
+    global_min: Arc<AtomicI32>,
+    global_max: Arc<AtomicI32>,
+    white_move: bool,
+    red_light: Arc<AtomicBool>,
+    exit_signal: Arc<AtomicBool>,
+) -> Cogitator {
     Cogitator {
         id: id,
         barrier: barrier,
@@ -40,6 +49,7 @@ pub fn new(id: u8, barrier: Arc<Barrier>, global_min: Arc<AtomicI32>, global_max
         white_move: white_move,
         children: vec![],
         red_light: red_light,
+        exit_signal: exit_signal,
     }
 }
 

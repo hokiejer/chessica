@@ -42,6 +42,7 @@ impl Orchestrator {
 
                 },
                 ExitProgram => {
+                    self.close_cogitators();
                     return true;
                 },
 
@@ -68,6 +69,7 @@ impl Orchestrator {
                 Arc::clone(&search_max),
                 white_move,
                 Arc::clone(&self.red_light),
+                Arc::clone(&self.exit_signal),
             );
 
             cogitator.set_child_list(self.tree_children.clone());
@@ -88,6 +90,7 @@ impl Orchestrator {
     }
 
     pub fn close_cogitators(&mut self) {
+        self.exit_signal.store(true,Ordering::Relaxed);
         while self.cogitator_handles.len() > 0 {
             let handle = self.cogitator_handles.pop().unwrap();
             handle.join().unwrap();

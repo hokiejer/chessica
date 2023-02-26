@@ -23,6 +23,7 @@ pub struct Orchestrator {
     cogitator_thread_count: u8,
     cogitator_handles:  Vec<JoinHandle<()>>,
     red_light: Arc<AtomicBool>,
+    exit_signal: Arc<AtomicBool>,
 }
 
 /// Constructs a new Orchestrator
@@ -46,6 +47,7 @@ pub fn new() -> Orchestrator {
         cogitator_thread_count: 2,
         cogitator_handles: Vec::new(),
         red_light: Arc::new(AtomicBool::new(false)),
+        exit_signal: Arc::new(AtomicBool::new(false)),
     }
 }
 

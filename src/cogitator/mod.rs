@@ -70,6 +70,9 @@ impl Cogitator {
                     &(self.red_light),
                     &mut move_count
                 );
+                if success {
+                    tree.score = Some(score);
+                }
                 if self.white_move {
                     while score > self.global_max.load(Ordering::SeqCst) {
                         let temp = self.global_max.load(Ordering::SeqCst);

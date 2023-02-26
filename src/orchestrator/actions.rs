@@ -81,6 +81,11 @@ impl Orchestrator {
         self.close_cogitators();
     }
 
+    pub fn start_cogitators(&mut self) {
+        //TODO Clear tree scores
+        //TODO Green Light
+        //TODO Set Finish Timer
+    }
 
     pub fn close_cogitators(&mut self) {
         while self.cogitator_handles.len() > 0 {

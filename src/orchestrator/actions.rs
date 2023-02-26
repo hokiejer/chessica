@@ -80,16 +80,20 @@ impl Orchestrator {
             self.cogitator_handles.push(handle);
         }
 
-        self.close_cogitators();
     }
 
-    pub fn start_cogitators(&mut self) {
+    pub fn start_cogitation(&mut self) {
         //TODO Clear tree scores
         //TODO Green Light
         //TODO Set Finish Timer
     }
 
+    pub fn pause_cogitation(&mut self) {
+        self.red_light.store(true,Ordering::Relaxed);
+    }
+
     pub fn close_cogitators(&mut self) {
+        self.pause_cogitation();
         self.exit_signal.store(true,Ordering::Relaxed);
         while self.cogitator_handles.len() > 0 {
             let handle = self.cogitator_handles.pop().unwrap();

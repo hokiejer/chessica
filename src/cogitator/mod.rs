@@ -82,22 +82,28 @@ impl Cogitator {
                 );
                 if success {
                     tree.score = Some(score);
-                }
-                if self.white_move {
-                    while score > self.global_max.load(Ordering::SeqCst) {
-                        let temp = self.global_max.load(Ordering::SeqCst);
-                        let _r = self.global_max.compare_exchange(temp,score,Ordering::Acquire,Ordering::SeqCst);
-                    }
-                } else {
-                    while score < self.global_min.load(Ordering::SeqCst) {
-                        let temp = self.global_min.load(Ordering::SeqCst);
-                        let _r = self.global_min.compare_exchange(temp,score,Ordering::Acquire,Ordering::SeqCst);
+                    if self.white_move {
+                        while score > self.global_max.load(Ordering::SeqCst) {
+                            let temp = self.global_max.load(Ordering::SeqCst);
+                            let _r = self.global_max.compare_exchange(temp,score,Ordering::Acquire,Ordering::SeqCst);
+                        }
+                    } else {
+                        while score < self.global_min.load(Ordering::SeqCst) {
+                            let temp = self.global_min.load(Ordering::SeqCst);
+                            let _r = self.global_min.compare_exchange(temp,score,Ordering::Acquire,Ordering::SeqCst);
+                        }
                     }
                 }
                 println!("Move = {}, Thread = {}, Score == {} [{}] {}",tree.reset.move_text(),self.id,score,move_count,success);
                 locked_trees.push(tree);
             }
         }
+        self.barrier.wait();
+        //This will clear the locks
+        locked_trees.clear();
+        println!("Mind the gap!");
+        self.barrier.wait();
+        println!("Leader has to sort here!");
         self.barrier.wait();
 
     }

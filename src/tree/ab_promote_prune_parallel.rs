@@ -36,7 +36,11 @@ impl Tree {
                     moves_generated = true;
                     boards_seen.push(child.reset.child_hash());
 
-                    let temp_score: i32 = child.alpha_beta_promote_prune(depth+1,max_depth,local_min,local_max,move_count);
+                    let temp_score: i32 = child.alpha_beta_promote_prune(depth+1, max_depth, local_min, local_max, &red_light, move_count);
+                    if red_light.load(Ordering::Relaxed) {
+                        successful_search = false;
+                        break 'outer;
+                    }
                     if self.reset.white_to_move() {
                         local_max = max.load(Ordering::SeqCst);
                         if temp_score > local_max {
@@ -65,7 +69,11 @@ impl Tree {
                     } else {
                         moves_generated = true;
                     }
-                    let temp_score: i32 = child.alpha_beta_promote_prune(depth+1,max_depth,local_min,local_max,move_count);
+                    let temp_score: i32 = child.alpha_beta_promote_prune(depth+1, max_depth, local_min, local_max, &red_light, move_count);
+                    if red_light.load(Ordering::Relaxed) {
+                        successful_search = false;
+                        break 'outer;
+                    }
                     if self.reset.white_to_move() {
                         local_max = max.load(Ordering::SeqCst);
                         if temp_score > local_max {

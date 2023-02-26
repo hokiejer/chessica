@@ -11,6 +11,7 @@ pub struct Tree
 {
     pub reset: Reset,
     pub children: Vec<Tree>,
+    pub score: Option<i32>,
 }
 
 unsafe impl Send for Tree {}
@@ -22,6 +23,7 @@ pub fn new() -> Tree {
     Tree {
         reset: crate::reset::new(),
         children: emptyvec,
+        score: None,
     }
 }
 
@@ -117,10 +119,12 @@ mod tests {
         let fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         let mut t: Tree = crate::tree::from_fen(fen);
         assert_eq!(t.to_fen(),"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        assert_eq!(t.score,None);
 
         let fen = String::from("r1bk3r/p2pBpNp/n4n2/1p1NP2P/6P1/3P4/P1P1K3/q5b1 b - - 1 23");
         let mut t: Tree = crate::tree::from_fen(fen);
         assert_eq!(t.to_fen(),"r1bk3r/p2pBpNp/n4n2/1p1NP2P/6P1/3P4/P1P1K3/q5b1 b - - 1 23");
+        assert_eq!(t.score,None);
     }
 
 }

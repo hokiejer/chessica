@@ -163,7 +163,7 @@ mod tests {
         }
         c.set_child_list(tree_list.clone());
         c.pre_sort_children();
-        for tree in c.children {
+        for tree in &c.children {
             match tree.lock().unwrap().score {
                 Some(this_score) => {
                     println!("Score == {}",this_score);
@@ -173,6 +173,12 @@ mod tests {
                 },
             }
         }
-        assert!(false);
+        assert!(c.children[0].lock().unwrap().score.is_some());
+        assert!(c.children[1].lock().unwrap().score.is_some());
+        assert!(c.children[2].lock().unwrap().score.is_some());
+        assert!(c.children[3].lock().unwrap().score.is_some());
+        assert_eq!(c.children[4].lock().unwrap().score,None);
+        assert_eq!(c.children[5].lock().unwrap().score,None);
+        assert_eq!(c.children[6].lock().unwrap().score,None);
     }
 }

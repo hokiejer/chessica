@@ -136,7 +136,6 @@ mod tests {
         let mut message = message::new();
         message.move_taken();
         assert!(!o.process_command(message)); //returns `false` to go on
-        assert!(false);
     }
 
 }

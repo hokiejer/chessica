@@ -30,7 +30,7 @@ pub struct Cogitator {
 /// ```
 /// use chessica::cogitator::Cogitator;
 
-/// let mut my_cogitator = chessica::cogitator::new();
+/// //let mut my_cogitator = chessica::cogitator::new();
 /// ```
 pub fn new(
     id: u8,
@@ -65,9 +65,8 @@ impl Cogitator {
     pub fn run(&mut self) {
         self.search(6);
         self.barrier.wait();
-        println!("Mind the gap!");
-        self.barrier.wait();
-        self.pre_sort_children();
+        println!("Sorting Children");
+        self.sort_children();
         self.barrier.wait();
 
     }
@@ -107,24 +106,41 @@ impl Cogitator {
         self.barrier.wait();
     }
 
-    pub fn pre_sort_children(&mut self) {
+    pub fn pre_sort_children(&mut self) -> usize {
         //let mut locked_trees = Vec::new();
-        if self.id == 0 {
-            println!("Leader has to sort here!");
-            let mut i = 0;
-            let mut j = self.children.len() - 1;
-            while i <= j {
-                if self.children[i].lock().unwrap().score != None {
-                    i += 1;
-                    continue;
-                }
-                if self.children[j].lock().unwrap().score == None {
-                    j -= 1;
-                    continue;
-                }
-                self.children.swap(i,j);
+        let mut i = 0;
+        let mut j = self.children.len() - 1;
+        while i <= j {
+            if self.children[i].lock().unwrap().score != None {
                 i += 1;
+                continue;
+            }
+            if self.children[j].lock().unwrap().score == None {
                 j -= 1;
+                continue;
+            }
+            self.children.swap(i,j);
+            i += 1;
+            j -= 1;
+        }
+        if self.children[i-1].lock().unwrap().score == None {
+            i-2
+        } else {
+            i-1
+        }
+    }
+
+    pub fn sort_children(&mut self) {
+        if self.id == 0 {
+            let i = self.pre_sort_children();
+            if self.white_move {
+                self.children[0..=i].sort_by(|a, b| {
+                    b.lock().unwrap().score.cmp(&a.lock().unwrap().score)
+                });
+            } else {
+                self.children[0..=i].sort_by(|a, b| {
+                    a.lock().unwrap().score.cmp(&b.lock().unwrap().score)
+                });
             }
         }
     }
@@ -134,35 +150,30 @@ impl Cogitator {
 #[cfg(test)]
 mod tests {
     use crate::cogitator;
+    use cogitator::Cogitator;
     use std::sync::{Arc,Mutex,Barrier};
     use crate::tree;
     use tree::Tree;
     use std::sync::atomic::{AtomicBool,AtomicI32};
 
-    #[test]
-    fn new_cogitator() {
-        //let o = cogitator::new();
-        //assert_eq!(o.x,0);
-    }
-
-    #[test]
-    fn sorting() {
+    fn prep_cogitator() -> Cogitator {
         let barrier = Arc::new(Barrier::new(1));
         let min = Arc::new(AtomicI32::new(1));
         let max = Arc::new(AtomicI32::new(2));
         let red_light = Arc::new(AtomicBool::new(false));
         let exit_signal = Arc::new(AtomicBool::new(false));
-        let mut c = cogitator::new(0, barrier, min, max, true, red_light, exit_signal);
+        cogitator::new(0, barrier, min, max, true, red_light, exit_signal)
+    }
 
+    fn pre_sort(c: &mut Cogitator, scores: Vec<Option<i32>>) -> usize {
         let mut tree_list: Vec<Arc<Mutex<Tree>>> = Vec::new();
-        let scores = vec![None, Some(123), None, Some(-123), Some(12), Some(100), None];
         for score in scores {
             let mut t = tree::new();
             t.score = score;
             tree_list.push(Arc::new(Mutex::new(t)));
         }
         c.set_child_list(tree_list.clone());
-        c.pre_sort_children();
+        let index = c.pre_sort_children();
         for tree in &c.children {
             match tree.lock().unwrap().score {
                 Some(this_score) => {
@@ -173,12 +184,128 @@ mod tests {
                 },
             }
         }
+        index
+    }
+
+    fn sort(c: &mut Cogitator, scores: Vec<Option<i32>>) {
+        let mut tree_list: Vec<Arc<Mutex<Tree>>> = Vec::new();
+        for score in scores {
+            let mut t = tree::new();
+            t.score = score;
+            tree_list.push(Arc::new(Mutex::new(t)));
+        }
+        c.set_child_list(tree_list.clone());
+        let index = c.sort_children();
+        for tree in &c.children {
+            match tree.lock().unwrap().score {
+                Some(this_score) => {
+                    println!("Score == {}",this_score);
+                },
+                None => {
+                    println!("Found a node with no score");
+                },
+            }
+        }
+    }
+
+    #[test]
+    fn new_cogitator() {
+        //let o = cogitator::new();
+        //assert_eq!(o.x,0);
+    }
+
+    #[test]
+    fn pre_sort_1() {
+        let mut c = prep_cogitator();
+        let scores = vec![None, Some(123), None, Some(-123), Some(12), Some(100), None];
+        let index = pre_sort(&mut c,scores);
+        assert!(c.children[index].lock().unwrap().score.is_some());
+        assert!(c.children[index+1].lock().unwrap().score.is_none());
         assert!(c.children[0].lock().unwrap().score.is_some());
         assert!(c.children[1].lock().unwrap().score.is_some());
         assert!(c.children[2].lock().unwrap().score.is_some());
         assert!(c.children[3].lock().unwrap().score.is_some());
+        assert!(c.children[4].lock().unwrap().score.is_none());
+        assert!(c.children[5].lock().unwrap().score.is_none());
+        assert!(c.children[6].lock().unwrap().score.is_none());
+    }
+
+    #[test]
+    fn pre_sort_2() {
+        let mut c = prep_cogitator();
+        let scores = vec![Some(5), None, None, None, None, None];
+        let index = pre_sort(&mut c,scores);
+        assert!(c.children[index].lock().unwrap().score.is_some());
+        assert!(c.children[index+1].lock().unwrap().score.is_none());
+        assert!(c.children[0].lock().unwrap().score.is_some());
+        assert!(c.children[1].lock().unwrap().score.is_none());
+        assert!(c.children[2].lock().unwrap().score.is_none());
+        assert!(c.children[3].lock().unwrap().score.is_none());
+        assert!(c.children[4].lock().unwrap().score.is_none());
+        assert!(c.children[5].lock().unwrap().score.is_none());
+    }
+
+    #[test]
+    fn pre_sort_3() {
+        let mut c = prep_cogitator();
+        let scores = vec![None, None, Some(6), None];
+        let index = pre_sort(&mut c,scores);
+        assert!(c.children[index].lock().unwrap().score.is_some());
+        assert!(c.children[index+1].lock().unwrap().score.is_none());
+        assert!(c.children[0].lock().unwrap().score.is_some());
+        assert!(c.children[1].lock().unwrap().score.is_none());
+        assert!(c.children[2].lock().unwrap().score.is_none());
+        assert!(c.children[3].lock().unwrap().score.is_none());
+    }
+
+    #[test]
+    fn pre_sort_4() {
+        let mut c = prep_cogitator();
+        let scores = vec![None, Some(-2), Some(6), None];
+        let index = pre_sort(&mut c,scores);
+        assert!(c.children[index].lock().unwrap().score.is_some());
+        assert!(c.children[index+1].lock().unwrap().score.is_none());
+        assert!(c.children[0].lock().unwrap().score.is_some());
+        assert!(c.children[1].lock().unwrap().score.is_some());
+        assert!(c.children[2].lock().unwrap().score.is_none());
+        assert!(c.children[3].lock().unwrap().score.is_none());
+    }
+
+    #[test]
+    fn sort_1() {
+        let mut c = prep_cogitator();
+        let scores = vec![None, Some(123), None, Some(-123), Some(12), Some(100), None];
+        sort(&mut c,scores);
+        assert_eq!(c.children[0].lock().unwrap().score,Some(123));
+        assert_eq!(c.children[1].lock().unwrap().score,Some(100));
+        assert_eq!(c.children[2].lock().unwrap().score,Some(12));
+        assert_eq!(c.children[3].lock().unwrap().score,Some(-123));
         assert_eq!(c.children[4].lock().unwrap().score,None);
         assert_eq!(c.children[5].lock().unwrap().score,None);
         assert_eq!(c.children[6].lock().unwrap().score,None);
     }
+
+    #[test]
+    fn sort_2() {
+        let mut c = prep_cogitator();
+        c.white_move = false;
+        let scores = vec![None, Some(-2), Some(6), None];
+        sort(&mut c,scores);
+        assert_eq!(c.children[0].lock().unwrap().score,Some(-2));
+        assert_eq!(c.children[1].lock().unwrap().score,Some(6));
+        assert_eq!(c.children[2].lock().unwrap().score,None);
+        assert_eq!(c.children[3].lock().unwrap().score,None);
+    }
+
+    #[test]
+    fn sort_3() {
+        let mut c = prep_cogitator();
+        let scores = vec![None, Some(-2), Some(6), None];
+        sort(&mut c,scores);
+        assert_eq!(c.children[0].lock().unwrap().score,Some(6));
+        assert_eq!(c.children[1].lock().unwrap().score,Some(-2));
+        assert_eq!(c.children[2].lock().unwrap().score,None);
+        assert_eq!(c.children[3].lock().unwrap().score,None);
+    }
+
 }

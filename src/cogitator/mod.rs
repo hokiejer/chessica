@@ -68,8 +68,11 @@ impl Cogitator {
         for i in 3..9 {
             self.search(i);
             self.barrier.wait();
-            self.sort_children();
-            self.prep_for_next_iteration();
+            if self.id == 0 && self.search_got_far_enough() {
+                self.sort_children();
+                self.children[0].lock().unwrap().print();
+                self.prep_for_next_iteration();
+            }
             self.barrier.wait();
         }
     }
@@ -102,7 +105,7 @@ impl Cogitator {
                         }
                     }
                 }
-                println!("Move = {}, Thread = {}, Score == {} [{}] {}",tree.reset.move_text(),self.id,score,move_count,success);
+                println!("# Move = {}, Thread = {}, Score == {} [{}] {}",tree.reset.move_text(),self.id,score,move_count,success);
                 locked_trees.push(tree);
             }
         }
@@ -133,21 +136,21 @@ impl Cogitator {
         }
     }
 
+    pub fn search_got_far_enough(&mut self) -> bool {
+        self.children[0].lock().unwrap().score.is_some()
+    }
 
     pub fn sort_children(&mut self) {
         // If the previous top score didn't get a chance at this depth, don't do anything
-        if self.id == 0 && self.children[0].lock().unwrap().score.is_some() {
-            let i = self.pre_sort_children();
-            if self.white_move {
-                self.children[0..=i].sort_by(|a, b| {
-                    b.lock().unwrap().score.cmp(&a.lock().unwrap().score)
-                });
-            } else {
-                self.children[0..=i].sort_by(|a, b| {
-                    a.lock().unwrap().score.cmp(&b.lock().unwrap().score)
-                });
-            }
-            self.children[0].lock().unwrap().print();
+        let i = self.pre_sort_children();
+        if self.white_move {
+            self.children[0..=i].sort_by(|a, b| {
+                b.lock().unwrap().score.cmp(&a.lock().unwrap().score)
+            });
+        } else {
+            self.children[0..=i].sort_by(|a, b| {
+                a.lock().unwrap().score.cmp(&b.lock().unwrap().score)
+            });
         }
     }
 

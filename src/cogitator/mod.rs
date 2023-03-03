@@ -96,12 +96,12 @@ impl Cogitator {
                     if self.white_move {
                         while score > self.global_max.load(Ordering::SeqCst) {
                             let temp = self.global_max.load(Ordering::SeqCst);
-                            let _r = self.global_max.compare_exchange(temp,score,Ordering::Acquire,Ordering::Acquire);
+                            let _r = self.global_max.compare_exchange(temp,score,Ordering::SeqCst,Ordering::SeqCst);
                         }
                     } else {
                         while score < self.global_min.load(Ordering::SeqCst) {
                             let temp = self.global_min.load(Ordering::SeqCst);
-                            let _r = self.global_min.compare_exchange(temp,score,Ordering::Acquire,Ordering::Acquire);
+                            let _r = self.global_min.compare_exchange(temp,score,Ordering::SeqCst,Ordering::SeqCst);
                         }
                     }
                 }

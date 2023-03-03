@@ -105,7 +105,7 @@ impl Cogitator {
                         }
                     }
                 }
-                println!("# Move = {}, Thread = {}, Score == {} [{}] {}",tree.reset.move_text(),self.id,score,move_count,success);
+                println!("# Move = {}, Depth = {}, Thread = {}, Score == {} [{}] {}",tree.reset.move_text(),depth,self.id,score,move_count,success);
                 locked_trees.push(tree);
             }
         }

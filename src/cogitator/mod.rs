@@ -3,6 +3,8 @@ use std::sync::{Arc, Barrier, Mutex};
 use std::sync::atomic::{AtomicI32,AtomicBool,Ordering};
 use crate::tree;
 use tree::Tree;
+use crate::reset::r#const::SCORE_MIN;
+use crate::reset::r#const::SCORE_MAX;
 
 
 /// Data necessary for the Cogitator functionality to run successfully
@@ -63,12 +65,13 @@ impl Cogitator {
 
     /// Run Chessica's Cogitator
     pub fn run(&mut self) {
-        self.search(6);
-        self.barrier.wait();
-        println!("Sorting Children");
-        self.sort_children();
-        self.barrier.wait();
-
+        for i in 3..9 {
+            self.search(i);
+            self.barrier.wait();
+            self.sort_children();
+            self.prep_for_next_iteration();
+            self.barrier.wait();
+        }
     }
 
     pub fn search(&mut self, depth: u8) {
@@ -130,8 +133,10 @@ impl Cogitator {
         }
     }
 
+
     pub fn sort_children(&mut self) {
-        if self.id == 0 {
+        // If the previous top score didn't get a chance at this depth, don't do anything
+        if self.id == 0 && self.children[0].lock().unwrap().score.is_some() {
             let i = self.pre_sort_children();
             if self.white_move {
                 self.children[0..=i].sort_by(|a, b| {
@@ -142,6 +147,17 @@ impl Cogitator {
                     a.lock().unwrap().score.cmp(&b.lock().unwrap().score)
                 });
             }
+            self.children[0].lock().unwrap().print();
+        }
+    }
+
+    pub fn prep_for_next_iteration(&mut self) {
+        if self.id == 0 {
+            for child in &self.children {
+                child.lock().unwrap().score = None;
+            }
+            self.global_min.store(SCORE_MAX, Ordering::SeqCst);
+            self.global_max.store(SCORE_MIN, Ordering::SeqCst);
         }
     }
 

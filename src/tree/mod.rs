@@ -86,7 +86,7 @@ impl Tree {
     }
 
     pub fn print_children(&mut self) -> bool {
-        if self.children.len() > 0 {
+        if !self.children.is_empty() {
             self.reset.print_board_big();
             for c in 0..self.children.len() {
                 let child = &mut self.children[c];
@@ -98,11 +98,11 @@ impl Tree {
     }
 
     pub fn best_line(&mut self) -> String {
-        if self.children.len() == 0 {
+        if self.children.is_empty() {
             self.reset.move_text()
         } else {
             let my_best_line = self.children[0].best_line();
-            format!("{} {}",self.reset.move_text(),my_best_line.trim().to_string())
+            format!("{} {}",self.reset.move_text(),my_best_line.trim())
         }
 
     }

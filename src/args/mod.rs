@@ -76,7 +76,7 @@ mod tests {
 
     fn convert_to_strings(arr: &[&str]) -> Vec<String> {
         let mut vec = Vec::new();
-        for item in arr.into_iter().enumerate() {
+        for item in arr.iter().enumerate() {
             let (i, x): (usize, &&str) = item;
             println!("array[{i}] = {x}");
             vec.push(x.to_string());
@@ -89,10 +89,10 @@ mod tests {
         let arr = ["chessica","whatever"];
         let vec = convert_to_strings(&arr);
         let mut a = process_args(vec);
-        assert_eq!(a.error(),true);
+        assert!(a.error());
 
         a.error = false;
-        assert_eq!(a.error(),false);
+        assert!(!a.error());
     }
 
 }

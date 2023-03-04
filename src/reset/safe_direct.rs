@@ -77,16 +77,14 @@ pub fn direct_check_router(king: u8, attacker: u8) -> DirectCheckSearchType {
         }
         if difference % 8 == 0 {
             return DirectCheckSearchType::LongDistanceFromN;
-        } else if difference <= 8 - ((king - 1) % 8) - 1 {
+        } else if difference < 8 - ((king - 1) % 8) {
             return DirectCheckSearchType::LongDistanceFromW;
         } else if difference % 9 == 0 {
             if (attacker - 1) % 8 > (king - 1) % 8 {
                 return DirectCheckSearchType::LongDistanceFromNW;
             }
-        } else if difference % 7 == 0 {
-            if (attacker - 1) % 8 < (king - 1) % 8 {
-                return DirectCheckSearchType::LongDistanceFromNE;
-            }
+        } else if difference % 7 == 0 && (attacker - 1) % 8 < (king - 1) % 8 {
+            return DirectCheckSearchType::LongDistanceFromNE;
         }
     } else { // Attack from E, SE, S, or SW
         let difference: u8 = king - attacker;
@@ -123,10 +121,8 @@ pub fn direct_check_router(king: u8, attacker: u8) -> DirectCheckSearchType {
             if (attacker - 1) % 8 < (king - 1) % 8 {
                 return DirectCheckSearchType::LongDistanceFromSE;
             }
-        } else if difference % 7 == 0 {
-            if (attacker - 1) % 8 > (king - 1) % 8 {
-                return DirectCheckSearchType::LongDistanceFromSW;
-            }
+        } else if difference % 7 == 0 && (attacker - 1) % 8 > (king - 1) % 8 {
+            return DirectCheckSearchType::LongDistanceFromSW;
         }
     }
     DirectCheckSearchType::DoNotSearch
@@ -307,17 +303,15 @@ impl Reset {
                             return false;
                         }
                     }
+                } else if attack_square < king_square {
+                    let b_attackers: u64 = self.b_all & !(self.b_knights & self.b_rooks);
+                    if self.b_to & b_opponents & b_attackers != 0 {
+                        return false;
+                    }
                 } else {
-                    if attack_square < king_square {
-                        let b_attackers: u64 = self.b_all & !(self.b_knights & self.b_rooks);
-                        if self.b_to & b_opponents & b_attackers != 0 {
-                            return false;
-                        }
-                    } else {
-                        let b_attackers: u64 = self.b_all & !(self.b_pawns & self.b_knights & self.b_rooks);
-                        if self.b_to & b_opponents & b_attackers != 0 {
-                            return false;
-                        }
+                    let b_attackers: u64 = self.b_all & !(self.b_pawns & self.b_knights & self.b_rooks);
+                    if self.b_to & b_opponents & b_attackers != 0 {
+                        return false;
                     }
                 }
             },

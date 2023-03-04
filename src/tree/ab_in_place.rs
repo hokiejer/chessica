@@ -20,10 +20,8 @@ impl Tree {
                     if temp_score > max {
                         max = temp_score;
                     }
-                } else {
-                    if temp_score < min {
-                        min = temp_score;
-                    }
+                } else if temp_score < min {
+                    min = temp_score;
                 }
                 if min <= max {
                     break;
@@ -35,19 +33,17 @@ impl Tree {
                 } else {
                     min
                 }
-            } else {
-                if self.reset.in_check() {
-                    if self.reset.white_to_move() {
-                        //println!("Found Black Checkmate???");
-                        SCORE_BLACK_CHECKMATE
-                    } else {
-                        //println!("Found White Checkmate???");
-                        SCORE_WHITE_CHECKMATE
-                    }
+            } else if self.reset.in_check() {
+                if self.reset.white_to_move() {
+                    //println!("Found Black Checkmate???");
+                    SCORE_BLACK_CHECKMATE
                 } else {
-                        //println!("Found Stalemate???");
-                    SCORE_STALEMATE
+                    //println!("Found White Checkmate???");
+                    SCORE_WHITE_CHECKMATE
                 }
+            } else {
+                    //println!("Found Stalemate???");
+                SCORE_STALEMATE
             }
         }
     }

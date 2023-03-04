@@ -26,7 +26,7 @@ impl Reset {
             return self.score;
         }
         self.score = self.material as i32 * 1000000;
-        let randomfactor: i32 = ((self.b_all % 1997) as i32 - 998).try_into().unwrap();
+        let randomfactor: i32 = (self.b_all % 1997) as i32 - 998;
         self.score += randomfactor;
         self.score
     }

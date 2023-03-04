@@ -3,6 +3,7 @@ use crate::args::ArgStruct;
 pub fn args_ab(arg: &str, option: &str, response: &mut ArgStruct) {
     match option {
         "--ab-search-depth" => args_ab_search_depth(arg, response),
+        "--some-other-option" => {},
         _ => {
             // Will not get here
         },
@@ -27,7 +28,7 @@ mod tests {
 
     fn convert_to_strings(arr: &[&str]) -> Vec<String> {
         let mut vec = Vec::new();
-        for item in arr.into_iter().enumerate() {
+        for item in arr.iter().enumerate() {
             let (_i, x): (usize, &&str) = item;
             vec.push(x.to_string());
         }
@@ -39,7 +40,7 @@ mod tests {
         let arr = ["chessica","--ab-search-depth","117"];
         let vec = convert_to_strings(&arr);
         let a = process_args(vec);
-        assert_eq!(a.error,false);
+        assert!(!a.error);
         assert_eq!(a.ab_search_depth,117);
     }
 
@@ -48,7 +49,7 @@ mod tests {
         let arr = ["chessica","--ab-search-depth","moose"];
         let vec = convert_to_strings(&arr);
         let a = process_args(vec);
-        assert_eq!(a.error,true);
+        assert!(a.error);
     }
 
     #[test]
@@ -56,7 +57,7 @@ mod tests {
         let arr = ["chessica","--ab-search-depth","-1"];
         let vec = convert_to_strings(&arr);
         let a = process_args(vec);
-        assert_eq!(a.error,true);
+        assert!(a.error);
     }
 
     #[test]
@@ -64,7 +65,7 @@ mod tests {
         let arr = ["chessica","--ab-search-depth","2000"];
         let vec = convert_to_strings(&arr);
         let a = process_args(vec);
-        assert_eq!(a.error,true);
+        assert!(a.error);
     }
 
 }

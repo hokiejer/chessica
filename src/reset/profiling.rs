@@ -16,7 +16,7 @@ pub fn perft(fen: &str, depth: u8) {
         let to_square = convert_bitstring_to_square(child.b_to);
         println!("{}{} {}",from_square,to_square,move_count);
     }
-    println!("");
+    println!();
     println!("{}",total_move_count);
 }
 

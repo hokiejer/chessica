@@ -23,6 +23,7 @@ impl Reset {
 
         // PROCESS THE PIECE POSITIONS (Chunk 0)
         let rows:Vec<&str>= chunks[0].split('/').collect();
+        #[allow(clippy::needless_range_loop)]
         for y in 0..8 {
             let mut x = 0;
             for c in rows[y].chars() {

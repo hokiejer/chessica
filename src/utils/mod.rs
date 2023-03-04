@@ -106,9 +106,9 @@ mod tests {
         for tuple in test_data.iter() {
           let (square,bitstring) = tuple;
           let result = utils::convert_square_to_bitstring(square.to_string());
-          assert_eq!(result,*bitstring,"{}",square.to_string());
+          assert_eq!(result,*bitstring,"{}",square);
           let result = utils::convert_bitstring_to_square(*bitstring);
-          assert_eq!(result,*square,"{}",square.to_string());
+          assert_eq!(result,*square,"{}",square);
         }
     }
 

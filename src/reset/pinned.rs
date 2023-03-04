@@ -18,7 +18,7 @@ pub const PIN_MATCH_NESW: u8 = 0xf6;
 pub const PIN_MATCH_SENW: u8 = 0xee;
 pub const PIN_MATCH_NONE: u8 = 0xfe;
 
-static PIN_DIMENSIONS: &'static [u8] = &[
+static PIN_DIMENSIONS: &[u8] = &[
             PIN_DIMENSION_NONE,
             PIN_DIMENSION_NS,
             PIN_DIMENSION_NESW,
@@ -37,7 +37,6 @@ impl Reset {
     /// Someday, king_square won't be needed by this method, but for now it's there for performance
     /// reasons.
     pub fn set_current_piece_pin_dimension(&mut self) {
-
         let mut b_opponents: u64 = if self.white_to_move() {
             self.b_black()
         } else {
@@ -50,53 +49,51 @@ impl Reset {
         };
         let from_square = self.bi_current_piece as usize;
 
-        let search_type = &REVEALED_CHECK_ROUTES[king_square as usize][from_square as usize];
+        let search_type = &REVEALED_CHECK_ROUTES[king_square as usize][from_square];
         if matches!(search_type,RevealedCheckSearchType::DoNotSearch) {
             self.pin_dimension = PIN_DIMENSION_NONE;
             return;
         }
 
-        let b_attacks: u64;
-        let index: u8;
         let b_others: u64 = self.b_pawns | self.b_knights | self.b_kings;
-        match search_type {
+        let index: u8 = match search_type {
             RevealedCheckSearchType::DoNotSearch => {
                 return; //Will not get here
             },
             RevealedCheckSearchType::FromN => {
                 b_opponents &= !(b_others | self.b_bishops);
-                index = 1;
+                1
             },
             RevealedCheckSearchType::FromNE => {
                 b_opponents &= !(b_others | self.b_rooks);
-                index = 2;
+                2
             },
             RevealedCheckSearchType::FromE => {
                 b_opponents &= !(b_others | self.b_bishops);
-                index = 3;
+                3
             },
             RevealedCheckSearchType::FromSE => {
                 b_opponents &= !(b_others | self.b_rooks);
-                index = 4;
+                4
             },
             RevealedCheckSearchType::FromS => {
                 b_opponents &= !(b_others | self.b_bishops);
-                index = 5;
+                5
             },
             RevealedCheckSearchType::FromSW => {
                 b_opponents &= !(b_others | self.b_rooks);
-                index = 6;
+                6
             },
             RevealedCheckSearchType::FromW => {
                 b_opponents &= !(b_others | self.b_bishops);
-                index = 7;
+                7
             },
             RevealedCheckSearchType::FromNW => {
                 b_opponents &= !(b_others | self.b_rooks);
-                index = 8;
+                8
             },
-        }
-        b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][index as usize];
+        };
+        let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][index as usize];
         if b_attacks & b_opponents == 0 {
             self.pin_dimension = PIN_DIMENSION_NONE;
             return;

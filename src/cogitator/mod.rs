@@ -1,4 +1,3 @@
-use std::thread;
 use std::sync::{Arc, Barrier, Mutex};
 use std::sync::atomic::{AtomicI32,AtomicBool,Ordering};
 use crate::tree;
@@ -44,14 +43,14 @@ pub fn new(
     exit_signal: Arc<AtomicBool>,
 ) -> Cogitator {
     Cogitator {
-        id: id,
-        barrier: barrier,
-        global_min: global_min,
-        global_max: global_max,
-        white_move: white_move,
+        id,
+        barrier,
+        global_min,
+        global_max,
+        white_move,
         children: vec![],
-        red_light: red_light,
-        exit_signal: exit_signal,
+        red_light,
+        exit_signal,
     }
 }
 
@@ -117,11 +116,11 @@ impl Cogitator {
         let mut i = 0;
         let mut j = self.children.len() - 1;
         while i <= j {
-            if self.children[i].lock().unwrap().score != None {
+            if self.children[i].lock().unwrap().score.is_some() {
                 i += 1;
                 continue;
             }
-            if self.children[j].lock().unwrap().score == None {
+            if self.children[j].lock().unwrap().score.is_none() {
                 j -= 1;
                 continue;
             }
@@ -129,7 +128,7 @@ impl Cogitator {
             i += 1;
             j -= 1;
         }
-        if self.children[i-1].lock().unwrap().score == None {
+        if self.children[i-1].lock().unwrap().score.is_none() {
             i-2
         } else {
             i-1
@@ -214,7 +213,7 @@ mod tests {
             tree_list.push(Arc::new(Mutex::new(t)));
         }
         c.set_child_list(tree_list.clone());
-        let index = c.sort_children();
+        c.sort_children();
         for tree in &c.children {
             match tree.lock().unwrap().score {
                 Some(this_score) => {

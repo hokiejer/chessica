@@ -137,7 +137,7 @@ impl Cogitator {
     }
 
     pub fn search_got_far_enough(&mut self) -> bool {
-        self.children[0].lock().unwrap().score.is_some()
+        !self.red_light.load(Ordering::SeqCst)
     }
 
     pub fn sort_children(&mut self) {

@@ -97,6 +97,15 @@ impl Tree {
         false
     }
 
+    pub fn best_line(&mut self) -> String {
+        if self.children.len() == 0 {
+            "".to_string()
+        } else {
+            format!("{} {}",self.reset.move_text(),self.children[0].best_line()).trim().to_string()
+        }
+
+    }
+
     //pub fn add_child_first(&mut self, child: Tree) {
 
         //let child = crate::tree::new();
@@ -125,6 +134,16 @@ mod tests {
         let mut t: Tree = crate::tree::from_fen(fen);
         assert_eq!(t.to_fen(),"r1bk3r/p2pBpNp/n4n2/1p1NP2P/6P1/3P4/P1P1K3/q5b1 b - - 1 23");
         assert_eq!(t.score,None);
+    }
+
+    #[test]
+    fn move_text() {
+        let fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        let mut t: Tree = crate::tree::from_fen(fen);
+        let mut move_count: u64 = 0;
+        t.simple_move_tree(5,&mut move_count);
+        let s = t. children[0].best_line();
+        assert_eq!(s,"g1h3 h7h6 h1g1 h6h5".to_string());
     }
 
 }

@@ -22,7 +22,7 @@ impl Tree {
                     let child = &mut self.children[c];
                     moves_generated = true;
                     boards_seen.push(child.reset.child_hash());
-                    let temp_score: i32 = child.alpha_beta_promote_prune(depth+1,max_depth,min,max,&red_light, move_count);
+                    let temp_score: i32 = child.alpha_beta_promote_prune(depth+1,max_depth,min,max,red_light, move_count);
                     if red_light.load(Ordering::Relaxed) {
                         break 'outer;
                     }
@@ -49,7 +49,7 @@ impl Tree {
                     } else {
                         moves_generated = true;
                     }
-                    let temp_score: i32 = child.alpha_beta_promote_prune(depth+1,max_depth,min,max,&red_light,move_count);
+                    let temp_score: i32 = child.alpha_beta_promote_prune(depth+1,max_depth,min,max,red_light,move_count);
                     if red_light.load(Ordering::Relaxed) {
                         break 'outer;
                     }

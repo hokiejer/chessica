@@ -13,6 +13,7 @@ pub mod operator; //include "operator/mod.rs"
 pub mod orchestrator; //include "operator/mod.rs"
 pub mod cogitator; //include "operator/mod.rs"
 
+#[allow(dead_code)]
 fn main() {
     //use std::mem;
     use crate::tree::Tree;

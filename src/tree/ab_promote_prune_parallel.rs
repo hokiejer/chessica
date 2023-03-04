@@ -75,14 +75,14 @@ impl Tree {
                         break 'outer;
                     }
                     if self.reset.white_to_move() {
-                        local_max = max.load(Ordering::SeqCst);
+                        local_min = min.load(Ordering::SeqCst);
                         println!("#    ** Move = {}, local_max == {}, temp_Score == {}",self.reset.move_text(),local_max,temp_score);
                         if temp_score > local_max {
                             self.promote_last_child_to_first(self.children.len()-1);
                             local_max = temp_score;
                         }
                     } else {
-                        local_min = min.load(Ordering::SeqCst);
+                        local_max = max.load(Ordering::SeqCst);
                         println!("#    ** Move = {}, local_min == {}, temp_Score == {}",self.reset.move_text(),local_min,temp_score);
                         if temp_score < local_min {
                             self.promote_last_child_to_first(self.children.len()-1);

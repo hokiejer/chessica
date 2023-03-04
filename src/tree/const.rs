@@ -4,4 +4,4 @@
 // so there's a balance between not wasting too much space versus the cost of reallocation
 //
 pub const MAX_EXPECTED_CHILD_MOVES: usize = 40;
-pub const MAX_CHILDREN_KEPT: usize = 2;
+pub const MAX_CHILDREN_KEPT: usize = 3;

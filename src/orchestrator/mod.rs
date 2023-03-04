@@ -8,6 +8,7 @@ use tree::Tree;
 use std::sync::{Arc, Mutex};
 use std::thread::JoinHandle;
 use std::sync::atomic::{AtomicBool};
+use crate::orchestrator::r#const::SEARCH_THREADS_DEFAULT;
 
 /// Data necessary the Orchestrator functionality to run successfully
 ///
@@ -44,7 +45,7 @@ pub fn new() -> Orchestrator {
         cogitator_transmit_channel: None,
         tree_root: tree::from_fen(starting_fen),
         tree_children: Vec::new(),
-        cogitator_thread_count: 2,
+        cogitator_thread_count: SEARCH_THREADS_DEFAULT,
         cogitator_handles: Vec::new(),
         red_light: Arc::new(AtomicBool::new(false)),
         exit_signal: Arc::new(AtomicBool::new(false)),

@@ -4,7 +4,6 @@ use crate::reset::r#const::SCORE_BLACK_CHECKMATE;
 use crate::reset::r#const::SCORE_WHITE_CHECKMATE;
 use crate::tree::r#const::MAX_CHILDREN_KEPT;
 use std::sync::atomic::{AtomicI32, AtomicBool, Ordering};
-use std::cmp;
 
 #[allow(clippy::never_loop)]
 impl Tree {
@@ -36,7 +35,7 @@ impl Tree {
                     moves_generated = true;
                     boards_seen.push(child.reset.child_hash());
 
-                    let temp_score: i32 = child.alpha_beta_promote_prune(depth+1, max_depth, local_min, local_max, &red_light, move_count);
+                    let temp_score: i32 = child.alpha_beta_promote_prune(depth+1, max_depth, local_min, local_max, red_light, move_count);
                     if red_light.load(Ordering::Relaxed) {
                         successful_search = false;
                         break 'outer;
@@ -69,7 +68,7 @@ impl Tree {
                     } else {
                         moves_generated = true;
                     }
-                    let temp_score: i32 = child.alpha_beta_promote_prune(depth+1, max_depth, local_min, local_max, &red_light, move_count);
+                    let temp_score: i32 = child.alpha_beta_promote_prune(depth+1, max_depth, local_min, local_max, red_light, move_count);
                     if red_light.load(Ordering::Relaxed) {
                         successful_search = false;
                         break 'outer;

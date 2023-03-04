@@ -79,7 +79,6 @@ mod tests {
 
     #[test]
     fn new_orchestrator() {
-        use std::sync::mpsc;
         let _o = orchestrator::new();
         //assert_eq!(o.operator_receive_channel,None);
         //assert_eq!(o.cogitator_transmit_channel,None);

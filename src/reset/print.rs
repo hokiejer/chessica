@@ -76,37 +76,33 @@ impl Reset {
         self.print();
         while b_index > 0 {
             if b_index & self.b_all == 0 {
-                print_string.push_str(&". ".to_string());
-            } else {
-                if b_index & self.b_white != 0 {
-                    if b_index & self.b_pawns != 0 {
-                        print_string.push_str(&"P ".to_string());
-                    } else if b_index & self.b_knights != 0 {
-                        print_string.push_str(&"N ".to_string());
-                    } else if b_index & self.b_bishops != 0 {
-                        print_string.push_str(&"B ".to_string());
-                    } else if b_index & self.b_rooks != 0 {
-                        print_string.push_str(&"R ".to_string());
-                    } else if b_index & self.b_kings != 0 {
-                        print_string.push_str(&"K ".to_string());
-                    } else {
-                        print_string.push_str(&"Q ".to_string());
-                    }
+                print_string.push_str(". ");
+            } else if b_index & self.b_white != 0 {
+                if b_index & self.b_pawns != 0 {
+                    print_string.push_str("P ");
+                } else if b_index & self.b_knights != 0 {
+                    print_string.push_str("N ");
+                } else if b_index & self.b_bishops != 0 {
+                    print_string.push_str("B ");
+                } else if b_index & self.b_rooks != 0 {
+                    print_string.push_str("R ");
+                } else if b_index & self.b_kings != 0 {
+                    print_string.push_str("K ");
                 } else {
-                    if b_index & self.b_pawns != 0 {
-                        print_string.push_str(&"p ".to_string());
-                    } else if b_index & self.b_knights != 0 {
-                        print_string.push_str(&"n ".to_string());
-                    } else if b_index & self.b_bishops != 0 {
-                        print_string.push_str(&"b ".to_string());
-                    } else if b_index & self.b_rooks != 0 {
-                        print_string.push_str(&"r ".to_string());
-                    } else if b_index & self.b_kings != 0 {
-                        print_string.push_str(&"k ".to_string());
-                    } else {
-                        print_string.push_str(&"q ".to_string());
-                    }
+                    print_string.push_str("Q ");
                 }
+            } else if b_index & self.b_pawns != 0 {
+                print_string.push_str("p ");
+            } else if b_index & self.b_knights != 0 {
+                print_string.push_str("n ");
+            } else if b_index & self.b_bishops != 0 {
+                print_string.push_str("b ");
+            } else if b_index & self.b_rooks != 0 {
+                print_string.push_str("r ");
+            } else if b_index & self.b_kings != 0 {
+                print_string.push_str("k ");
+            } else {
+                print_string.push_str("q ");
             }
             b_index >>= 1;
             increment += 1;
@@ -146,45 +142,43 @@ impl Reset {
                         }
                     }
                     print!("{}", style.paint("   "));
-                } else {
-                    if b_index & self.b_white != 0 {
-                        if b_index & self.b_to != 0 {
-                            style = Colour::RGB(0,0,0).on(Colour::RGB(255,255,255)).blink();
-                        } else {
-                            style = Colour::RGB(0,0,0).on(Colour::RGB(255,255,255));
-                        }
-                        if b_index & self.b_pawns != 0 {
-                            print!("{}", style.paint(" P "));
-                        } else if b_index & self.b_knights != 0 {
-                            print!("{}", style.paint(" N "));
-                        } else if b_index & self.b_bishops != 0 {
-                            print!("{}", style.paint(" B "));
-                        } else if b_index & self.b_rooks != 0 {
-                            print!("{}", style.paint(" R "));
-                        } else if b_index & self.b_kings != 0 {
-                            print!("{}", style.paint(" K "));
-                        } else {
-                            print!("{}", style.paint(" Q "));
-                        }
+                } else if b_index & self.b_white != 0 {
+                    if b_index & self.b_to != 0 {
+                        style = Colour::RGB(0,0,0).on(Colour::RGB(255,255,255)).blink();
                     } else {
-                        if b_index & self.b_to != 0 {
-                            style = Colour::RGB(255,255,255).on(Colour::RGB(0,0,0)).blink();
-                        } else {
-                            style = Colour::RGB(255,255,255).on(Colour::RGB(0,0,0));
-                        }
-                        if b_index & self.b_pawns != 0 {
-                            print!("{}", style.paint(" P "));
-                        } else if b_index & self.b_knights != 0 {
-                            print!("{}", style.paint(" N "));
-                        } else if b_index & self.b_bishops != 0 {
-                            print!("{}", style.paint(" B "));
-                        } else if b_index & self.b_rooks != 0 {
-                            print!("{}", style.paint(" R "));
-                        } else if b_index & self.b_kings != 0 {
-                            print!("{}", style.paint(" K "));
-                        } else {
-                            print!("{}", style.paint(" Q "));
-                        }
+                        style = Colour::RGB(0,0,0).on(Colour::RGB(255,255,255));
+                    }
+                    if b_index & self.b_pawns != 0 {
+                        print!("{}", style.paint(" P "));
+                    } else if b_index & self.b_knights != 0 {
+                        print!("{}", style.paint(" N "));
+                    } else if b_index & self.b_bishops != 0 {
+                        print!("{}", style.paint(" B "));
+                    } else if b_index & self.b_rooks != 0 {
+                        print!("{}", style.paint(" R "));
+                    } else if b_index & self.b_kings != 0 {
+                        print!("{}", style.paint(" K "));
+                    } else {
+                        print!("{}", style.paint(" Q "));
+                    }
+                } else {
+                    if b_index & self.b_to != 0 {
+                        style = Colour::RGB(255,255,255).on(Colour::RGB(0,0,0)).blink();
+                    } else {
+                        style = Colour::RGB(255,255,255).on(Colour::RGB(0,0,0));
+                    }
+                    if b_index & self.b_pawns != 0 {
+                        print!("{}", style.paint(" P "));
+                    } else if b_index & self.b_knights != 0 {
+                        print!("{}", style.paint(" N "));
+                    } else if b_index & self.b_bishops != 0 {
+                        print!("{}", style.paint(" B "));
+                    } else if b_index & self.b_rooks != 0 {
+                        print!("{}", style.paint(" R "));
+                    } else if b_index & self.b_kings != 0 {
+                        print!("{}", style.paint(" K "));
+                    } else {
+                        print!("{}", style.paint(" Q "));
                     }
                 }
                 b_index >>= 1;
@@ -201,7 +195,7 @@ impl Reset {
             increment += 1;
             col += 1;
             if increment % 8 == 0 {
-                println!("");
+                println!();
                 level += 1;
                 if level > 3 {
                     level = 1;
@@ -227,35 +221,35 @@ impl Reset {
         if self.b_pawns > 0 {
             println!("Pawns:");
             self.b_pawns.print_board();
-            println!("");
+            println!();
         } else {
             println!("No Pawns");
         }
         if self.b_knights > 0 {
             println!("Knights:");
             self.b_knights.print_board();
-            println!("");
+            println!();
         } else {
             println!("No Knights");
         }
         if self.b_bishops > 0 {
             println!("Bishops:");
             self.b_bishops.print_board();
-            println!("");
+            println!();
         } else {
             println!("No Bishops");
         }
         if self.b_rooks > 0 {
             println!("Rooks:");
             self.b_rooks.print_board();
-            println!("");
+            println!();
         } else {
             println!("No Rooks");
         }
         if self.b_queens() > 0 {
             println!("Queens:");
             self.b_queens().print_board();
-            println!("");
+            println!();
         } else {
             println!("No Queens");
         }
@@ -276,7 +270,6 @@ mod tests {
         r.b_to = 2;
         r.init_from_fen(fen);
         r.print_board_small();
-        assert!(true);
     }
 
 }

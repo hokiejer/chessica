@@ -11,9 +11,8 @@ use std::sync::{Arc, Barrier, Mutex};
 //use crossbeam_channel::unbounded;
 use crate::reset::r#const::SCORE_MIN;
 use crate::reset::r#const::SCORE_MAX;
-use std::sync::atomic::{AtomicI32,AtomicBool,Ordering};
+use std::sync::atomic::{AtomicI32,Ordering};
 use crate::cogitator;
-use crate::cogitator::Cogitator;
 
 impl Orchestrator {
 
@@ -52,8 +51,6 @@ impl Orchestrator {
     }
 
     pub fn launch_cogitators(&mut self) {
-        let mut cogitators: Vec<Cogitator> = vec![];
-
         //Shared variables
         let barrier = Arc::new(Barrier::new(self.cogitator_thread_count.into()));
         let search_min = Arc::new(AtomicI32::new(SCORE_MAX));
@@ -95,7 +92,7 @@ impl Orchestrator {
     pub fn close_cogitators(&mut self) {
         self.pause_cogitation();
         self.exit_signal.store(true,Ordering::Relaxed);
-        while self.cogitator_handles.len() > 0 {
+        while !self.cogitator_handles.is_empty() {
             let handle = self.cogitator_handles.pop().unwrap();
             handle.join().unwrap();
         }

@@ -47,7 +47,7 @@ mod tests {
         let starting_fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         let mut t: Tree = crate::tree::from_fen(starting_fen);
         let mut count = 0;
-        while t.add_next_child() == true {
+        while t.add_next_child() {
             count += 1;
         }
         assert_eq!(count,20);

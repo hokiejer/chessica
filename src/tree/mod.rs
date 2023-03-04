@@ -80,9 +80,9 @@ impl Tree {
         let mut node_count: Vec<u64> = Vec::new();
         node_count.push(1);
         self.count_tree_nodes(1, &mut node_count);
-        for i in 0..node_count.len() {
+        (0..node_count.len()).for_each(|i| {
             println!("Depth = {}, node_count = {}",i,node_count[i]);
-        }
+        });
     }
 
     pub fn print_children(&mut self) -> bool {

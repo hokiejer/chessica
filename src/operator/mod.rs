@@ -18,9 +18,13 @@ pub enum CommunicationProtocol {
 /// Orchestrator thread, which oversees move searching.
 ///
 pub struct Operator {
+    #[allow(dead_code)] //todo: Get rid of this
     white_is_engine: bool,
+    #[allow(dead_code)] //todo: Get rid of this
     black_is_engine: bool,
+    #[allow(dead_code)] //todo: Get rid of this
     game_fen: String,
+    #[allow(dead_code)] //todo: Get rid of this
     communication_protocol: CommunicationProtocol,
     orchestrator_transmit_channel: Option<Sender<OperatorMessage>>,
 }

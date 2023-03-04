@@ -322,9 +322,9 @@ mod tests {
     fn reset_in_check() {
         let mut r = reset::new();
         r.in_check = 1;
-        assert_eq!(r.in_check(),true);
+        assert!(r.in_check());
         r.in_check = 0;
-        assert_eq!(r.in_check(),false);
+        assert!(!r.in_check());
     }
 }
 

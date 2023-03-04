@@ -194,7 +194,7 @@ mod tests {
 
         // No Third Move
         let retval = r.generate_next_knight_move(&mut child);
-        assert_eq!(retval,false);
+        assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("f8".to_string()));
         assert_eq!(r.move_id,10);
     }
@@ -223,7 +223,7 @@ mod tests {
 
         // No Third Move
         let retval = r.generate_next_knight_move(&mut child);
-        assert_eq!(retval,false);
+        assert!(!retval);
         assert_eq!(r.b_current_piece,utils::convert_square_to_bitstring("a8".to_string()));
         assert_eq!(r.move_id,10);
     }

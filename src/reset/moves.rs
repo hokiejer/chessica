@@ -236,10 +236,8 @@ impl Reset {
 
         // Move is invalid if I'm moving into check
         if self.white_to_move() {
-            if self.in_check != 0 {
-                if !child.white_is_safe(child.b_kings & child.b_white) {
-                    return false;
-                }
+            if self.in_check != 0 && !child.white_is_safe(child.b_kings & child.b_white) {
+                return false;
             }
             if !child.is_safe_from_revealed_check(child.black_king_square,child.bi_from,BLACK) ||
                 !child.is_safe_from_direct_check(child.black_king_square,child.bi_to,BLACK) 
@@ -247,10 +245,8 @@ impl Reset {
                 child.in_check = 1;
             }
         } else {
-            if self.in_check != 0 {
-                if !child.black_is_safe(child.b_kings & child.b_black()) {
-                    return false;
-                }
+            if self.in_check != 0 && !child.black_is_safe(child.b_kings & child.b_black()) {
+                return false;
             }
             if !child.is_safe_from_revealed_check(child.white_king_square,child.bi_from,WHITE) ||
                 !child.is_safe_from_direct_check(child.white_king_square,child.bi_to,WHITE) 

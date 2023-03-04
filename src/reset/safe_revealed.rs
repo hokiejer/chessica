@@ -25,7 +25,7 @@ pub enum RevealedCheckSearchType {
     FromNW,
 }
 
-pub static IS_SAFE_FROM_REVEALED_CHECK_FUNCTIONS: &'static [fn(u8,u64,u64)->bool] = &[
+pub static IS_SAFE_FROM_REVEALED_CHECK_FUNCTIONS: &[fn(u8,u64,u64)->bool] = &[
     is_safe_from_revealed_check_from_n, // Slot 0 doesn't matter
     is_safe_from_revealed_check_from_n,
     is_safe_from_revealed_check_from_ne,
@@ -46,16 +46,14 @@ pub fn revealed_check_router(king: u8, revealed: u8) -> RevealedCheckSearchType 
         let difference: u8 = revealed - king;
         if difference % 8 == 0 {
             return RevealedCheckSearchType::FromN;
-        } else if difference <= 8 - ((king - 1) % 8) - 1 {
+        } else if difference < 8 - ((king - 1) % 8) {
             return RevealedCheckSearchType::FromW;
         } else if difference % 9 == 0 {
             if (revealed - 1) % 8 > (king - 1) % 8 {
                 return RevealedCheckSearchType::FromNW;
             }
-        } else if difference % 7 == 0 {
-            if (revealed - 1) % 8 < (king - 1) % 8 {
-                return RevealedCheckSearchType::FromNE;
-            }
+        } else if difference % 7 == 0 && (revealed - 1) % 8 < (king - 1) % 8 {
+            return RevealedCheckSearchType::FromNE;
         }
     } else { // Attack from E, SE, S, or SW
         let difference: u8 = king - revealed;
@@ -67,10 +65,8 @@ pub fn revealed_check_router(king: u8, revealed: u8) -> RevealedCheckSearchType 
             if (revealed - 1) % 8 < (king - 1) % 8 {
                 return RevealedCheckSearchType::FromSE;
             }
-        } else if difference % 7 == 0 {
-            if (revealed - 1) % 8 > (king - 1) % 8 {
-                return RevealedCheckSearchType::FromSW;
-            }
+        } else if difference % 7 == 0 && (revealed - 1) % 8 > (king - 1) % 8 {
+            return RevealedCheckSearchType::FromSW;
         }
     }
     RevealedCheckSearchType::DoNotSearch
@@ -183,16 +179,17 @@ lazy_static! {
         vec.push(blank); // push a blank at index 0
 
         for king in 1..65 { // indexes 1 to 64
-            let mut bit_strings: Vec<u64> = Vec::new();
-            bit_strings.push(revealed_check_bitmapper(king as u8,RevealedCheckSearchType::DoNotSearch));
-            bit_strings.push(revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromN));
-            bit_strings.push(revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromNE));
-            bit_strings.push(revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromE));
-            bit_strings.push(revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromSE));
-            bit_strings.push(revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromS));
-            bit_strings.push(revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromSW));
-            bit_strings.push(revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromW));
-            bit_strings.push(revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromNW));
+            let bit_strings: Vec<u64> = vec![
+                revealed_check_bitmapper(king as u8,RevealedCheckSearchType::DoNotSearch),
+                revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromN),
+                revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromNE),
+                revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromE),
+                revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromSE),
+                revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromS),
+                revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromSW),
+                revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromW),
+                revealed_check_bitmapper(king as u8,RevealedCheckSearchType::FromNW),
+            ];
             vec.push(bit_strings);
         }
         vec
@@ -338,7 +335,7 @@ impl Reset {
                 if b_attacks & b_opponents == 0 {
                     return true;
                 }
-                return is_safe_from_revealed_check_from_n(king_square,self.b_all,b_opponents)
+                is_safe_from_revealed_check_from_n(king_square,self.b_all,b_opponents)
             },
             RevealedCheckSearchType::FromNE => {
                 let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][2];
@@ -346,7 +343,7 @@ impl Reset {
                 if b_attacks & b_opponents == 0 {
                     return true;
                 }
-                return is_safe_from_revealed_check_from_ne(king_square,self.b_all,b_opponents)
+                is_safe_from_revealed_check_from_ne(king_square,self.b_all,b_opponents)
             },
             RevealedCheckSearchType::FromE => {
                 let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][3];
@@ -354,7 +351,7 @@ impl Reset {
                 if b_attacks & b_opponents == 0 {
                     return true;
                 }
-                return is_safe_from_revealed_check_from_e(king_square,self.b_all,b_opponents)
+                is_safe_from_revealed_check_from_e(king_square,self.b_all,b_opponents)
             },
             RevealedCheckSearchType::FromSE => {
                 let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][4];
@@ -362,7 +359,7 @@ impl Reset {
                 if b_attacks & b_opponents == 0 {
                     return true;
                 }
-                return is_safe_from_revealed_check_from_se(king_square,self.b_all,b_opponents)
+                is_safe_from_revealed_check_from_se(king_square,self.b_all,b_opponents)
             },
             RevealedCheckSearchType::FromS => {
                 let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][5];
@@ -370,7 +367,7 @@ impl Reset {
                 if b_attacks & b_opponents == 0 {
                     return true;
                 }
-                return is_safe_from_revealed_check_from_s(king_square,self.b_all,b_opponents)
+                is_safe_from_revealed_check_from_s(king_square,self.b_all,b_opponents)
             },
             RevealedCheckSearchType::FromSW => {
                 let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][6];
@@ -378,7 +375,7 @@ impl Reset {
                 if b_attacks & b_opponents == 0 {
                     return true;
                 }
-                return is_safe_from_revealed_check_from_sw(king_square,self.b_all,b_opponents)
+                is_safe_from_revealed_check_from_sw(king_square,self.b_all,b_opponents)
             },
             RevealedCheckSearchType::FromW => {
                 let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][7];
@@ -386,7 +383,7 @@ impl Reset {
                 if b_attacks & b_opponents == 0 {
                     return true;
                 }
-                return is_safe_from_revealed_check_from_w(king_square,self.b_all,b_opponents)
+                is_safe_from_revealed_check_from_w(king_square,self.b_all,b_opponents)
             },
             RevealedCheckSearchType::FromNW => {
                 let b_attacks = REVEALED_CHECK_BITMAPS[king_square as usize][8];
@@ -394,12 +391,12 @@ impl Reset {
                 if b_attacks & b_opponents == 0 {
                     return true;
                 }
-                return is_safe_from_revealed_check_from_nw(king_square,self.b_all,b_opponents)
+                is_safe_from_revealed_check_from_nw(king_square,self.b_all,b_opponents)
             },
             RevealedCheckSearchType::DoNotSearch => {
                 // Can't get here
-                return false;
-            }
+                false
+            },
         }
         // Shouldn't get here
     }

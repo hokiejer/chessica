@@ -70,7 +70,7 @@ impl Reset {
             child.in_check = 1;
         }
         self.valid_child_post_processing(child);
-        return true;
+        true
     }
 
     pub fn generate_next_white_pawn_move(&mut self, child: &mut Reset) -> bool {
@@ -92,7 +92,7 @@ impl Reset {
                 return true;
             }
         }
-                
+
         // Forward two (North)
         if self.move_id < 30 {
             self.move_id = 30;

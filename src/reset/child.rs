@@ -153,7 +153,7 @@ mod tests {
         let mut child = reset::new();
         r.clone_to(&mut child);
         let result = child.to_fen();
-        assert_eq!(result,fen.to_string().to_string());
+        assert_eq!(result,fen.to_string());
     }
 }
 

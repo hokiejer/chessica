@@ -140,7 +140,7 @@ mod tests {
         let mut child = reset::new();
         r.clone_to(&mut child);
         let result = child.to_fen();
-        assert_eq!(result,fen.to_string().to_string());
+        assert_eq!(result,fen.to_string());
     }
 
     #[test]
@@ -150,7 +150,7 @@ mod tests {
         r.init_from_fen(fen.to_string());
         let mut child = reset::clone::clone_from(&mut r);
         let result = child.to_fen();
-        assert_eq!(result,fen.to_string().to_string());
+        assert_eq!(result,fen.to_string());
     }
 
     #[test]

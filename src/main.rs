@@ -1,6 +1,8 @@
 #[macro_use]
 extern crate lazy_static;
 extern crate enum_map;
+use std::sync::Arc;
+use std::sync::atomic::{AtomicBool};
 
 pub mod utils; //include "utils/mod.rs"
 pub mod reset; //include "reset/mod.rs"
@@ -11,6 +13,7 @@ pub mod operator; //include "operator/mod.rs"
 pub mod orchestrator; //include "operator/mod.rs"
 pub mod cogitator; //include "operator/mod.rs"
 
+#[allow(dead_code)]
 fn main() {
     //use std::mem;
     use crate::tree::Tree;
@@ -60,11 +63,13 @@ fn main() {
         } else if argdata.profile_promote_prune_ab() {
             println!("Running profile script for Promote Prune Alpha-Beta...");
             println!("Search Depth == {}",argdata.ab_search_depth);
+            let red_light = Arc::new(AtomicBool::new(false));
             let score = t.alpha_beta_promote_prune(
                 0,
                 argdata.ab_search_depth,
                 SCORE_MAX,
                 SCORE_MIN,
+                &red_light,
                 &mut move_count
             );
             println!("Score == {}  Move count == {}",score,move_count.to_formatted_string(&Locale::en));

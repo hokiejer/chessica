@@ -61,7 +61,8 @@ impl Operator {
 
         // Spawn the Orchestrator thread
         let orchestrator_join_handle = thread::spawn(|| {
-            let mut orchestrator = orchestrator::new(rx);
+            let mut orchestrator = orchestrator::new();
+            orchestrator.operator_receive_channel = Some(rx);
             orchestrator.run();
         });
 

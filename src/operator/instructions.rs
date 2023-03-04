@@ -9,13 +9,17 @@ impl Operator {
         println!("Board Input == \"{}\"",instruction);
         let mut message = message::new();
         match instruction.as_str() {
+            "e2e4" => {
+                message.move_taken();
+                self.send(&message);
+            }
             "quit" => {
                 message.exit_program();
                 self.send(&message);
             },
             "force" => {
                 message.player_status_change(false, false);
-                self.send(&message);            
+                self.send(&message);
             },
             "new" => {
                 message.new_board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1".to_string());

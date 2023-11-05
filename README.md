@@ -1,4 +1,4 @@
-# rustica
+# chessica
 
 Chessica in Rust
 

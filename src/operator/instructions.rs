@@ -24,6 +24,7 @@ impl Operator {
             "new" => {
                 message.new_board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1".to_string());
                 self.send(&message);
+                message = message::new();
                 message.player_status_change(false, true);
                 self.send(&message);
             },

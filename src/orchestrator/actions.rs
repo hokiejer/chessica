@@ -17,6 +17,7 @@ impl Orchestrator {
     pub fn process_command(&mut self, received_message: OperatorMessage) -> bool {
             match received_message.instruction {
                 MoveTaken => {
+                    // Needs to be told the move taken and then apply it to tree_root
                     self.launch_cogitators();
                 },
                 NewBoard => {
@@ -36,7 +37,7 @@ impl Orchestrator {
                     self.tree_root.simple_move_tree(1,&mut m);
                 },
                 PlayerStatusChange => {
-
+                    // Needs to update tree_root
                 },
                 ExitProgram => {
                     self.close_cogitators();
